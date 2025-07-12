@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.RegisterController"
+            prefWidth="800" prefHeight="600">
+    <VBox spacing="10" alignment="TOP_CENTER" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+
+        <Label text="Đăng ký" style="-fx-font-size: 26px; -fx-text-fill: red; -fx-font-weight: bold;" />
+
+        <ImageView fitHeight="80" fitWidth="80">
+            <image>
+                <Image url="@register_logo.png"/>
+            </image>
+        </ImageView>
+
+        <Label text="Điền thông tin sau" style="-fx-font-weight: bold;" />
+
+        <GridPane hgap="10" vgap="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <columnConstraints>
+                <ColumnConstraints percentWidth="30"/>
+                <ColumnConstraints percentWidth="70"/>
+            </columnConstraints>
+
+            <Label text="Họ &amp; tên" GridPane.rowIndex="0" />
+            <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+            <Label text="Ngày sinh" GridPane.rowIndex="1" />
+            <DatePicker fx:id="dobPicker" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+            <Label text="Số điện thoại" GridPane.rowIndex="2" />
+            <TextField fx:id="phoneField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+            <Label text="Email" GridPane.rowIndex="3" />
+            <TextField fx:id="emailField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+            <Label text="Vai trò" GridPane.rowIndex="4" />
+            <ComboBox fx:id="roleCombo" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Admin" />
+                        <String fx:value="Nhân viên" />
+                        <String fx:value="Khách" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+
+            <Label text="Mật khẩu" GridPane.rowIndex="5" />
+            <PasswordField fx:id="passwordField" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+
+            <Label text="! Mật khẩu tối thiểu 8 ký tự, có ít nhất 1 chữ và 1 số" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                   style="-fx-font-size: 10px; -fx-text-fill: gray;" />
+
+            <Label text="Nhập lại mật khẩu" GridPane.rowIndex="7" />
+            <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="7" GridPane.columnIndex="1" />
+        </GridPane>
+
+        <HBox spacing="50" alignment="CENTER">
+            <Button fx:id="backToLoginBtn" text="Quay lại đăng nhập" style="-fx-font-weight: bold;" />
+            <Button fx:id="registerBtn" text="Hoàn tất đăng kí" style="-fx-text-fill: red; -fx-font-weight: bold;" />
+        </HBox>
+
+    </VBox>
+</AnchorPane>
