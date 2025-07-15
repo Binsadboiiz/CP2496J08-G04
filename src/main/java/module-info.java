@@ -1,4 +1,6 @@
 module Project_Sem2 {
+    requires java.sql;
+
     requires javafx.controls;
     requires javafx.fxml;
 
