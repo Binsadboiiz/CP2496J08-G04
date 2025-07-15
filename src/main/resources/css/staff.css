@@ -1,0 +1,15 @@
+.product-card {
+    -fx-border-color: #ccc;
+    -fx-padding: 10;
+    -fx-alignment: center;
+    -fx-background-color: #f9f9f9;
+}
+
+.button {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+}
+
+.text-field {
+    -fx-background-color: white;
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane stylesheets="@../css/staff.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StaffController">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="10" left="10" right="10" top="20" /></padding>
+
+            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
+                <image><Image url="@../images/register_logo.png" /></image>
+            </ImageView>
+
+            <Label text="Nhân viên" />
+            <Label text="Vai Trò" />
+
+            <Button maxWidth="180" text="Home" />
+            <Button maxWidth="180" text="Products" />
+            <Button maxWidth="180" text="Orders" />
+            <Button maxWidth="180" text="Customers" />
+
+            <Pane VBox.vgrow="ALWAYS" />
+
+            <Button maxWidth="180" style="-fx-background-color: red; -fx-text-fill: white;" text="Logout" />
+        </VBox>
+    </left>
+
+    <!-- Main content -->
+    <center>
+        <VBox alignment="TOP_CENTER" prefHeight="640.0" prefWidth="612.0" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Staff Dashboard">
+                    <font><Font name="System Bold" size="24" /></font>
+                </Label>
+                <TextField prefWidth="300" promptText="Search..." />
+            </HBox>
+
+            <GridPane fx:id="productGrid" hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33" />
+                    <ColumnConstraints percentWidth="33" />
+                    <ColumnConstraints percentWidth="33" />
+                </columnConstraints>
+
+                <rowConstraints>
+                    <RowConstraints percentHeight="50" />
+                    <RowConstraints percentHeight="50" />
+                </rowConstraints>
+
+                <!-- Sample Item -->
+                <VBox alignment="CENTER" spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Hình sản phẩm" />
+                    <Label text="Tên sản phẩm" />
+                    <Label text="Giá" />
+                    <Label text="Số lượng" />
+                </VBox>
+
+            </GridPane>
+        </VBox>
+    </center>
+
+</BorderPane>

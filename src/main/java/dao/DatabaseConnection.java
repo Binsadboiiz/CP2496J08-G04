@@ -9,8 +9,8 @@ public class DatabaseConnection {
     public Connection getConnection() {
         String databaseName = "CellPhoneStore"; // Tên DB bạn đã tạo trong SQL Server
         String user = "sa";                     // Tài khoản bạn dùng trong ảnh
-        String password = "sqladmin";      // Thay bằng mật khẩu thật
-        String serverName = "DESKTOP-7C17MA6";  // Server name bạn đang dùng
+        String password = "sa";      // Thay bằng mật khẩu thật
+        String serverName = "";  // Server name bạn đang dùng
 
         String url = "jdbc:sqlserver://" + serverName + ":1433;"
                 + "databaseName=" + databaseName + ";encrypt=false;";
