@@ -85,6 +85,7 @@ public class StaffController implements Initializable {
         try {
             Stage stage = (Stage) btnLogout.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+
             stage.setScene(new Scene(root));
         } catch (Exception e) {
             e.printStackTrace();

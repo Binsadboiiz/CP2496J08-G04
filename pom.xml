@@ -31,7 +31,11 @@
             <artifactId>controlsfx</artifactId>
             <version>11.2.0</version> <!-- Tuỳ theo JDK -->
         </dependency>
-
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.6.1.jre11</version> <!-- Hoặc bản tương ứng JDK -->
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>

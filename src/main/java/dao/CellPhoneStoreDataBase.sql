@@ -1,5 +1,8 @@
 CREATE DATABASE CellPhoneStore;
 
+use CellPhoneStore;
+    go
+
 CREATE TABLE [User] (
     UserID INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
     Username VARCHAR(50) NOT NULL,

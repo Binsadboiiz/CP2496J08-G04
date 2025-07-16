@@ -10,6 +10,9 @@ public class User {
     private String role;
     private String password;
 
+
+    public User() {}
+
     public User(String name, LocalDate dob, String phone, String email, String role, String password) {
         this.name = name;
         this.dob = dob;
