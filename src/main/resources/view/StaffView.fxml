@@ -29,25 +29,35 @@
             <Label text="Nhân viên" />
             <Label text="Vai Trò" />
 
-            <Button maxWidth="180" text="Home" />
-            <Button maxWidth="180" text="Products" />
-            <Button maxWidth="180" text="Orders" />
-            <Button maxWidth="180" text="Customers" />
+            <Button fx:id="btnHome" maxWidth="180" text="Home">
+                <font><Font name="Times New Roman Bold" size="18" /></font>
+            </Button>
+            <Button fx:id="btnProducts" maxWidth="180" text="Products">
+                <font><Font name="Times New Roman Bold" size="18" /></font>
+            </Button>
+            <Button fx:id="btnOrders" maxWidth="180" text="Orders">
+                <font><Font name="Times New Roman Bold" size="18" /></font>
+            </Button>
+            <Button fx:id="btnCustomers" maxWidth="180" text="Customers">
+                <font><Font name="Times New Roman Bold" size="18" /></font>
+            </Button>
 
             <Pane VBox.vgrow="ALWAYS" />
 
-            <Button maxWidth="180" style="-fx-background-color: red; -fx-text-fill: white;" text="Logout" />
+            <Button fx:id="btnLogout" maxWidth="180" style="-fx-background-color: red; -fx-text-fill: white;" text="Logout">
+                <font><Font name="Times New Roman Bold" size="18" /></font>
+            </Button>
         </VBox>
     </left>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <center>
-        <VBox alignment="TOP_CENTER" prefHeight="640.0" prefWidth="612.0" spacing="10">
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Staff Dashboard">
-                    <font><Font name="System Bold" size="24" /></font>
+        <VBox alignment="TOP_CENTER" prefHeight="500.0" prefWidth="640.0" spacing="10">
+            <HBox alignment="CENTER_LEFT" prefHeight="58.0" prefWidth="640.0" spacing="10">
+                <Label alignment="CENTER" prefHeight="32.0" prefWidth="274.0" text="Staff Dashboard" textAlignment="CENTER">
+                    <font><Font name="SansSerif Bold" size="28" /></font>
                 </Label>
-                <TextField prefWidth="300" promptText="Search..." />
+                <TextField fx:id="searchField" prefWidth="300" promptText="Search..." />
             </HBox>
 
             <GridPane fx:id="productGrid" hgap="10" vgap="10">
@@ -62,14 +72,7 @@
                     <RowConstraints percentHeight="50" />
                 </rowConstraints>
 
-                <!-- Sample Item -->
-                <VBox alignment="CENTER" spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                    <Label text="Hình sản phẩm" />
-                    <Label text="Tên sản phẩm" />
-                    <Label text="Giá" />
-                    <Label text="Số lượng" />
-                </VBox>
-
+                <!-- Mặc định để trống, sẽ load bằng code -->
             </GridPane>
         </VBox>
     </center>

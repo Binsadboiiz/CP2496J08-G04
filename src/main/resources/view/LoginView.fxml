@@ -45,7 +45,7 @@
    </left>
 
    <center>
-      <ImageView fitHeight="640.0" fitWidth="612.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="500.0" fitWidth="640.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../images/login-img.png" />
          </image>
