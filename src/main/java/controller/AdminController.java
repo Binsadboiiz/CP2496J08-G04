@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.security.PrivateKey;
 
 
-public class StaffController {
+public class AdminController {
     @FXML
     private AnchorPane contentArea;
     @FXML
@@ -46,7 +46,7 @@ public class StaffController {
 
     private void loadUI(String fxml) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/staff/" + fxml + ".fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/" + fxml + ".fxml"));
             AnchorPane pane = loader.load();
             contentArea.getChildren().setAll(pane);
         } catch (IOException e) {
@@ -54,8 +54,12 @@ public class StaffController {
         }
     }
     @FXML
-    private void loadHome() {
-        loadUI("Home");
+    private void loadRoleManagement() {
+        loadUI("RoleManagement");
+    }
+    @FXML
+    private void loadControlPanel() {
+        loadUI("ControlPanel");
     }
     @FXML
     private void logout() {

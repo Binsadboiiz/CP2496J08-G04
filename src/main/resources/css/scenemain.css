@@ -15,6 +15,6 @@
     -fx-background-color: white;
 }
 .button:focused {
-    -fx-background-color: red;
+    -fx-background-color: green;
     -fx-text-fill: white;
 }

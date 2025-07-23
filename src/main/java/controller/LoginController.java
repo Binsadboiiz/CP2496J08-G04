@@ -1,22 +1,25 @@
 package controller;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import dao.DatabaseConnection;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.Node;
-import java.net.URL;
+import dao.DatabaseConnection;
 
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
-public class LoginController {
+public class LoginController implements Initializable {
 
     @FXML
     private TextField usernameField;
@@ -28,10 +31,28 @@ public class LoginController {
     private Label messageLabel;
 
     @FXML
+    private CheckBox rememberMeBox;
+
+    // Preferences node cho app của bạn
+    private final Preferences prefs = Preferences.userNodeForPackage(LoginController.class);
+
+    /** Gọi tự động sau khi FXML load xong */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // Load prefs
+        String savedUser = prefs.get("username", "");
+        boolean savedRemember = prefs.getBoolean("remember", false);
+
+        if (savedRemember && !savedUser.isEmpty()) {
+            usernameField.setText(savedUser);
+            rememberMeBox.setSelected(true);
+        }
+    }
+
+    @FXML
     private void handlelogin(ActionEvent event) {
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
-
 
         if (username.isEmpty() || password.isEmpty()) {
             messageLabel.setText("Vui lòng nhập đầy đủ thông tin!");
@@ -45,32 +66,43 @@ public class LoginController {
 
             statement.setString(1, username);
             statement.setString(2, password);
-
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                // Lưu hoặc xoá prefs tuỳ checkbox
+                if (rememberMeBox.isSelected()) {
+                    prefs.put("username", username);
+                    prefs.putBoolean("remember", true);
+                } else {
+                    prefs.remove("username");
+                    prefs.putBoolean("remember", false);
+                }
+
+                // Hiển thị thông báo
                 String role = rs.getString("Role");
                 messageLabel.setStyle("-fx-text-fill: green;");
                 messageLabel.setText("Log In Success " + role);
-                // TODO: Chuyển scene hoặc mở dashboard theo role
+
+                // Chuyển scene theo role
                 if ("Admin".equalsIgnoreCase(role)) {
-                    switchScene("/view/AdminView.fxml", event);
+                    switchScene("/view/admin/SceneAdmin.fxml", event);
                 } else if ("Staff".equalsIgnoreCase(role)) {
-                    switchScene("/view/StaffView.fxml", event);
-                }
-                else {
+                    switchScene("/view/staff/SceneStaff.fxml", event);
+                } else {
                     messageLabel.setText("Không xác định quyền!");
                 }
             } else {
+                messageLabel.setStyle("-fx-text-fill: red;");
                 messageLabel.setText("Sai tên đăng nhập hoặc mật khẩu!");
             }
 
         } catch (SQLException e) {
+            messageLabel.setStyle("-fx-text-fill: red;");
             messageLabel.setText("Lỗi kết nối CSDL!");
             e.printStackTrace();
         }
     }
+
     private void switchScene(String fxmlPath, ActionEvent event) {
         try {
             URL url = getClass().getResource(fxmlPath);
@@ -78,7 +110,6 @@ public class LoginController {
                 System.out.println("FXML file not found: " + fxmlPath);
                 return;
             }
-
             Parent root = FXMLLoader.load(url);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
@@ -87,6 +118,4 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-
-
 }

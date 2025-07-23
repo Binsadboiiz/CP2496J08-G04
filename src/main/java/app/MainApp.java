@@ -3,17 +3,22 @@ package app;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import java.sql.Connection;
 import dao.DatabaseConnection;
+import javafx.stage.StageStyle;
+
 
 public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
-        primaryStage.setTitle("Log In");
+        primaryStage.getIcons().add(
+                new Image(getClass().getResourceAsStream("/images/text-logo.png"))
+        );
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
         primaryStage.show();

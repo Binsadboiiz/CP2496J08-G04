@@ -9,47 +9,70 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.LoginController">
 
+   <!-- LEFT: form trắng -->
    <left>
-      <VBox alignment="CENTER_LEFT" prefWidth="400.0" spacing="10.0" BorderPane.alignment="CENTER">
-         <padding><Insets bottom="60" left="40" right="40" top="60" /></padding>
+      <StackPane prefWidth="400" style="-fx-background-color: white;">
+         <VBox alignment="TOP_LEFT" prefWidth="360" spacing="20">
+            <padding>
+               <Insets bottom="60" left="20" right="20" top="60" />
+            </padding>
 
-         <Label fx:id="messageLabel" prefHeight="54.0" prefWidth="500.0" style="-fx-text-fill: red; -fx-text-alignment: center;" text="WELCOME CELLPHONES" textAlignment="CENTER" textFill="WHITE">
-            <font><Font name="Arial Bold" size="24.0" /></font>
-         </Label>
+            <!-- Tiêu đề (đã thêm fx:id) -->
+            <Label fx:id="messageLabel"
+                   style="-fx-text-fill: red;"
+                   text="WELCOME CELLPHONES">
+               <font><Font name="Arial Bold" size="24" /></font>
+            </Label>
 
-         <Label text="Hey, welcome back to your special place">
-            <font><Font size="14" /></font>
-         </Label>
+            <!-- Subtitle -->
+            <Label style="-fx-text-fill: red;"
+                   text="Hey, welcome back to your special place">
+               <font><Font size="14" /></font>
+            </Label>
 
-         <TextField fx:id="usernameField" promptText="Email" />
+            <!-- Email & Password -->
+            <TextField fx:id="usernameField"
+                       prefHeight="40"
+                       promptText="Email" />
+            <PasswordField fx:id="passwordField"
+                           prefHeight="40"
+                           promptText="Password" />
 
-         <PasswordField fx:id="passwordField" promptText="Password" />
+            <!-- Remember me -->
+            <CheckBox fx:id="rememberMeBox" style="-fx-text-fill: red;"
+                      text="Remember me" />
 
-         <HBox alignment="CENTER_LEFT" spacing="100">
-            <CheckBox text="Remember me" />
-         </HBox>
-<!--                                NÚT LOGIN                          -->
-         <Button onAction="#handlelogin" prefHeight="30.0" prefWidth="114.0" style="-fx-background-color: red; -fx-text-fill: white; -fx-border-radius: 30;" text="Sign In">
-            <font>
-               <Font name="Times New Roman Bold" size="18.0" />
-            </font></Button>
+            <!-- Nút Sign In -->
+            <Button onAction="#handlelogin"
+                    prefHeight="40" prefWidth="120"
+                    style="-fx-background-color: #FF3B30; -fx-background-radius: 20; -fx-text-fill: white;"
+                    text="Sign In">
+               <font><Font name="Times New Roman Bold" size="18.0" /></font>
+            </Button>
 
-         <HBox alignment="CENTER" />
-      </VBox>
+            <!-- Đẩy nội dung lên trên -->
+            <Region VBox.vgrow="ALWAYS" />
+         </VBox>
+      </StackPane>
    </left>
 
+   <!-- CENTER: logo với background đỏ -->
    <center>
-      <ImageView fitHeight="500.0" fitWidth="640.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/login-img.png" />
-         </image>
-      </ImageView>
+      <StackPane style="-fx-background-color: #FF3B30;">
+         <ImageView fitHeight="500" fitWidth="640" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/logo.png" />
+            </image>
+         </ImageView>
+      </StackPane>
    </center>
-
 </BorderPane>
