@@ -49,6 +49,7 @@ public class StaffController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/staff/" + fxml + ".fxml"));
             AnchorPane pane = loader.load();
             contentArea.getChildren().setAll(pane);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

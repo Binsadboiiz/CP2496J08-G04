@@ -11,11 +11,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StaffController">
+<BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StaffController">
 
     <!-- Sidebar -->
     <left>
-        <VBox alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
+        <VBox alignment="TOP_CENTER" prefWidth="200" spacing="10" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
             <padding><Insets bottom="10" left="10" right="10" top="20" /></padding>
 
             <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
@@ -25,22 +25,22 @@
             <Label text="Nhân viên" />
             <Label text="Vai Trò" />
 
-            <Button fx:id="btnHome" maxWidth="180" text="Home" onAction="#loadHome">
+            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" textFill="WHITE">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
-            <Button fx:id="btnUser" maxWidth="180" text="User">
+            <Button fx:id="btnProducts" maxWidth="180" text="Products" textFill="WHITE">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
-            <Button fx:id="btnInvoice" maxWidth="180" text="Create New Invoice">
+            <Button fx:id="btnOrders" maxWidth="180" text="Role Management" textFill="WHITE">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
-            <Button fx:id="btnCustomers" maxWidth="180" text="Manage Customers">
+            <Button fx:id="btnCustomers" maxWidth="180" text="Customers" textFill="WHITE">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
 
             <Pane VBox.vgrow="ALWAYS" />
 
-            <Button fx:id="btnLogout" maxWidth="180" style="-fx-background-color: red; -fx-text-fill: white;" text="Logout" onAction="#logout">
+            <Button fx:id="btnLogout" maxWidth="180" onAction="#logout" text="Logout">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
         </VBox>
@@ -48,7 +48,7 @@
 
     <!-- Main Content -->
     <center>
-        <AnchorPane fx:id="contentArea" prefHeight="500.0" prefWidth="640.0"/>
+        <AnchorPane fx:id="contentArea" prefHeight="580.0" prefWidth="800.0" />
     </center>
 
 </BorderPane>

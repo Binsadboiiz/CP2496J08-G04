@@ -1,4 +1,4 @@
-package controller;
+package controller.admin;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,21 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.event.ActionEvent;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.cell.PropertyValueFactory;
 import model.Order;
 
 
 import java.io.IOException;
-import java.security.PrivateKey;
 
 
 public class AdminController {
@@ -60,6 +53,10 @@ public class AdminController {
     @FXML
     private void loadControlPanel() {
         loadUI("ControlPanel");
+    }
+    @FXML
+    private void loadProductManagement() {
+        loadUI("ProductManagement");
     }
     @FXML
     private void logout() {

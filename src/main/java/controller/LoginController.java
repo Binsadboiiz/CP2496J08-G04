@@ -55,7 +55,7 @@ public class LoginController implements Initializable {
         String password = passwordField.getText().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            messageLabel.setText("Vui lòng nhập đầy đủ thông tin!");
+            messageLabel.setText("Please enter complete information!");
             return;
         }
 
@@ -72,9 +72,11 @@ public class LoginController implements Initializable {
                 // Lưu hoặc xoá prefs tuỳ checkbox
                 if (rememberMeBox.isSelected()) {
                     prefs.put("username", username);
+                    prefs.put("password", password);
                     prefs.putBoolean("remember", true);
                 } else {
                     prefs.remove("username");
+                    prefs.remove("password");
                     prefs.putBoolean("remember", false);
                 }
 
@@ -89,16 +91,16 @@ public class LoginController implements Initializable {
                 } else if ("Staff".equalsIgnoreCase(role)) {
                     switchScene("/view/staff/SceneStaff.fxml", event);
                 } else {
-                    messageLabel.setText("Không xác định quyền!");
+                    messageLabel.setText("No permissions specified!");
                 }
             } else {
                 messageLabel.setStyle("-fx-text-fill: red;");
-                messageLabel.setText("Sai tên đăng nhập hoặc mật khẩu!");
+                messageLabel.setText("Wrong username or password!");
             }
 
         } catch (SQLException e) {
             messageLabel.setStyle("-fx-text-fill: red;");
-            messageLabel.setText("Lỗi kết nối CSDL!");
+            messageLabel.setText("Database connection error!");
             e.printStackTrace();
         }
     }

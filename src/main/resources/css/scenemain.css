@@ -1,20 +1,12 @@
-.product-card {
-    -fx-border-color: #ccc;
-    -fx-padding: 10;
-    -fx-alignment: center;
-    -fx-background-color: #f9f9f9;
+text-field {
+    -fx-background-color: white;
 }
-
+.button:focused {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+}
 .button {
     -fx-background-color: red;
     -fx-text-fill: white;
     -fx-background-radius: 5 5 5 5;
-}
-
-.text-field {
-    -fx-background-color: white;
-}
-.button:focused {
-    -fx-background-color: green;
-    -fx-text-fill: white;
 }

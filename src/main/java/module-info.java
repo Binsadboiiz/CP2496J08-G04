@@ -4,6 +4,7 @@ module Project_Sem2 {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.prefs;
+    requires jdk.jfr;
 
     opens app to javafx.fxml;
     opens controller to javafx.fxml;
@@ -14,4 +15,6 @@ module Project_Sem2 {
     exports controller;
 //    exports dao;
     exports model;
+    exports controller.admin;
+    opens controller.admin to javafx.fxml;
 }

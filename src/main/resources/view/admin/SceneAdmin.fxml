@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminController">
+<BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.AdminController">
 
     <!-- Sidebar -->
     <left>
@@ -25,22 +25,22 @@
             <Label text="Nhân viên" />
             <Label text="Vai Trò" />
 
-            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" onAction="#loadControlPanel">
+            <Button fx:id="btnHome" maxWidth="180" onAction="#loadControlPanel" style="-fx-background-radius: 5 5 5 5;" text="Control Panel">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
-            <Button fx:id="btnProducts" maxWidth="180" text="Products">
+            <Button fx:id="btnProducts" maxWidth="180" style="-fx-background-radius: 5 5 5 5;" text="Product Management" onAction="#loadProductManagement">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
-            <Button fx:id="btnOrders" maxWidth="180" text="Role Management" onAction="#loadRoleManagement">
+            <Button fx:id="btnOrders" maxWidth="180" onAction="#loadRoleManagement" style="-fx-background-radius: 5 5 5 5;" text="Role Management">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
-            <Button fx:id="btnCustomers" maxWidth="180" text="Customers">
+            <Button fx:id="btnCustomers" maxWidth="180" style="-fx-background-radius: 5 5 5 5;" text="Customers">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
 
             <Pane VBox.vgrow="ALWAYS" />
 
-            <Button fx:id="btnLogout" maxWidth="180" style="-fx-background-color: red; -fx-text-fill: white;" text="Logout" onAction="#logout">
+            <Button fx:id="btnLogout" maxWidth="180" onAction="#logout" style="-fx-background-color: red; -fx-background-radius: 5 5 5 5; -fx-text-fill: white;" text="Logout">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
         </VBox>
@@ -48,7 +48,7 @@
 
     <!-- Main Content -->
     <center>
-        <AnchorPane fx:id="contentArea" prefHeight="500.0" prefWidth="640.0"/>
+        <AnchorPane fx:id="contentArea" prefHeight="580.0" prefWidth="840.0" />
     </center>
 
 </BorderPane>
