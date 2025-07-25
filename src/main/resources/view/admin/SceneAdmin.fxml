@@ -15,33 +15,50 @@
 
     <!-- Sidebar -->
     <left>
-        <VBox alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
-            <padding><Insets bottom="10" left="10" right="10" top="20" /></padding>
+        <VBox id="sidebar" fx:id="sidebar" alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="20" />
+            </padding>
 
             <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
-                <image><Image url="@../../images/register_logo.png" /></image>
+                <image>
+                    <Image url="@../../images/register_logo.png" />
+                </image>
             </ImageView>
 
-            <Label text="Nhân viên" />
-            <Label text="Vai Trò" />
+            <Label text="Nhân viên" textFill="WHITE" />
+            <Label text="Vai Trò" textFill="WHITE" />
 
-            <Button fx:id="btnHome" maxWidth="180" onAction="#loadControlPanel" style="-fx-background-radius: 5 5 5 5;" text="Control Panel">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+            <Button fx:id="btnHome" maxWidth="180" onAction="#loadControlPanel" styleClass="sidebar-button" text="Control Panel">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
-            <Button fx:id="btnProducts" maxWidth="180" style="-fx-background-radius: 5 5 5 5;" text="Product Management" onAction="#loadProductManagement">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+
+            <Button fx:id="btnProducts" maxWidth="180" onAction="#loadProductManagement" styleClass="sidebar-button" text="Product Management">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
-            <Button fx:id="btnOrders" maxWidth="180" onAction="#loadRoleManagement" style="-fx-background-radius: 5 5 5 5;" text="Role Management">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+
+            <Button fx:id="btnOrders" maxWidth="180" onAction="#loadRoleManagement" styleClass="sidebar-button" text="Role Management">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
-            <Button fx:id="btnCustomers" maxWidth="180" style="-fx-background-radius: 5 5 5 5;" text="Customers">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+
+            <Button fx:id="btnCustomers" maxWidth="180" styleClass="sidebar-button" text="Customers">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
 
             <Pane VBox.vgrow="ALWAYS" />
 
-            <Button fx:id="btnLogout" maxWidth="180" onAction="#logout" style="-fx-background-color: red; -fx-background-radius: 5 5 5 5; -fx-text-fill: white;" text="Logout">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+            <Button fx:id="btnLogout" maxWidth="180" onAction="#logout" styleClass="logout-button" text="Logout">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
         </VBox>
     </left>

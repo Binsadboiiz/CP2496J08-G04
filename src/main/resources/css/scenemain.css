@@ -1,12 +1,42 @@
 text-field {
     -fx-background-color: white;
 }
-.button:focused {
-    -fx-background-color: black;
+
+#sidebar {
+    -fx-background-color: #2C3E50;
+}
+
+/* Sidebar button chung */
+.sidebar-button {
+    -fx-background-color: #34495E;
+    -fx-text-fill: #ECF0F1;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 10px;
+}
+
+/* Hover effect */
+.sidebar-button:hover {
+    -fx-background-color: #1ABC9C;
     -fx-text-fill: white;
 }
-.button {
-    -fx-background-color: red;
+
+/* Logout button style */
+.logout-button {
+    -fx-background-color: #34495E;
     -fx-text-fill: white;
-    -fx-background-radius: 5 5 5 5;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.logout-button:hover {
+    -fx-background-color: #C0392B;
+}
+.sidebar-button:focused {
+    -fx-border-color: #1ABC9C;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-color: #16A085;
+    -fx-text-fill: white;
 }

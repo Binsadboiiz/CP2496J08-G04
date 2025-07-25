@@ -90,7 +90,11 @@ public class LoginController implements Initializable {
                     switchScene("/view/admin/SceneAdmin.fxml", event);
                 } else if ("Staff".equalsIgnoreCase(role)) {
                     switchScene("/view/staff/SceneStaff.fxml", event);
-                } else {
+                }
+                else if ("Cashier".equalsIgnoreCase(role)) {
+                    switchScene("/view/cashier/SceneCashier.fxml", event);
+                }
+                else {
                     messageLabel.setText("No permissions specified!");
                 }
             } else {

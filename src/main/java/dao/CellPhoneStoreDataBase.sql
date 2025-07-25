@@ -162,3 +162,4 @@ CREATE TABLE PriceHistory
 
 INSERT INTO [User] (Username, Password, Role) VALUES ('admin', '123456', 'Admin')
 insert into [User] (Username, Password, Role) values ('staff', '123456', 'Staff')
+insert into [User] (Username, Password, Role) values ('cashier', '123456', 'Cashier')
