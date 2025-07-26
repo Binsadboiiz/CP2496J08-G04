@@ -17,4 +17,6 @@ module Project_Sem2 {
     exports model;
     exports controller.admin;
     opens controller.admin to javafx.fxml;
+    requires java.desktop;
+
 }
