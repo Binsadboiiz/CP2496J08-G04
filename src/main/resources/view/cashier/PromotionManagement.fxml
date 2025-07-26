@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.cashier.PromotionManagementController">
+    <VBox spacing="10" padding="Insets(20)">
+        <Label text="Quản lý Khuyến mãi" />
+        <Button text="Thêm Khuyến mãi" onAction="#addPromotion" />
+        <Button text="Xóa Khuyến mãi" onAction="#removePromotion" />
+        <Button text="Cập nhật Khuyến mãi" onAction="#updatePromotion" />
+    </VBox>
+</AnchorPane>

@@ -1,4 +1,4 @@
-package controller.admin;
+package controller.cashier;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,11 +13,9 @@ import javafx.scene.control.TableColumn;
 import javafx.event.ActionEvent;
 import model.Order;
 
-
 import java.io.IOException;
 
-
-public class AdminController {
+public class CashierController {
     @FXML
     private AnchorPane contentArea;
     @FXML
@@ -39,31 +37,48 @@ public class AdminController {
 
     private void loadUI(String fxml) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/" + fxml + ".fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cashier/" + fxml + ".fxml"));
             AnchorPane pane = loader.load();
             contentArea.getChildren().setAll(pane);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    @FXML
-    private void loadRoleManagement() {
-        loadUI("RoleManagement");
-    }
+
     @FXML
     private void loadControlPanel() {
         loadUI("ControlPanel");
     }
+
     @FXML
-    private void loadProductManagement() {
-        loadUI("ProductManagement");
+    private void loadPromotionManagement() {
+        loadUI("PromotionManagement");
+    }
+
+    @FXML
+    private void loadReturnPolicy() {
+        loadUI("ReturnPolicy");
+    }
+
+    @FXML
+    private void loadRevenueReports() {
+        loadUI("RevenueReports");
+    }
+
+    @FXML
+    private void loadCalculateSalary() {
+        loadUI("CalculateSalary");
     }
 
     @FXML
     private void logout() {
-
+        try {
+            Stage stage = (Stage) btnLogout.getScene().getWindow();
+            Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void loadSalaryCalculation(ActionEvent actionEvent) {
-    }
 }
