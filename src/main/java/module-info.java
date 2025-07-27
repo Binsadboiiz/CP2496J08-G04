@@ -5,6 +5,7 @@ module Project_Sem2 {
     requires javafx.fxml;
     requires java.prefs;
     requires jdk.jfr;
+    requires java.desktop;
 
     opens app to javafx.fxml;
     opens controller to javafx.fxml;

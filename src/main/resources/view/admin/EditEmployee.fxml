@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.admin.EditEmployeeController"
+            prefWidth="400" prefHeight="500"
+            style="-fx-padding:20;">
+
+    <Label text="Edit" layoutX="20" layoutY="10"
+           style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+    <!-- Title -->
+    <Label layoutX="20" layoutY="10"
+           text="Thêm Nhân Viên"
+           style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+    <!-- Họ và tên -->
+    <Label layoutX="20" layoutY="50" text="Họ và tên:*"/>
+    <TextField fx:id="fullNameField"
+               layoutX="140" layoutY="46"
+               prefWidth="220"/>
+
+    <!-- Ngày sinh -->
+    <Label layoutX="20" layoutY="90" text="Ngày sinh:*"/>
+    <DatePicker fx:id="dobPicker"
+                layoutX="140" layoutY="86"
+                prefWidth="220"/>
+
+    <!-- CCCD -->
+    <Label layoutX="20" layoutY="130" text="CCCD:*"/>
+    <TextField fx:id="idCardField"
+               layoutX="140" layoutY="126"
+               prefWidth="220"/>
+
+    <!-- Quê quán -->
+    <Label layoutX="20" layoutY="170" text="Quê quán:"/>
+    <TextField fx:id="hometownField"
+               layoutX="140" layoutY="166"
+               prefWidth="220"/>
+
+    <!-- SĐT -->
+    <Label layoutX="20" layoutY="210" text="SĐT:"/>
+    <TextField fx:id="phoneField"
+               layoutX="140" layoutY="206"
+               prefWidth="220"/>
+
+    <!-- Email -->
+    <Label layoutX="20" layoutY="250" text="Email:"/>
+    <TextField fx:id="emailField"
+               layoutX="140" layoutY="246"
+               prefWidth="220"/>
+
+    <!-- Username -->
+    <Label layoutX="20" layoutY="290" text="Username:*"/>
+    <TextField fx:id="usernameField"
+               layoutX="140" layoutY="286"
+               prefWidth="220"/>
+
+    <!-- Password -->
+    <Label layoutX="20" layoutY="330" text="Password:*"/>
+    <PasswordField fx:id="passwordField"
+                   layoutX="140" layoutY="326"
+                   prefWidth="220"/>
+
+    <!-- Chức vụ -->
+    <Label layoutX="20" layoutY="370" text="Chức vụ:*"/>
+    <ComboBox fx:id="roleBox"
+              layoutX="140" layoutY="366"
+              prefWidth="220"/>
+
+    <HBox layoutX="140" layoutY="420" spacing="10">
+        <Button fx:id="updateButton"
+                text="Update"
+                onAction="#handleUpdateEmployee"
+                prefWidth="100"/>
+        <Button fx:id="cancelButton"
+                text="Cancel"
+                onAction="#handleCancel"
+                prefWidth="100"/>
+    </HBox>
+</AnchorPane>

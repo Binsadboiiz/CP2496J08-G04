@@ -159,6 +159,22 @@ CREATE TABLE PriceHistory
     EffectiveDate  DATETIME                       NOT NULL,
     FOREIGN KEY (ProductID) REFERENCES Product (ProductID)
 );
+CREATE TABLE Employee (
+EmployeeID   INT PRIMARY KEY IDENTITY(1,1),
+FullName     NVARCHAR(100) NOT NULL,
+DateOfBirth  DATE,
+IDCard       VARCHAR(20),           -- CCCD
+Hometown     NVARCHAR(100),
+Phone        VARCHAR(20),
+Email        VARCHAR(100),
+Status       VARCHAR(20) DEFAULT 'Active'
+);
+ALTER TABLE [User]
+ADD EmployeeID INT;
+
+ALTER TABLE [User]
+ADD CONSTRAINT FK_User_Employee
+FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID);
 
 INSERT INTO [User] (Username, Password, Role) VALUES ('admin', '123456', 'Admin')
 insert into [User] (Username, Password, Role) values ('staff', '123456', 'Staff')

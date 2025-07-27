@@ -41,7 +41,7 @@
                 </font>
             </Button>
 
-            <Button fx:id="btnOrders" maxWidth="180" onAction="#loadRoleManagement" styleClass="sidebar-button" text="Role Management">
+            <Button fx:id="btnOrders" maxWidth="180" onAction="#loadRoleManagement" styleClass="sidebar-button" text="Employee Management">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>

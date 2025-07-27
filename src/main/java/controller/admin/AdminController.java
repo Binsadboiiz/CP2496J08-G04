@@ -40,7 +40,7 @@ public class AdminController {
     private void loadUI(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/" + fxml + ".fxml"));
-            AnchorPane pane = loader.load();
+            Parent pane = loader.load();
             contentArea.getChildren().setAll(pane);
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,7 +48,7 @@ public class AdminController {
     }
     @FXML
     private void loadRoleManagement() {
-        loadUI("RoleManagement");
+        loadUI("EmployeeManagement");
     }
     @FXML
     private void loadControlPanel() {
@@ -61,7 +61,13 @@ public class AdminController {
 
     @FXML
     private void logout() {
-
+        try {
+            Stage stage = (Stage) btnLogout.getScene().getWindow();
+            Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void loadSalaryCalculation(ActionEvent actionEvent) {

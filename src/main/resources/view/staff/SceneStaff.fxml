@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+
 <BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StaffController">
 
     <!-- Sidebar -->

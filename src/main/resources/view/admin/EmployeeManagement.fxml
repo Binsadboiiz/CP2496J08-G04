@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="550.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.EmployeeManagementController">
+
+
+    <ToolBar fx:id="toolBar" layoutX="14.0" layoutY="-4.0" prefHeight="35.0" prefWidth="230.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="476.0" AnchorPane.topAnchor="-4.0">
+        <Button onAction="#onAddEmployee" text="Add" />
+        <Button onAction="#onEditEmployee" text="Edit" />
+        <Button onAction="#onDeleteEmployee" text="Delete" />
+        <Separator />
+        <Button onAction="#onRefresh" text="Refresh" />
+    </ToolBar>
+
+    <TableView fx:id="tableView" layoutX="10.0" layoutY="35.0" prefHeight="497.0" prefWidth="700.0" AnchorPane.bottomAnchor="17.799999999999955" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="35.0">
+        <columns>
+            <TableColumn fx:id="colId" prefWidth="50" text="ID" />
+            <TableColumn fx:id="colName" prefWidth="150" text="Full Name" />
+            <TableColumn fx:id="colDob" prefWidth="100" text="Birth Date" />
+            <TableColumn fx:id="colIdCard" prefWidth="100" text="Card ID" />
+            <TableColumn fx:id="colHometown" prefWidth="100" text="Hometown" />
+            <TableColumn fx:id="colPhone" prefWidth="100" text="Phone" />
+            <TableColumn fx:id="colEmail" prefWidth="150" text="Email" />
+            <TableColumn fx:id="colStatus" prefWidth="80" text="Status" />
+        </columns>
+    </TableView>
+
+</AnchorPane>
