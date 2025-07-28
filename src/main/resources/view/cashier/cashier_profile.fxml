@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.CashierController" stylesheets="@../css/scenemain.css">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.cashier.CashierController" stylesheets="@../">
 
     <center>
         <HBox alignment="CENTER" spacing="50">
