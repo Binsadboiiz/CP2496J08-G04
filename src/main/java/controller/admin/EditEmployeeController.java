@@ -33,7 +33,7 @@ public class EditEmployeeController implements Initializable {
 
     @Override
     public void initialize(URL loc, ResourceBundle res) {
-        roleBox.getItems().addAll("Admin", "Staff", "Warehouse");
+        roleBox.getItems().addAll("Admin", "Staff","Cashier", "Warehouse");
     }
 
     public void setEmployee(Employee emp) {

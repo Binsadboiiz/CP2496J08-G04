@@ -26,7 +26,7 @@
             <Label text="Nhân viên" />
             <Label text="Vai Trò" />
 
-            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" textFill="WHITE">
+            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" onAction="#loadHome" textFill="WHITE">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
             <Button fx:id="btnProducts" maxWidth="180" text="Products" textFill="WHITE">
