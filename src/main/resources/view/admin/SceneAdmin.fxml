@@ -29,7 +29,7 @@
             <Label text="Nhân viên" textFill="WHITE" />
             <Label text="Vai Trò" textFill="WHITE" />
 
-            <Button fx:id="btnHome" maxWidth="180" onAction="#loadControlPanel" styleClass="sidebar-button" text="Control Panel">
+            <Button fx:id="btnHome" maxWidth="180" onAction="#loadDashboard" styleClass="sidebar-button" text="Dashboard">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
