@@ -20,5 +20,7 @@ module Project_Sem2 {
     opens controller.admin to javafx.fxml;
     opens controller.cashier to javafx.fxml;
     exports controller.cashier;
+    exports controller.staff;
+    opens controller.staff to javafx.fxml;
 
 }

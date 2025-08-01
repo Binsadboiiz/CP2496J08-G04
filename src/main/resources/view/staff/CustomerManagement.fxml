@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.staff.CustomerManagementController">
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="QUẢN LÝ KHÁCH HÀNG" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <HBox spacing="10">
+                <TextField fx:id="searchField" promptText="Tìm theo tên hoặc loại khách"/>
+                <Button text="Tìm kiếm" onAction="#handleSearch"/>
+                <Button text="Làm mới" onAction="#handleReset"/>
+                <Button text="Thêm khách hàng" onAction="#handleAddCustomer"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="customerTable" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="nameColumn" text="Họ tên"/>
+                <TableColumn fx:id="phoneColumn" text="SĐT"/>
+                <TableColumn fx:id="typeColumn" text="Loại"/>
+                <TableColumn fx:id="actionsColumn" text="Hành động"/>
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.staff.InvoiceHistoryController">
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="LỊCH SỬ HÓA ĐƠN BÁN HÀNG" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <HBox spacing="10">
+                <Label text="Khách hàng:"/>
+                <TextField fx:id="customerFilterField"/>
+
+                <Label text="Sản phẩm:"/>
+                <TextField fx:id="productFilterField"/>
+
+                <Label text="Ngày bán:"/>
+                <DatePicker fx:id="dateFilterPicker"/>
+
+                <Button text="Lọc" onAction="#handleFilter"/>
+                <Button text="Làm mới" onAction="#handleReset"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="invoiceTable" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="invoiceIdColumn" text="Mã HĐ"/>
+                <TableColumn fx:id="customerNameColumn" text="Khách hàng"/>
+                <TableColumn fx:id="productListColumn" text="Sản phẩm"/>
+                <TableColumn fx:id="dateColumn" text="Ngày bán"/>
+                <TableColumn fx:id="totalColumn" text="Tổng tiền"/>
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>

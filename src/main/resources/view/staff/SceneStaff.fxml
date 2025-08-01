@@ -12,37 +12,59 @@
 <?import javafx.scene.text.Font?>
 
 
-<BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StaffController">
+<BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css"
+            xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.staff.StaffController">
 
     <!-- Sidebar -->
     <left>
-        <VBox alignment="TOP_CENTER" prefWidth="200" spacing="10" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
-            <padding><Insets bottom="10" left="10" right="10" top="20" /></padding>
+        <VBox id="sidebar" fx:id="sidebar" alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="20" />
+            </padding>
 
+            <!-- Logo -->
             <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
-                <image><Image url="@../../images/register_logo.png" /></image>
+                <image>
+                    <Image url="@../../images/register_logo.png" />
+                </image>
             </ImageView>
 
-            <Label text="Nhân viên" />
-            <Label text="Vai Trò" />
+            <!-- Info -->
+            <Label text="Nhân viên" textFill="WHITE" />
+            <Label text="Vai Trò" textFill="WHITE" />
 
-            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" textFill="WHITE">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+            <!-- Buttons -->
+            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
-            <Button fx:id="btnProducts" maxWidth="180" text="Products" textFill="WHITE">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+
+            <Button fx:id="btnProducts" maxWidth="180" text="InvoiceHistory" onAction="#loadInvoiceHistory" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
-            <Button fx:id="btnOrders" maxWidth="180" text="Role Management" textFill="WHITE">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+
+            <Button fx:id="btnOrders" maxWidth="180" text="CreateInvoice" onAction="#loadCreateInvoice" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
-            <Button fx:id="btnCustomers" maxWidth="180" text="Customers" textFill="WHITE">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+
+            <Button fx:id="btnCustomers" maxWidth="180" text="Customers" onAction="#loadCustomerManagement" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
 
             <Pane VBox.vgrow="ALWAYS" />
 
-            <Button fx:id="btnLogout" maxWidth="180" onAction="#logout" text="Logout">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
+            <Button fx:id="btnLogout" maxWidth="180" onAction="#handleLogout" styleClass="logout-button" text="Logout">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
             </Button>
         </VBox>
     </left>
