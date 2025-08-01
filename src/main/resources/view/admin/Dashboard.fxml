@@ -11,7 +11,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="550.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.AdminController">
+<AnchorPane prefHeight="550.0" prefWidth="720.0"
+            xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.admin.DashboardController">
 
    <children>
       <!-- Top bar -->
@@ -37,36 +40,40 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <children>
+         <!--            Total Products-->
             <VBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="140.0" style="-fx-background-color:white; -fx-background-radius:8;">
                <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
                <effect><DropShadow color="#00000033" offsetY="2.0" radius="5.0" /></effect>
                <children>
                   <Label style="-fx-text-fill:#666666;" text="Total Products" />
-                  <Label style="-fx-font-size:20px; -fx-font-weight:bold;" text="348" />
+                  <Label fx:id="lblTotalProducts" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
                </children>
             </VBox>
+<!--            Total Employee-->
             <VBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="140.0" style="-fx-background-color:white; -fx-background-radius:8;">
                <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
                <effect><DropShadow color="#00000033" offsetY="2.0" radius="5.0" /></effect>
                <children>
                   <Label style="-fx-text-fill:#666666;" text="Total Employees" />
-                  <Label style="-fx-font-size:20px; -fx-font-weight:bold;" text="42" />
+                  <Label fx:id="lblTotalEmployees" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
                </children>
             </VBox>
+<!--            Today's Sales-->
             <VBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="140.0" style="-fx-background-color:white; -fx-background-radius:8;">
                <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
                <effect><DropShadow color="#00000033" offsetY="2.0" radius="5.0" /></effect>
                <children>
                   <Label style="-fx-text-fill:#666666;" text="Today's Sales" />
-                  <Label style="-fx-font-size:20px; -fx-font-weight:bold;" text="12,548" />
+                  <Label fx:id="lblTodaysSales" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
                </children>
             </VBox>
+<!--            Stock Alerts-->
             <VBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="140.0" style="-fx-background-color:white; -fx-background-radius:8;">
                <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
                <effect><DropShadow color="#00000033" offsetY="2.0" radius="5.0" /></effect>
                <children>
                   <Label style="-fx-text-fill:#666666;" text="Stock Alerts" />
-                  <Label style="-fx-font-size:20px; -fx-font-weight:bold;" text="12" />
+                  <Label fx:id="lblStockAlerts" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
                </children>
             </VBox>
          </children>

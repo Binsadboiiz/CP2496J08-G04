@@ -12,6 +12,7 @@ public class ProductDAO {
     private static final String USER = "sa";
     private static final String PASSWORD = "sa";
 
+
     /**
      * 1) Lấy tất cả sản phẩm
      */
@@ -42,6 +43,14 @@ public class ProductDAO {
         }
         return list;
     }
+    public static Connection getConnection() {
+        try {
+            return DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to connect to DB", e);
+        }
+    }
+
 
     /**
      * 2) Thêm sản phẩm mới
@@ -130,4 +139,36 @@ public class ProductDAO {
         }
         return list;
     }
+
+    public static List<Product> getTopSellingProducts() {
+        List<Product> list = new ArrayList<>();
+        String sql = """
+    SELECT TOP 5 p.ProductID, p.ProductName, p.Image, SUM(d.Quantity) AS Sales
+    FROM InvoiceDetail d
+    JOIN Product p ON d.ProductID = p.ProductID
+    GROUP BY p.ProductID, p.ProductName, p.Image
+    ORDER BY Sales DESC
+    """;
+
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Product p = new Product();
+                p.setProductID(rs.getInt("ProductID"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setImage(rs.getString("Image"));
+                p.setSales(rs.getInt("Sales"));
+                list.add(p);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 }

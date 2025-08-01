@@ -34,11 +34,16 @@
             <Label text="Nhân viên" textFill="WHITE" />
             <Label text="Vai Trò" textFill="WHITE" />
 
+<<<<<<< HEAD
             <!-- Buttons -->
             <Button fx:id="btnHome" maxWidth="180" text="Control Panel" styleClass="sidebar-button">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
+=======
+            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" onAction="#loadHome" textFill="WHITE">
+                <font><Font name="Times New Roman Bold" size="18" /></font>
+>>>>>>> 1889364dc2cd75299f26fcb2d159f66021e7afff
             </Button>
 
             <Button fx:id="btnProducts" maxWidth="180" text="InvoiceHistory" onAction="#loadInvoiceHistory" styleClass="sidebar-button">

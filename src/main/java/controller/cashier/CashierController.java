@@ -4,22 +4,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
-import javafx.event.ActionEvent;
 import model.Order;
+import model.RevenueReport;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CashierController {
-    @FXML
-    private AnchorPane contentArea;
-    @FXML
-    private Button btnLogout;
+
+    @FXML private AnchorPane contentArea;
+    @FXML private Button btnLogout;
 
     @FXML private TextField searchField;
     @FXML private Button clearButton;
@@ -31,17 +29,26 @@ public class CashierController {
     @FXML private TableColumn<Order, String> colDate;
 
     @FXML
-    private void onClearSearch(ActionEvent e) {
+    private void onClearSearch() {
         searchField.clear();
     }
 
-    private void loadUI(String fxml) {
+    /**
+     * Load UI into contentArea and return FXMLLoader for controller access
+     */
+    private FXMLLoader loadUI(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cashier/" + fxml + ".fxml"));
-            AnchorPane pane = loader.load();
-            contentArea.getChildren().setAll(pane);
+            Parent root = loader.load();
+            contentArea.getChildren().setAll(root);
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
+            return loader;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -60,14 +67,29 @@ public class CashierController {
         loadUI("ReturnPolicy");
     }
 
+    /**
+     * Load Revenue Reports View & Pass Data to Controller
+     */
     @FXML
     private void loadRevenueReports() {
-        loadUI("RevenueReports");
+        FXMLLoader loader = loadUI("RevenueReports");
+        if (loader != null) {
+            RevenueReportsController controller = loader.getController();
+            List<RevenueReport> reports = fetchDetailedRevenueReports();
+            controller.loadData(reports);
+        }
+    }
+
+    private List<RevenueReport> fetchDetailedRevenueReports() {
+        List<RevenueReport> reports = new ArrayList<>();
+        reports.add(new RevenueReport("2025-07-25", "iPhone 15", 5000.0, "Credit Card"));
+        reports.add(new RevenueReport("2025-07-26", "Samsung S24", 7500.0, "Cash"));
+        return reports;
     }
 
     @FXML
     private void loadCalculateSalary() {
-        loadUI("CalculateSalary");
+        loadUI("CalculatorSalary");
     }
 
     @FXML
@@ -76,9 +98,8 @@ public class CashierController {
             Stage stage = (Stage) btnLogout.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
             stage.setScene(new Scene(root));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
