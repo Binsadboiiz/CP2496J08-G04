@@ -1,4 +1,4 @@
-module Project_Sem2 {
+module demo {
     requires java.sql;
 
     requires javafx.controls;

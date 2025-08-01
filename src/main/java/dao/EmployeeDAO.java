@@ -100,4 +100,13 @@ public class EmployeeDAO {
             return false;
         }
     }
+    public static int getTotalEmployees() {
+        String sql = "SELECT COUNT(*) FROM Employee";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {e.printStackTrace(); return 0;}
+    }
 }

@@ -169,6 +169,13 @@ public class ProductDAO {
         }
         return list;
     }
-
-
+    public static int getTotalProducts() {
+        String sql = "SELECT COUNT(*) FROM Product";
+        try(Connection conn = DatabaseConnection.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {e.printStackTrace(); return 0;}
+    }
 }

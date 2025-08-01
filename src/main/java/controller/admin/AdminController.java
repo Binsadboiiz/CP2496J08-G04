@@ -33,7 +33,7 @@ public class AdminController {
         }
     }
     @FXML
-    private void loadRoleManagement(ActionEvent event) {
+    private void loadEmployeeManagement(ActionEvent event) {
         loadUI("EmployeeManagement");
     }
     @FXML
@@ -44,6 +44,8 @@ public class AdminController {
     private void loadProductManagement(ActionEvent event) {
         loadUI("ProductManagement");
     }
+    @FXML
+    private void loadSupplierManagement(ActionEvent event) {loadUI("SupplierManagement");}
 
     @FXML
     private void logout() {

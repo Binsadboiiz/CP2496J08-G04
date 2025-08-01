@@ -26,10 +26,10 @@
                 </image>
             </ImageView>
 
-            <Label text="Nhân viên" textFill="WHITE" />
+            <Label text="Admin" textFill="WHITE" />
             <Label text="Vai Trò" textFill="WHITE" />
 
-            <Button fx:id="btnHome" maxWidth="180" onAction="#loadDashboard" styleClass="sidebar-button" text="Dashboard">
+            <Button fx:id="btnDashboard" maxWidth="180" onAction="#loadDashboard" styleClass="sidebar-button" text="Dashboard">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
@@ -41,13 +41,13 @@
                 </font>
             </Button>
 
-            <Button fx:id="btnOrders" maxWidth="180" onAction="#loadRoleManagement" styleClass="sidebar-button" text="Employee Management">
+            <Button fx:id="btnEmployee" maxWidth="180" onAction="#loadEmployeeManagement" styleClass="sidebar-button" text="Employee Management">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
             </Button>
 
-            <Button fx:id="btnCustomers" maxWidth="180" styleClass="sidebar-button" text="Customers">
+            <Button fx:id="btnSupplier" maxWidth="180" onAction="#loadSupplierManagement" styleClass="sidebar-button" text="Supplier Management">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>

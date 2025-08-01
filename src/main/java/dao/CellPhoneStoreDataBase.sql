@@ -67,7 +67,12 @@ CREATE TABLE Supplier
     SupplierID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
     Name       VARCHAR(100)                   NOT NULL,
     Phone      VARCHAR(15),
-    Address    VARCHAR(200)
+    Address    VARCHAR(200),
+    ContactName NVARCHAR(200) NULL,
+    Email NVARCHAR(200) NULL,
+    Note NVARCHAR(255) NULL,
+    CreatedDate DATETIME2 DEFAULT GETDATE() NOT NULL,
+    IsActive BIT DEFAULT 1 NOT NULL;
 );
 
 CREATE TABLE Invoice
