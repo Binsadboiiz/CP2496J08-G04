@@ -1,13 +1,11 @@
 package controller.admin;
 
-import dao.DashboardAdminDAO;
-import dao.DatabaseConnection;
+import dao.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import model.Order;
-
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
@@ -45,21 +43,21 @@ public class DashboardController implements Initializable {
 
     private void loadDashboardStats() {
         // 1. Tổng số sản phẩm
-        int totalProducts = DashboardAdminDAO.getTotalProducts();
+        int totalProducts = ProductDAO.getTotalProducts();
         lblTotalProducts.setText(String.valueOf(totalProducts));
 
         // 2. Tổng số nhân viên
-        int totalEmployees = DashboardAdminDAO.getTotalEmployees();
+        int totalEmployees = EmployeeDAO.getTotalEmployees();
         lblTotalEmployees.setText(String.valueOf(totalEmployees));
 
         // 3. Doanh thu hôm nay
-        double todaysSales = DashboardAdminDAO.getTodaysSales();
+        double todaysSales = InvoiceDAO.getTodaysSales();
         // format có dấu ngăn cách hàng nghìn
         DecimalFormat df = new DecimalFormat("#,###");
         lblTodaysSales.setText(df.format(todaysSales));
 
         // 4. Stock alerts (threshold = 5)
-        int alerts = DashboardAdminDAO.getStockAlerts(5);
+        int alerts = InventoryDAO.getStockAlerts(5);
         lblStockAlerts.setText(String.valueOf(alerts));
     }
 }
