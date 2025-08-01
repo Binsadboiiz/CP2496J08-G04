@@ -179,3 +179,92 @@ FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID);
 INSERT INTO [User] (Username, Password, Role) VALUES ('admin', '123456', 'Admin')
 insert into [User] (Username, Password, Role) values ('staff', '123456', 'Staff')
 insert into [User] (Username, Password, Role) values ('cashier', '123456', 'Cashier')
+
+--phần bài của như
+
+CREATE TABLE SalaryHistory (
+    SalaryID INT PRIMARY KEY IDENTITY(1,1),
+    EmployeeID INT NOT NULL,
+    Month INT NOT NULL,
+    Year INT NOT NULL,
+    BasicSalary DECIMAL(18, 2) NOT NULL,
+    WorkingDays INT NOT NULL,
+    Bonus DECIMAL(18, 2) NOT NULL,
+    Penalty DECIMAL(18, 2) NOT NULL,
+    TotalSalary DECIMAL(18, 2) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_SalaryHistory_Employee FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+);
+
+CREATE TABLE ReturnPolicy (
+    PolicyID INT PRIMARY KEY IDENTITY(1,1),
+    PolicyName VARCHAR(100) NOT NULL,
+    Description NVARCHAR(500),
+    DaysAllowed INT NOT NULL CHECK (DaysAllowed >= 0),
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME
+);
+
+CREATE TABLE ControlPanelConfig (
+    ConfigID INT PRIMARY KEY IDENTITY(1,1),
+    ConfigName VARCHAR(100) NOT NULL,
+    ConfigValue VARCHAR(200) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME
+);
+
+CREATE TABLE RevenueReports (
+    ReportID INT PRIMARY KEY IDENTITY(1,1),
+    ReportType VARCHAR(50) NOT NULL CHECK (ReportType IN ('Monthly', 'Yearly')),
+    ReportDate DATE NOT NULL,
+    TotalRevenue DECIMAL(18, 2) NOT NULL,
+    TotalInvoices INT NOT NULL,
+    TopSellingProductID INT,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (TopSellingProductID) REFERENCES Product(ProductID)
+);
+
+
+CREATE TABLE SalaryConfig (
+    ConfigID INT PRIMARY KEY IDENTITY(1,1),
+    ConfigName VARCHAR(100) NOT NULL,
+    ConfigValue DECIMAL(18,2) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+
+-- Employees
+INSERT INTO Employee (FullName, DateOfBirth, Phone, Email) VALUES
+('Nguyễn Văn A', '1995-01-01', '0123456789', 'a@example.com'),
+('Trần Thị B', '1997-03-10', '0987654321', 'b@example.com');
+
+-- Users
+INSERT INTO [User] (Username, Password, Role, EmployeeID) VALUES
+('admin', '123456', 'Admin', 1),
+('staff', '123456', 'Staff', 2);
+
+-- Products
+INSERT INTO Product (ProductName, ProductCode, Brand, Type, Price, Description, Image)
+VALUES ('iPhone 15', 'IP15-256GB', 'Apple', 'Smartphone', 24990000, 'iPhone 15 256GB', 'iphone15.jpg');
+
+-- Salary Config
+INSERT INTO SalaryConfig (ConfigName, ConfigValue) VALUES
+('StandardWorkingDays', 26),
+('OvertimeRate', 1.5);
+
+-- Return Policy
+INSERT INTO ReturnPolicy (PolicyName, Description, DaysAllowed) VALUES
+('Standard Return', 'Return within 7 days if unused', 7);
+
+-- Dashboard Config
+INSERT INTO ControlPanelConfig (ConfigName, ConfigValue) VALUES
+('ThemeColor', '#1E90FF'),
+('ItemsPerPage', '10');
+
+-- Revenue Reports
+INSERT INTO RevenueReports (ReportType, ReportDate, TotalRevenue, TotalInvoices, TopSellingProductID)
+VALUES ('Monthly', '2025-07-01', 500000000, 120, 1);
+
+-- SalaryHistory Example
+INSERT INTO SalaryHistory (EmployeeID, Month, Year, BasicSalary, WorkingDays, Bonus, Penalty, TotalSalary)
+VALUES (1, 7, 2025, 15000000, 26, 2000000, 500000, 16500000);

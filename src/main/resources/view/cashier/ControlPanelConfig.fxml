@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.cashier.CashierController">
+    <TableView fx:id="configTable" layoutX="20" layoutY="20" prefWidth="800" prefHeight="400">
+        <columns>
+            <TableColumn fx:id="colConfigName" text="Config Name" prefWidth="300"/>
+            <TableColumn fx:id="colConfigValue" text="Config Value" prefWidth="300"/>
+        </columns>
+    </TableView>
+</AnchorPane>
+

@@ -1,23 +1,32 @@
 package model;
 
-public class Transaction {
-    private int invoiceID;
-    private String customer;
-    private String time;
-    private double amount;
-    private String status;
+import java.time.LocalDate;
 
-    public Transaction(int invoiceID, String customer, String time, double amount, String status) {
-        this.invoiceID = invoiceID;
-        this.customer = customer;
-        this.time = time;
-        this.amount = amount;
-        this.status = status;
+public class Transaction {
+    private int id;
+    private String productName;
+    private double price;
+    private int quantity;
+    private LocalDate date;
+
+    public Transaction(int id, String productName, double price, int quantity, LocalDate date) {
+        this.id = id;
+        this.productName = productName;
+        this.price = price;
+        this.quantity = quantity;
+        this.date = date;
     }
 
-    public int getInvoiceID() { return invoiceID; }
-    public String getCustomer() { return customer; }
-    public String getTime() { return time; }
-    public double getAmount() { return amount; }
-    public String getStatus() { return status; }
+    // Getters & Setters
+    public int getId() { return id; }
+    public String getProductName() { return productName; }
+    public double getPrice() { return price; }
+    public int getQuantity() { return quantity; }
+    public LocalDate getDate() { return date; }
+
+    public void setId(int id) { this.id = id; }
+    public void setProductName(String productName) { this.productName = productName; }
+    public void setPrice(double price) { this.price = price; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setDate(LocalDate date) { this.date = date; }
 }

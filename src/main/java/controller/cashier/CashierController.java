@@ -1,103 +1,138 @@
 package controller.cashier;
 
+import dao.TransactionDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import model.Order;
-import model.RevenueReport;
+import model.Transaction;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
 
 public class CashierController {
 
-    @FXML private AnchorPane contentArea;
-    @FXML private Button btnLogout;
+    @FXML private TableView<Transaction> transactionTable;
+    @FXML private TableColumn<Transaction, Integer> idColumn;
+    @FXML private TableColumn<Transaction, String> productColumn;
+    @FXML private TableColumn<Transaction, Double> priceColumn;
+    @FXML private TableColumn<Transaction, Integer> quantityColumn;
+    @FXML private TableColumn<Transaction, String> dateColumn;
 
-    @FXML private TextField searchField;
-    @FXML private Button clearButton;
-    @FXML private TableView<Order> orderTable;
-    @FXML private TableColumn<Order, String> colOrderId;
-    @FXML private TableColumn<Order, String> colCustomer;
-    @FXML private TableColumn<Order, String> colStatus;
-    @FXML private TableColumn<Order, String> colAmount;
-    @FXML private TableColumn<Order, String> colDate;
+    @FXML private TextField productField;
+    @FXML private TextField priceField;
+    @FXML private TextField quantityField;
+
+    @FXML private AnchorPane contentArea; // Add fx:id="contentArea" in FXML BorderPane center
+
+    private final TransactionDAO transactionDAO = new TransactionDAO();
+    private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
 
     @FXML
-    private void onClearSearch() {
-        searchField.clear();
+    public void initialize() {
+        setupTableColumns();
+        loadTransactions();
     }
 
-    /**
-     * Load UI into contentArea and return FXMLLoader for controller access
-     */
-    private FXMLLoader loadUI(String fxml) {
+    private void setupTableColumns() {
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        productColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+    }
+
+    private void loadTransactions() {
+        ObservableList<Transaction> list = FXCollections.observableArrayList(transactionDAO.getAllTransactions());
+        transactionTable.setItems(list);
+    }
+
+
+
+    @FXML
+    private void handleAddTransaction() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cashier/" + fxml + ".fxml"));
-            Parent root = loader.load();
-            contentArea.getChildren().setAll(root);
-            AnchorPane.setTopAnchor(root, 0.0);
-            AnchorPane.setBottomAnchor(root, 0.0);
-            AnchorPane.setLeftAnchor(root, 0.0);
-            AnchorPane.setRightAnchor(root, 0.0);
-            return loader;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            String product = productField.getText();
+            double price = Double.parseDouble(priceField.getText());
+            int quantity = Integer.parseInt(quantityField.getText());
+
+            if (transactionDAO.addTransaction(product, price, quantity)) {
+                showAlert("Success", "Transaction added successfully", Alert.AlertType.INFORMATION);
+                loadTransactions();
+                clearFields();
+            } else {
+                showAlert("Error", "Failed to add transaction", Alert.AlertType.ERROR);
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Input Error", "Please enter valid numbers for price and quantity", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
-    private void loadControlPanel() {
-        loadUI("ControlPanel");
-    }
-
-    @FXML
-    private void loadPromotionManagement() {
-        loadUI("PromotionManagement");
-    }
-
-    @FXML
-    private void loadReturnPolicy() {
-        loadUI("ReturnPolicy");
-    }
-
-    /**
-     * Load Revenue Reports View & Pass Data to Controller
-     */
-    @FXML
-    private void loadRevenueReports() {
-        FXMLLoader loader = loadUI("RevenueReports");
-        if (loader != null) {
-            RevenueReportsController controller = loader.getController();
-            List<RevenueReport> reports = fetchDetailedRevenueReports();
-            controller.loadData(reports);
-        }
-    }
-
-    private List<RevenueReport> fetchDetailedRevenueReports() {
-        List<RevenueReport> reports = new ArrayList<>();
-        reports.add(new RevenueReport("2025-07-25", "iPhone 15", 5000.0, "Credit Card"));
-        reports.add(new RevenueReport("2025-07-26", "Samsung S24", 7500.0, "Cash"));
-        return reports;
-    }
-
-    @FXML
-    private void loadCalculateSalary() {
-        loadUI("CalculatorSalary");
-    }
-
-    @FXML
-    private void logout() {
+    private void handleLogout() {
         try {
-            Stage stage = (Stage) btnLogout.getScene().getWindow();
+            Stage stage = (Stage) transactionTable.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
             stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void clearFields() {
+        productField.clear();
+        priceField.clear();
+        quantityField.clear();
+    }
+
+    // Load SalaryHistory.fxml
+    @FXML
+    private void loadSalaryHistory(javafx.event.ActionEvent event) {
+        loadPage("/view/cashier/SalaryHistory.fxml");
+    }
+
+    // Load ReturnPolicy.fxml
+    @FXML
+    private void loadReturnPolicy(javafx.event.ActionEvent event) {
+        loadPage("/view/cashier/ReturnPolicy.fxml");
+    }
+
+    // Load RevenueReports.fxml
+    @FXML
+    private void loadRevenueReports(javafx.event.ActionEvent event) {
+        loadPage("/view/cashier/RevenueReport.fxml");
+    }
+
+    // Load ControlPanelConfig.fxml
+    @FXML
+    private void loadControlPanelConfig(javafx.event.ActionEvent event) {
+        loadPage("/view/cashier/ControlPanelConfig.fxml");
+    }
+
+    // Dynamic Load Page Method
+    private void loadPage(String page) {
+        try {
+            URL fileUrl = getClass().getResource(page);
+            if (fileUrl != null) {
+                AnchorPane pane = FXMLLoader.load(fileUrl);
+                contentArea.getChildren().setAll(pane);
+            } else {
+                System.out.println("Cannot load page: " + page);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,28 +1,27 @@
-// src/model/RevenueReport.java
 package model;
 
 public class RevenueReport {
-    private String date;
-    private String product;
-    private double amount;
-    private String paymentMethod;
+    private int reportID;
+    private String reportType;
+    private String reportDate;
+    private double totalRevenue;
+    private int totalInvoices;
+    private String topSellingProduct;
 
-    public RevenueReport(String date, String product, double amount, String paymentMethod) {
-        this.date = date;
-        this.product = product;
-        this.amount = amount;
-        this.paymentMethod = paymentMethod;
+    public RevenueReport(int reportID, String reportType, String reportDate, double totalRevenue, int totalInvoices, String topSellingProduct) {
+        this.reportID = reportID;
+        this.reportType = reportType;
+        this.reportDate = reportDate;
+        this.totalRevenue = totalRevenue;
+        this.totalInvoices = totalInvoices;
+        this.topSellingProduct = topSellingProduct;
     }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
-
-    public String getProduct() { return product; }
-    public void setProduct(String product) { this.product = product; }
-
-    public double getAmount() { return amount; }
-    public void setAmount(double amount) { this.amount = amount; }
-
-    public String getPaymentMethod() { return paymentMethod; }
-    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    // Getters
+    public int getReportID() { return reportID; }
+    public String getReportType() { return reportType; }
+    public String getReportDate() { return reportDate; }
+    public double getTotalRevenue() { return totalRevenue; }
+    public int getTotalInvoices() { return totalInvoices; }
+    public String getTopSellingProduct() { return topSellingProduct; }
 }

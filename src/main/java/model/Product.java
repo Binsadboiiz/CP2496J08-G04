@@ -15,7 +15,8 @@ public class Product {
     private String name;
     private int sales;
 
-    public Product(int productID, String productName, String productCode, String brand, String type, double price, String description, String image, String createdAt, String updatedAt, String name, int sales) {
+    public Product(int productID, String productName, String productCode, String brand, String type,
+                   double price, String description, String image, String createdAt, String updatedAt) {
         this.productID = productID;
         this.productName = productName;
         this.productCode = productCode;
@@ -26,46 +27,13 @@ public class Product {
         this.image = image;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.name = name;
-        this.sales = sales;
     }
     public Product() {
         // Constructor mặc định (không tham số)
     }
 
-    public Product(String name, int sales) {
-        this.name = name;
-        this.sales = sales;
-    }
-
-    // Getter
-    public String getName() {
-        return name;
-    }
-
-    public int getSales() {
-        return sales;
-    }
-
-    // Setter (nếu cần)
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSales(int sales) {
-        this.sales = sales;
-    }
-
-    public Product(int productID,
-                   String productName,
-                   String productCode,
-                   String brand,
-                   String type,
-                   double price,
-                   String description,
-                   String image,
-                   String createdAt,
-                   String updatedAt) {
+    public Product(int productID, String productName, String productCode, String brand, String type,
+                   double price, String description, String image, int sales) {
         this.productID = productID;
         this.productName = productName;
         this.productCode = productCode;
@@ -74,11 +42,10 @@ public class Product {
         this.price = price;
         this.description = description;
         this.image = image;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.sales = sales;
     }
 
-    // getters & setters
+    // Getter & Setter
     public int getProductID() {
         return productID;
     }
@@ -157,5 +124,13 @@ public class Product {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public int getSales() {
+        return sales;
+    }
+
+    public void setSales(int sales) {
+        this.sales = sales;
     }
 }

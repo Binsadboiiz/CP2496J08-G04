@@ -1,27 +1,66 @@
 package dao;
 
 import model.Transaction;
-
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionDAO {
+    public List<Transaction> getAllTransactions() {
+        List<Transaction> list = new ArrayList<>();
+        String sql = "SELECT TransactionID, ProductName, Price, Quantity, Date FROM Transaction";
 
-    public static List<Transaction> getRecentTransactions() {
-        List<Transaction> transactions = new ArrayList<>();
-        transactions.add(new Transaction(1001, "Nguyễn Văn A", "2025-07-28 10:00", 500000, "Completed"));
-        transactions.add(new Transaction(1002, "Trần Thị B", "2025-07-28 11:30", 750000, "Completed"));
-        transactions.add(new Transaction(1003, "Lê Văn C", "2025-07-28 12:45", 250000, "Pending"));
-        return transactions;
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Transaction transaction = new Transaction(
+                        rs.getInt("TransactionID"),
+                        rs.getString("ProductName"),
+                        rs.getDouble("Price"),
+                        rs.getInt("Quantity"),
+                        rs.getDate("Date").toLocalDate()
+                );
+                list.add(transaction);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
-    public static double getTodayRevenue() {
-        // Dummy data: Tổng doanh thu hôm nay
-        return 1500000; // 1,500,000 VND
+    public boolean addTransaction(String productName, double price, int quantity) {
+        String sql = "INSERT INTO Transaction (ProductName, Price, Quantity, Date) VALUES (?, ?, ?, GETDATE())";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, productName);
+            stmt.setDouble(2, price);
+            stmt.setInt(3, quantity);
+
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    public static int getTodayTransactionCount() {
-        // Dummy data: Số lượng giao dịch hôm nay
-        return 3;
+    public boolean deleteTransaction(int id) {
+        String sql = "DELETE FROM Transaction WHERE TransactionID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
