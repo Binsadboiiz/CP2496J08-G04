@@ -7,19 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDAO {
-    private static final String URL =
-            "jdbc:sqlserver://localhost:1433;databaseName=CellPhoneStore;encrypt=false;trustServerCertificate=true";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "sa";
-
-
     /**
      * 1) Lấy tất cả sản phẩm
      */
     public static List<Product> getAll() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -45,7 +39,7 @@ public class ProductDAO {
     }
     public static Connection getConnection() {
         try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
+            return DatabaseConnection.getConnection();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to connect to DB", e);
         }
@@ -67,7 +61,7 @@ public class ProductDAO {
                   Image
                 ) VALUES(?,?,?,?,?,?,?)
                 """;
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, p.getProductName());
@@ -90,7 +84,7 @@ public class ProductDAO {
      */
     public static boolean delete(int productID) {
         String sql = "DELETE FROM Product WHERE ProductID = ?";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, productID);
@@ -110,7 +104,7 @@ public class ProductDAO {
                 SELECT * FROM Product
                 WHERE ProductName LIKE ? OR ProductCode LIKE ?
                 """;
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             String kw = "%" + keyword + "%";
@@ -151,7 +145,7 @@ public class ProductDAO {
     """;
 
 
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
