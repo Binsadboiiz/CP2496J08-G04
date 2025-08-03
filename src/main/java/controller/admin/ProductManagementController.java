@@ -1,8 +1,8 @@
-// src/controller/ProductManagementController.java
 package controller.admin;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
@@ -62,6 +62,7 @@ public class ProductManagementController implements Initializable {
     private TableColumn<Product, String> colUpdatedAt;
     @FXML
     private TableColumn<Product, Integer> colUpdatedBy;
+
 
     private ObservableList<Product> masterList = FXCollections.observableArrayList();
     private ObservableList<Product> filteredList = FXCollections.observableArrayList();
@@ -161,14 +162,29 @@ public class ProductManagementController implements Initializable {
     }
 
     @FXML
-    private void onEdit(ActionEvent e) {
-        Product sel = tblProducts.getSelectionModel().getSelectedItem();
-        if (sel == null) {
-            showAlert("Please select a product to edit.");
+    private void onEdit() {
+        Product selected = tblProducts.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Vui lòng chọn sản phẩm cần sửa!");
             return;
         }
-        // TODO: hiện dialog sửa, truyền sel vào
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/AddProduct.fxml"));
+            Parent root = loader.load();
+            AddProductController controller = loader.getController();
+            controller.setEditProduct(selected);
+            Stage dialog = new Stage();
+            dialog.setTitle("Edit Product");
+            dialog.setScene(new Scene(root));
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setResizable(false);
+            dialog.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+
 
     @FXML
     private void onDelete(ActionEvent e) {

@@ -1,5 +1,7 @@
 package model;
 
+import javafx.fxml.FXML;
+
 public class Supplier {
     private int supplierID;
     private String name;
@@ -99,5 +101,9 @@ public class Supplier {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+    @Override
+    public String toString() {
+        return name;
     }
 }

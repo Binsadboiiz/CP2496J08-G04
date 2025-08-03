@@ -46,6 +46,8 @@ public class AdminController {
     }
     @FXML
     private void loadSupplierManagement(ActionEvent event) {loadUI("SupplierManagement");}
+    @FXML
+    private void loadStockEntry(ActionEvent event) {loadUI("StockEntryList");}
 
     @FXML
     private void logout() {

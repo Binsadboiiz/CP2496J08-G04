@@ -7,6 +7,9 @@ import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import dao.DatabaseConnection;
@@ -31,6 +34,8 @@ public class LoginController implements Initializable {
     private Label messageLabel;
 
     @FXML
+    private ImageView bgImage;
+    @FXML
     private CheckBox rememberMeBox;
 
     // Preferences node cho app của bạn
@@ -47,6 +52,8 @@ public class LoginController implements Initializable {
             usernameField.setText(savedUser);
             rememberMeBox.setSelected(true);
         }
+        Rectangle clip = new Rectangle(bgImage.getFitWidth(), bgImage.getFitHeight());
+        bgImage.setClip(clip);
     }
 
     @FXML
