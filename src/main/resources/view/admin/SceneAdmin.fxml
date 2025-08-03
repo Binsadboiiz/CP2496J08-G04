@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane prefHeight="700.0" prefWidth="1020.0" stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.AdminController">
 
     <!-- Sidebar -->
@@ -20,14 +21,20 @@
                 <Insets bottom="10" left="10" right="10" top="20" />
             </padding>
 
-            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../../images/register_logo.png" />
-                </image>
-            </ImageView>
+<!--            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">-->
+<!--                <image>-->
+<!--                    <Image url="@../../images/register_logo.png" />-->
+<!--                </image>-->
+<!--            </ImageView>-->
 
-            <Label text="Admin" textFill="WHITE" />
-            <Label text="Vai Trò" textFill="WHITE" />
+            <StackPane fx:id="userCard" styleClass="user-card">
+                <VBox alignment="CENTER" spacing="10">
+<!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
+                    <Label fx:id="usernameLabel" text="Admin" styleClass="username-label"/>
+                    <Label fx:id="roleLabel" text="Vai Trò" styleClass="role-label"/>
+                </VBox>
+            </StackPane>
+
 
             <Button fx:id="btnDashboard" maxWidth="180" onAction="#loadDashboard" styleClass="sidebar-button" text="Dashboard">
                 <font>

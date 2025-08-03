@@ -1,5 +1,7 @@
 package controller;
 
+import controller.admin.AdminController;
+import dao.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,6 +15,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import dao.DatabaseConnection;
+import model.User;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -91,17 +94,63 @@ public class LoginController implements Initializable {
                 String role = rs.getString("Role");
                 messageLabel.setStyle("-fx-text-fill: green;");
                 messageLabel.setText("Log In Success " + role);
+                User user = UserDAO.loginAndGetUser(username, password);
 
                 // Chuyển scene theo role
                 if ("Admin".equalsIgnoreCase(role)) {
-                    switchScene("/view/admin/SceneAdmin.fxml", event);
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/SceneAdmin.fxml"));
+                        Parent root = loader.load();
+                        AdminController adminController = loader.getController();
+                        adminController.setUserInfo(user.getUsername(), user.getRole());
+
+                        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else if ("Staff".equalsIgnoreCase(role)) {
-                    switchScene("/view/staff/SceneStaff.fxml", event);
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/staff/SceneStaff.fxml"));
+                        Parent root = loader.load();
+                        AdminController adminController = loader.getController();
+                        adminController.setUserInfo(user.getUsername(), user.getRole());
+
+                        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 else if ("Cashier".equalsIgnoreCase(role)) {
-                    switchScene("/view/cashier/SceneCashier.fxml", event);
-                }
-                else {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cashier/SceneCashier.fxml"));
+                        Parent root = loader.load();
+                        AdminController adminController = loader.getController();
+                        adminController.setUserInfo(user.getUsername(), user.getRole());
+
+                        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if ("Warehouse".equalsIgnoreCase(role)) {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/warehouse/SceneWare.fxml"));
+                        Parent root = loader.load();
+                        AdminController adminController = loader.getController();
+                        adminController.setUserInfo(user.getUsername(), user.getRole());
+
+                        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
                     messageLabel.setText("No permissions specified!");
                 }
             } else {
