@@ -1,26 +1,23 @@
 package model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class SalaryHistory {
-    private int salaryID;
-    private String employeeName;
-    private int month;
-    private int year;
-    private double totalSalary;
+    private int employeeId;
+    private double amount;
+    private LocalDate date;
 
-    public SalaryHistory(int salaryID, String employeeName, int month, int year, double totalSalary) {
-        this.salaryID = salaryID;
-        this.employeeName = employeeName;
-        this.month = month;
-        this.year = year;
-        this.totalSalary = totalSalary;
+    public SalaryHistory(int employeeId, double amount, LocalDate date) {
+        this.employeeId = employeeId;
+        this.amount = amount;
+        this.date = date;
     }
 
-    // Getters
-    public int getSalaryID() { return salaryID; }
-    public String getEmployeeName() { return employeeName; }
-    public int getMonth() { return month; }
-    public int getYear() { return year; }
-    public double getTotalSalary() { return totalSalary; }
+    // Getters and Setters
+    public int getEmployeeId() { return employeeId; }
+    public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }
+    public double getAmount() { return amount; }
+    public void setAmount(double amount) { this.amount = amount; }
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
 }

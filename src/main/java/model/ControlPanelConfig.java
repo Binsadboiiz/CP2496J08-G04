@@ -11,8 +11,12 @@ public class ControlPanelConfig {
         this.configValue = configValue;
     }
 
-    // Getters
+    // Getters and Setters
     public int getConfigID() { return configID; }
     public String getConfigName() { return configName; }
     public String getConfigValue() { return configValue; }
+
+    public void setConfigValue(String configValue) {
+        this.configValue = configValue;
+    }
 }

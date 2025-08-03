@@ -23,20 +23,6 @@ public class AdminController {
     @FXML
     private Button btnLogout;
 
-    @FXML private TextField searchField;
-    @FXML private Button clearButton;
-    @FXML private TableView<Order> orderTable;
-    @FXML private TableColumn<Order, String> colOrderId;
-    @FXML private TableColumn<Order, String> colCustomer;
-    @FXML private TableColumn<Order, String> colStatus;
-    @FXML private TableColumn<Order, String> colAmount;
-    @FXML private TableColumn<Order, String> colDate;
-
-    @FXML
-    private void onClearSearch(ActionEvent e) {
-        searchField.clear();
-    }
-
     private void loadUI(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/" + fxml + ".fxml"));
@@ -47,17 +33,19 @@ public class AdminController {
         }
     }
     @FXML
-    private void loadRoleManagement() {
+    private void loadEmployeeManagement(ActionEvent event) {
         loadUI("EmployeeManagement");
     }
     @FXML
-    private void loadControlPanel() {
-        loadUI("ControlPanel");
+    private void loadDashboard(ActionEvent event) {
+        loadUI("Dashboard");
     }
     @FXML
-    private void loadProductManagement() {
+    private void loadProductManagement(ActionEvent event) {
         loadUI("ProductManagement");
     }
+    @FXML
+    private void loadSupplierManagement(ActionEvent event) {loadUI("SupplierManagement");}
 
     @FXML
     private void logout() {
@@ -68,8 +56,5 @@ public class AdminController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void loadSalaryCalculation(ActionEvent actionEvent) {
     }
 }

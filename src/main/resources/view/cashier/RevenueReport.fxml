@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.cashier.RevenueReportsController">
-    <TableView fx:id="reportTable" layoutX="20" layoutY="20" prefWidth="800" prefHeight="400">
-        <columns>
-            <TableColumn fx:id="colReportType" text="Type" prefWidth="100"/>
-            <TableColumn fx:id="colReportDate" text="Date" prefWidth="100"/>
-            <TableColumn fx:id="colTotalRevenue" text="Total Revenue" prefWidth="150"/>
-            <TableColumn fx:id="colTotalInvoices" text="Invoices" prefWidth="100"/>
-            <TableColumn fx:id="colTopSellingProduct" text="Top Product" prefWidth="200"/>
-        </columns>
-    </TableView>
+<AnchorPane prefHeight="600.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.cashier.RevenueReportsController">
+
+    <ChoiceBox fx:id="reportTypeChoice" layoutX="20" layoutY="20" prefWidth="150"/>
+    <Button text="Load Report" layoutX="190" layoutY="20" onAction="#handleLoadReport"/>
+
+    <PieChart fx:id="pieChart" layoutX="20" layoutY="70" prefWidth="700" prefHeight="500"/>
+    <BarChart fx:id="barChart" layoutX="20" layoutY="70" prefWidth="700" prefHeight="500">
+        <xAxis>
+            <CategoryAxis fx:id="xAxis"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis fx:id="yAxis"/>
+        </yAxis>
+    </BarChart>
 </AnchorPane>

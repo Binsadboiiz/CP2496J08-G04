@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefWidth="400" prefHeight="370"
+            xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.admin.SupplierFormController">
+
+    <VBox spacing="14" alignment="CENTER" AnchorPane.topAnchor="16" AnchorPane.leftAnchor="16" AnchorPane.rightAnchor="16" AnchorPane.bottomAnchor="16">
+        <Label fx:id="lblTitle" text="Add Supplier" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <TextField fx:id="txtName" promptText="Supplier Name"/>
+        <TextField fx:id="txtContactName" promptText="Contact Name"/>
+        <TextField fx:id="txtPhone" promptText="Phone"/>
+        <TextField fx:id="txtEmail" promptText="Email"/>
+        <TextField fx:id="txtAddress" promptText="Address"/>
+        <TextArea fx:id="txtNote" promptText="Note" prefRowCount="2"/>
+        <CheckBox fx:id="chkActive" text="Active" selected="true"/>
+        <HBox spacing="12" alignment="CENTER">
+            <Button text="Save" fx:id="btnSave" onAction="#onSave"/>
+            <Button text="Cancel" fx:id="btnCancel" onAction="#onCancel"/>
+        </HBox>
+    </VBox>
+</AnchorPane>

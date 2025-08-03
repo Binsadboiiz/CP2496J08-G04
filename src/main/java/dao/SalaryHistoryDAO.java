@@ -1,31 +1,47 @@
 package dao;
 
 import model.SalaryHistory;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SalaryHistoryDAO {
-    public static List<SalaryHistory> getAllSalaryHistory() {
-        List<SalaryHistory> list = new ArrayList<>();
-        String sql = "SELECT sh.SalaryID, e.FullName, sh.Month, sh.Year, sh.TotalSalary " +
-                "FROM SalaryHistory sh JOIN Employee e ON sh.EmployeeID = e.EmployeeID";
-        try (Connection conn = DatabaseConnection.getConnection();
+    public static Connection getConnection() throws SQLException {
+        return DatabaseConnection.getConnection();
+    }
+
+    public static boolean addSalaryHistoryDAO(SalaryHistory salary) {
+        String sql = "INSERT INTO Salary (EmployeeID, Amount, Date) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, salary.getEmployeeId());
+            stmt.setDouble(2, salary.getAmount());
+            stmt.setDate(3, Date.valueOf(salary.getDate()));
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public static List<SalaryHistory> getAllSalaries() {
+        List<SalaryHistory> salaries = new ArrayList<>();
+        String sql = "SELECT * FROM Salary";
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                SalaryHistory sh = new SalaryHistory(
-                        rs.getInt("SalaryID"),
-                        rs.getString("FullName"),
-                        rs.getInt("Month"),
-                        rs.getInt("Year"),
-                        rs.getDouble("TotalSalary")
+                SalaryHistory salary = new SalaryHistory(
+                        rs.getInt("EmployeeID"),
+                        rs.getDouble("Amount"),
+                        rs.getDate("Date").toLocalDate()
                 );
-                list.add(sh);
+                salaries.add(salary);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        return list;
+        return salaries;
     }
 }

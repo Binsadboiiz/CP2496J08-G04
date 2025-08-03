@@ -1,4 +1,4 @@
-module Project_Sem2 {
+module demo {
     requires java.sql;
 
     requires javafx.controls;
@@ -6,6 +6,8 @@ module Project_Sem2 {
     requires java.prefs;
     requires jdk.jfr;
     requires java.desktop;
+    requires javafx.graphics;
+    requires javafx.base;
 
     opens app to javafx.fxml;
     opens controller to javafx.fxml;
@@ -20,5 +22,7 @@ module Project_Sem2 {
     opens controller.admin to javafx.fxml;
     opens controller.cashier to javafx.fxml;
     exports controller.cashier;
+    exports controller.staff;
+    opens controller.staff to javafx.fxml;
 
 }

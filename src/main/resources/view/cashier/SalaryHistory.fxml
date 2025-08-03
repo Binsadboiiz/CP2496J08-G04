@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.cashier.SalaryHistoryController"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane prefHeight="600.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.cashier.SalaryHistoryController">
+
+    <!-- TableView SalaryHistory -->
+    <TableView fx:id="salaryTable" layoutX="20" layoutY="20" prefHeight="300" prefWidth="700">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="nameColumn" text="Employee Name" prefWidth="150"/>
+            <TableColumn fx:id="monthColumn" text="Month" prefWidth="50"/>
+            <TableColumn fx:id="yearColumn" text="Year" prefWidth="50"/>
+            <TableColumn fx:id="basicSalaryColumn" text="Basic Salary" prefWidth="100"/>
+            <TableColumn fx:id="workingDaysColumn" text="Working Days" prefWidth="100"/>
+            <TableColumn fx:id="bonusColumn" text="Bonus" prefWidth="100"/>
+            <TableColumn fx:id="penaltyColumn" text="Penalty" prefWidth="100"/>
+            <TableColumn fx:id="totalSalaryColumn" text="Total Salary" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <!-- Input Fields -->
+    <Label text="Employee ID:" layoutX="20" layoutY="340"/>
+    <TextField fx:id="employeeIDField" layoutX="100" layoutY="335" prefWidth="100"/>
+
+    <Label text="Month:" layoutX="220" layoutY="340"/>
+    <TextField fx:id="monthField" layoutX="270" layoutY="335" prefWidth="50"/>
+
+    <Label text="Year:" layoutX="340" layoutY="340"/>
+    <TextField fx:id="yearField" layoutX="380" layoutY="335" prefWidth="60"/>
+
+    <Label text="Basic Salary:" layoutX="460" layoutY="340"/>
+    <TextField fx:id="basicSalaryField" layoutX="540" layoutY="335" prefWidth="100"/>
+
+    <Label text="Working Days:" layoutX="20" layoutY="380"/>
+    <TextField fx:id="workingDaysField" layoutX="120" layoutY="375" prefWidth="80"/>
+
+    <Label text="Bonus:" layoutX="220" layoutY="380"/>
+    <TextField fx:id="bonusField" layoutX="270" layoutY="375" prefWidth="80"/>
+
+    <Label text="Penalty:" layoutX="360" layoutY="380"/>
+    <TextField fx:id="penaltyField" layoutX="420" layoutY="375" prefWidth="80"/>
+
+    <!-- Action Buttons -->
+    <Button text="Calculate &amp; Save" layoutX="540" layoutY="375" prefWidth="120" onAction="#handleAddSalary"/>
 
 </AnchorPane>

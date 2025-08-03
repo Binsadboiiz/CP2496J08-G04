@@ -67,7 +67,12 @@ CREATE TABLE Supplier
     SupplierID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
     Name       VARCHAR(100)                   NOT NULL,
     Phone      VARCHAR(15),
-    Address    VARCHAR(200)
+    Address    VARCHAR(200),
+    ContactName NVARCHAR(200) NULL,
+    Email NVARCHAR(200) NULL,
+    Note NVARCHAR(255) NULL,
+    CreatedDate DATETIME2 DEFAULT GETDATE() NOT NULL,
+    IsActive BIT DEFAULT 1 NOT NULL;
 );
 
 CREATE TABLE Invoice
@@ -230,6 +235,15 @@ CREATE TABLE SalaryConfig (
     ConfigName VARCHAR(100) NOT NULL,
     ConfigValue DECIMAL(18,2) NOT NULL,
     CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+USE CellPhoneStore;
+CREATE TABLE Transactions (
+    TransactionID INT PRIMARY KEY IDENTITY(1,1),
+    ProductName NVARCHAR(255),
+    Price FLOAT,
+    Quantity INT,
+    Date DATE
 );
 
 

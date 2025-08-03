@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.cashier.PromotionManagementController" prefHeight="600.0" prefWidth="800.0">
+    <children>
+        <Label text="Manage Promotions" layoutX="20" layoutY="20" font="System 20 Bold"/>
+
+        <TableView fx:id="promotionTable" layoutX="20" layoutY="60" prefHeight="300" prefWidth="760">
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="nameColumn" text="Promotion Name" prefWidth="200"/>
+                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="300"/>
+                <TableColumn fx:id="discountColumn" text="Discount (%)" prefWidth="100"/>
+                <TableColumn fx:id="startDateColumn" text="Start Date" prefWidth="100"/>
+                <TableColumn fx:id="endDateColumn" text="End Date" prefWidth="100"/>
+            </columns>
+        </TableView>
+
+        <TextField fx:id="promotionNameField" layoutX="20" layoutY="380" promptText="Promotion Name" prefWidth="200"/>
+        <TextArea fx:id="descriptionField" layoutX="20" layoutY="420" promptText="Description" prefWidth="200" prefHeight="60"/>
+        <TextField fx:id="discountField" layoutX="20" layoutY="490" promptText="Discount (%)" prefWidth="100"/>
+        <DatePicker fx:id="startDateField" layoutX="150" layoutY="490"/>
+        <DatePicker fx:id="endDateField" layoutX="300" layoutY="490"/>
+        <Button text="Add Promotion" layoutX="20" layoutY="550" onAction="#handleAddPromotion"/>
+    </children>
+</AnchorPane>

@@ -1,40 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.cashier.CashierController"
-      spacing="10"
-      style="-fx-padding: 20;">
+<BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css"
+            xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.cashier.CashierController">
 
-    <Label text="Cashier Dashboard" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <!-- Sidebar -->
+    <left>
+        <VBox fx:id="sidebar" alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="20" />
+            </padding>
 
-    <TableView fx:id="transactionTable" prefHeight="300">
-        <columns>
-            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="productColumn" text="Product" prefWidth="150"/>
-            <TableColumn fx:id="priceColumn" text="Price" prefWidth="100"/>
-            <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="80"/>
-            <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
-        </columns>
-    </TableView>
+            <!-- Logo -->
+            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../../images/register_logo.png" />
+                </image>
+            </ImageView>
 
-    <GridPane hgap="10" vgap="10">
-        <Label text="Product:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="productField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="Cashier" textFill="WHITE" />
+            <Label text="Thu Ngân" textFill="WHITE" />
 
-        <Label text="Price:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextField fx:id="priceField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <!-- Menu Buttons -->
+            <Button fx:id="btnTransactions" maxWidth="180" onAction="#loadTransactions" styleClass="sidebar-button" text="Transactions">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
 
-        <Label text="Quantity:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField fx:id="quantityField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-    </GridPane>
+            <Button fx:id="btnPromotion" maxWidth="180" onAction="#loadPromotion" styleClass="sidebar-button" text="Promotions">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
 
-    <HBox spacing="10">
-        <Button text="Add Transaction" onAction="#handleAddTransaction" style="-fx-base: #4CAF50; -fx-text-fill: white;"/>
-        <Button text="Logout" onAction="#handleLogout" style="-fx-base: #F44336; -fx-text-fill: white;"/>
-    </HBox>
+            <Button fx:id="btnReturnPolicy" maxWidth="180" onAction="#loadReturnPolicy" styleClass="sidebar-button" text="Return Policy">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
 
-</VBox>
+            <Button fx:id="btnRevenueReports" maxWidth="180" onAction="#loadRevenueReports" styleClass="sidebar-button" text="Revenue Reports">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+
+            <Button fx:id="btnSalaryHistory" maxWidth="180" onAction="#loadSalaryHistory" styleClass="sidebar-button" text="Salary History">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+
+
+            <Pane VBox.vgrow="ALWAYS" />
+
+            <!-- Logout -->
+            <Button fx:id="btnLogout" maxWidth="180" onAction="#logout" styleClass="logout-button" text="Logout">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+        </VBox>
+    </left>
+
+    <!-- Main Content Area -->
+    <center>
+        <AnchorPane fx:id="contentArea" prefHeight="580.0" prefWidth="740.0">
+            <!-- Transaction Table -->
+            <TableView fx:id="transactionTable" layoutX="20" layoutY="20" prefWidth="700" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+                    <TableColumn fx:id="productColumn" text="Product" prefWidth="150"/>
+                    <TableColumn fx:id="priceColumn" text="Price" prefWidth="100"/>
+                    <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="100"/>
+                    <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
+                </columns>
+            </TableView>
+
+            <!-- Input Fields -->
+            <TextField fx:id="productField" layoutX="20" layoutY="450" promptText="Product Name" />
+            <TextField fx:id="priceField" layoutX="200" layoutY="450" promptText="Price" />
+            <TextField fx:id="quantityField" layoutX="350" layoutY="450" promptText="Quantity" />
+
+            <!-- Add Button -->
+            <Button text="Add" layoutX="500" layoutY="450" onAction="#handleAddTransaction"/>
+        </AnchorPane>
+    </center>
+
+</BorderPane>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.staff.CreateInvoiceController">
+    <top>
+        <Label text="TẠO HÓA ĐƠN BÁN HÀNG" style="-fx-font-size: 24px; -fx-font-weight: bold;" BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <HBox spacing="10">
+                <Label text="Tên sản phẩm:"/>
+                <TextField fx:id="productNameField"/>
+                <Label text="Số lượng:"/>
+                <TextField fx:id="quantityField"/>
+                <Button text="Thêm sản phẩm" onAction="#handleAddProduct"/>
+            </HBox>
+
+            <TableView fx:id="invoiceTable" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="productNameColumn" text="Sản phẩm"/>
+                    <TableColumn fx:id="quantityColumn" text="Số lượng"/>
+                    <TableColumn fx:id="priceColumn" text="Đơn giá"/>
+                    <TableColumn fx:id="totalColumn" text="Thành tiền"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="10">
+                <Label text="Giảm giá (%):"/>
+                <TextField fx:id="discountField"/>
+                <Button text="Tính tổng tiền" onAction="#handleCalculateTotal"/>
+            </HBox>
+
+            <Label fx:id="totalLabel" text="Tổng tiền: 0 VND" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Button text="Lưu hóa đơn" onAction="#handleSaveInvoice"/>
+            <Button text="Làm mới" onAction="#handleReset"/>
+        </HBox>
+    </bottom>
+</BorderPane>

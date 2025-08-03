@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.cashier.ReturnPolicyManagementController">
+
+    <TableView fx:id="returnPolicyTable" layoutX="20" layoutY="20" prefHeight="300" prefWidth="700">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="nameColumn" text="Policy Name" prefWidth="150"/>
+            <TableColumn fx:id="descColumn" text="Description" prefWidth="300"/>
+            <TableColumn fx:id="daysAllowedColumn" text="Days Allowed" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <!-- Input Fields -->
+    <TextField fx:id="nameField" layoutX="20" layoutY="350" promptText="Policy Name" prefWidth="200"/>
+    <TextField fx:id="descField" layoutX="240" layoutY="350" promptText="Description" prefWidth="300"/>
+    <TextField fx:id="daysAllowedField" layoutX="560" layoutY="350" promptText="Days Allowed" prefWidth="100"/>
+
+    <!-- Add Button -->
+    <Button text="Add Policy" layoutX="320" layoutY="400" onAction="#handleAddReturnPolicy"/>
+</AnchorPane>

@@ -7,12 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDAO {
-    private static final String URL =
-            "jdbc:sqlserver://localhost:1433;databaseName=CellPhoneStore;encrypt=false;trustServerCertificate=true";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "sa";
-
-
     /**
      * 1) Lấy tất cả sản phẩm
      */
@@ -43,9 +37,17 @@ public class ProductDAO {
         }
         return list;
     }
+    public static Connection getConnection() {
+        try {
+            return DatabaseConnection.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to connect to DB", e);
+        }
+    }
+
 
     /**
-     * 2. Thêm sản phẩm mới
+     * 2) Thêm sản phẩm mới
      */
     public static boolean insert(Product p) {
         String sql = """
@@ -78,7 +80,7 @@ public class ProductDAO {
     }
 
     /**
-     * 3. Xóa sản phẩm theo ID
+     * 3) Xóa sản phẩm theo ID
      */
     public static boolean delete(int productID) {
         String sql = "DELETE FROM Product WHERE ProductID = ?";
@@ -94,7 +96,7 @@ public class ProductDAO {
     }
 
     /**
-     * 4. Tìm sản phẩm theo từ khóa
+     * 4) Tìm sản phẩm theo từ khóa
      */
     public static List<Product> search(String keyword) {
         List<Product> list = new ArrayList<>();
@@ -132,37 +134,27 @@ public class ProductDAO {
         return list;
     }
 
-    /**
-     * 5. Lấy top 5 sản phẩm bán chạy
-     */
     public static List<Product> getTopSellingProducts() {
         List<Product> list = new ArrayList<>();
         String sql = """
-                    SELECT TOP 5 p.ProductID, p.ProductName, p.ProductCode, p.Brand, p.Type, p.Price, 
-                           p.Description, p.Image, SUM(id.Quantity) AS Sales
-                    FROM InvoiceDetail id
-                    JOIN Product p ON id.ProductID = p.ProductID
-                    GROUP BY p.ProductID, p.ProductName, p.ProductCode, p.Brand, p.Type, p.Price, 
-                             p.Description, p.Image
-                    ORDER BY Sales DESC
-                """;
+    SELECT TOP 5 p.ProductID, p.ProductName, p.Image, SUM(d.Quantity) AS Sales
+    FROM InvoiceDetail d
+    JOIN Product p ON d.ProductID = p.ProductID
+    GROUP BY p.ProductID, p.ProductName, p.Image
+    ORDER BY Sales DESC
+    """;
+
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Product p = new Product(
-                        rs.getInt("ProductID"),
-                        rs.getString("ProductName"),
-                        rs.getString("ProductCode"),
-                        rs.getString("Brand"),
-                        rs.getString("Type"),
-                        rs.getDouble("Price"),
-                        rs.getString("Description"),
-                        rs.getString("Image"),
-                        rs.getInt("Sales")  // Số lượng bán
-                );
+                Product p = new Product();
+                p.setProductID(rs.getInt("ProductID"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setImage(rs.getString("Image"));
+                p.setSales(rs.getInt("Sales"));
                 list.add(p);
             }
 
@@ -170,5 +162,14 @@ public class ProductDAO {
             e.printStackTrace();
         }
         return list;
+    }
+    public static int getTotalProducts() {
+        String sql = "SELECT COUNT(*) FROM Product";
+        try(Connection conn = DatabaseConnection.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {e.printStackTrace(); return 0;}
     }
 }
