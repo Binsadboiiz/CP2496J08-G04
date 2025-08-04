@@ -10,7 +10,7 @@ public class ProductDAO {
     private static final String URL =
             "jdbc:sqlserver://localhost:1433;databaseName=CellPhoneStore;encrypt=false;trustServerCertificate=true";
     private static final String USER = "sa";
-    private static final String PASSWORD = "sa";
+    private static final String PASSWORD = "sqladmin";
 
 
     /**
@@ -139,6 +139,40 @@ public class ProductDAO {
         }
         return list;
     }
+
+    /**
+     * 5) Tìm sản phẩm theo tên chính xác
+     */
+    public static Product getProductByName(String productName) {
+        String sql = "SELECT * FROM Product WHERE ProductName = ?";
+        Product product = null;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, productName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    product = new Product(
+                            rs.getInt("ProductID"),
+                            rs.getString("ProductName"),
+                            rs.getString("ProductCode"),
+                            rs.getString("Brand"),
+                            rs.getString("Type"),
+                            rs.getDouble("Price"),
+                            rs.getString("Description"),
+                            rs.getString("Image"),
+                            rs.getString("CreatedAt"),
+                            rs.getString("UpdatedAt")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tìm sản phẩm theo tên: " + e.getMessage());
+        }
+        return product;
+    }
+
 
     public static List<Product> getTopSellingProducts() {
         List<Product> list = new ArrayList<>();

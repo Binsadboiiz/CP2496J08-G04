@@ -4,7 +4,8 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.staff.CreateInvoiceController">
+<BorderPane prefHeight="650.0" prefWidth="820.0" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.staff.CreateInvoiceController">
     <top>
         <Label text="TẠO HÓA ĐƠN BÁN HÀNG" style="-fx-font-size: 24px; -fx-font-weight: bold;" BorderPane.alignment="CENTER"/>
     </top>
@@ -15,6 +16,8 @@
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
             <HBox spacing="10">
+                <Label text="Khách hàng:"/>
+                <ComboBox fx:id="customerComboBox" prefWidth="200" promptText="Chọn khách hàng..."/>
                 <Label text="Tên sản phẩm:"/>
                 <TextField fx:id="productNameField"/>
                 <Label text="Số lượng:"/>

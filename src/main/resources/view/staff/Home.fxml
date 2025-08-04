@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="650.0" prefWidth="820.0"
+            xmlns:fx="http://javafx.com/fxml" fx:controller="controller.staff.HomeController">
+
+    <!-- Thanh trên cùng chứa tiêu đề và thanh tìm kiếm -->
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label text="TRANG CHỦ - DANH SÁCH SẢN PHẨM"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+            <HBox spacing="10">
+                <TextField fx:id="searchField" promptText="Tìm sản phẩm..."/>
+                <Button text="Tìm kiếm" onAction="#handleSearch"/>
+                <Button text="Làm mới" onAction="#handleReset"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Khu vực trung tâm hiển thị sản phẩm động từ FlowPane -->
+    <center>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <FlowPane fx:id="productGrid"
+                          hgap="20"
+                          vgap="20"
+                          prefWrapLength="600"
+                          style="-fx-background-color: #f8f8f8;">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                </FlowPane>
+
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
