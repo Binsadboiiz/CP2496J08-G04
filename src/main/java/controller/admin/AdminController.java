@@ -4,12 +4,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
 import javafx.event.ActionEvent;
 import model.Order;
 
@@ -22,6 +21,8 @@ public class AdminController {
     private AnchorPane contentArea;
     @FXML
     private Button btnLogout;
+    @FXML private Label usernameLabel;
+    @FXML private Label roleLabel;
 
     private void loadUI(String fxml) {
         try {
@@ -46,6 +47,8 @@ public class AdminController {
     }
     @FXML
     private void loadSupplierManagement(ActionEvent event) {loadUI("SupplierManagement");}
+    @FXML
+    private void loadStockEntry(ActionEvent event) {loadUI("StockEntryList");}
 
     @FXML
     private void logout() {
@@ -56,5 +59,10 @@ public class AdminController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    public void setUserInfo(String name, String role) {
+        usernameLabel.setText(name);
+        roleLabel.setText(role);
     }
 }

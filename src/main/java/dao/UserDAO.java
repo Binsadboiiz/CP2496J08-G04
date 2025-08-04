@@ -15,7 +15,7 @@ public class UserDAO {
             stmt.setString(1, u.getUsername());
             stmt.setString(2, u.getPassword());
             stmt.setString(3, u.getRole());
-            stmt.setInt   (4, u.getEmployeeID());
+            stmt.setInt(4, u.getEmployeeID());
 
             int rows = stmt.executeUpdate();
             System.out.println("[DEBUG] insertUser rows affected = " + rows);
@@ -28,9 +28,6 @@ public class UserDAO {
     }
 
 
-
-
-
     // Update role/password/email/status
     public static boolean updateUser(User u) {
         String sql = "UPDATE [User] SET Password=?, Role=? WHERE EmployeeID=?";
@@ -39,7 +36,7 @@ public class UserDAO {
 
             stmt.setString(1, u.getPassword());
             stmt.setString(2, u.getRole());
-            stmt.setInt   (3, u.getEmployeeID());
+            stmt.setInt(3, u.getEmployeeID());
 
             int rows = stmt.executeUpdate();
             System.out.println("[DEBUG] updateUser rows = " + rows);
@@ -64,6 +61,7 @@ public class UserDAO {
             return false;
         }
     }
+
     public static User findByEmployeeID(int empId) {
         String sql = "SELECT Username, Password, Role, EmployeeID "
                 + "FROM [User] WHERE EmployeeID = ?";
@@ -88,5 +86,30 @@ public class UserDAO {
         return null;
     }
 
-
+    public static User loginAndGetUser(String username, String password) {
+        User user = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseConnection.getConnection(); // Sử dụng class DatabaseConnection của bạn
+            String sql = "SELECT * FROM [User] WHERE Username=? AND Password=?";
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                user = new User();
+                user.setUsername(rs.getString("username"));
+                user.setRole(rs.getString("role"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException ex) {}
+            try { if (ps != null) ps.close(); } catch (SQLException ex) {}
+            try { if (conn != null) conn.close(); } catch (SQLException ex) {}
+        }
+        return user;
+    }
 }

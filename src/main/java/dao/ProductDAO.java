@@ -7,19 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDAO {
-    private static final String URL =
-            "jdbc:sqlserver://localhost:1433;databaseName=CellPhoneStore;encrypt=false;trustServerCertificate=true";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "sqladmin";
-
-
     /**
      * 1) Lấy tất cả sản phẩm
      */
     public static List<Product> getAll() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -45,7 +39,7 @@ public class ProductDAO {
     }
     public static Connection getConnection() {
         try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
+            return DatabaseConnection.getConnection();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to connect to DB", e);
         }
@@ -67,7 +61,7 @@ public class ProductDAO {
                   Image
                 ) VALUES(?,?,?,?,?,?,?)
                 """;
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, p.getProductName());
@@ -90,7 +84,7 @@ public class ProductDAO {
      */
     public static boolean delete(int productID) {
         String sql = "DELETE FROM Product WHERE ProductID = ?";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, productID);
@@ -110,7 +104,7 @@ public class ProductDAO {
                 SELECT * FROM Product
                 WHERE ProductName LIKE ? OR ProductCode LIKE ?
                 """;
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             String kw = "%" + keyword + "%";
@@ -139,38 +133,23 @@ public class ProductDAO {
         }
         return list;
     }
-
-    /**
-     * 5) Tìm sản phẩm theo tên chính xác
-     */
-    public static Product getProductByName(String productName) {
-        String sql = "SELECT * FROM Product WHERE ProductName = ?";
-        Product product = null;
-
+    public static boolean update(Product product) {
+        String sql = "UPDATE Product SET ProductName = ?, ProductCode = ?, Brand = ?, Type = ?, Price = ?, Description = ?, Image = ?, UpdatedAt = GETDATE() WHERE ProductID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, productName);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    product = new Product(
-                            rs.getInt("ProductID"),
-                            rs.getString("ProductName"),
-                            rs.getString("ProductCode"),
-                            rs.getString("Brand"),
-                            rs.getString("Type"),
-                            rs.getDouble("Price"),
-                            rs.getString("Description"),
-                            rs.getString("Image"),
-                            rs.getString("CreatedAt"),
-                            rs.getString("UpdatedAt")
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm sản phẩm theo tên: " + e.getMessage());
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, product.getProductName());
+            ps.setString(2, product.getProductCode());
+            ps.setString(3, product.getBrand());
+            ps.setString(4, product.getType());
+            ps.setDouble(5, product.getPrice());
+            ps.setString(6, product.getDescription());
+            ps.setString(7, product.getImage());
+            ps.setInt(8, product.getProductID());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        return product;
     }
 
 
@@ -185,7 +164,7 @@ public class ProductDAO {
     """;
 
 
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
