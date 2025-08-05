@@ -49,4 +49,81 @@ public class StockEntryDetailDAO {
         } catch (Exception e) { e.printStackTrace(); }
         return false;
     }
+
+    // THÊM PHƯƠNG THỨC MỚI: Tính tổng số lượng nhập theo sản phẩm
+    public static int getTotalReceivedByProduct(int productID) {
+        String sql = "SELECT ISNULL(SUM(Quantity), 0) as TotalReceived FROM StockEntryDetail WHERE ProductID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("TotalReceived");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // THÊM PHƯƠNG THỨC MỚI: Lấy tất cả sản phẩm đã nhập với tổng số lượng
+    public static List<StockEntryDetail> getAllProductsWithTotalReceived() {
+        List<StockEntryDetail> list = new ArrayList<>();
+        String sql = """
+            SELECT p.ProductID, p.ProductName, p.ProductCode, p.Brand, p.Price,
+                   ISNULL(SUM(sed.Quantity), 0) as TotalReceived
+            FROM Product p
+            LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
+            GROUP BY p.ProductID, p.ProductName, p.ProductCode, p.Brand, p.Price
+            ORDER BY p.ProductName
+        """;
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                StockEntryDetail detail = new StockEntryDetail();
+                detail.setProductID(rs.getInt("ProductID"));
+                detail.setProductName(rs.getString("ProductName"));
+                detail.setQuantity(rs.getInt("TotalReceived"));
+                list.add(detail);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // THÊM PHƯƠNG THỨC MỚI: Lấy danh sách sản phẩm có số lượng nhập thấp
+    public static List<StockEntryDetail> getLowStockProducts(int threshold) {
+        List<StockEntryDetail> list = new ArrayList<>();
+        String sql = """
+            SELECT p.ProductID, p.ProductName, p.ProductCode, p.Brand, p.Price,
+                   ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
+                   ISNULL(SUM(lrd.Quantity), 0) as TotalLoss,
+                   ISNULL(SUM(sed.Quantity), 0) - ISNULL(SUM(lrd.Quantity), 0) as CurrentStock
+            FROM Product p
+            LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
+            LEFT JOIN LossReportDetail lrd ON p.ProductID = lrd.ProductID
+            GROUP BY p.ProductID, p.ProductName, p.ProductCode, p.Brand, p.Price
+            HAVING ISNULL(SUM(sed.Quantity), 0) - ISNULL(SUM(lrd.Quantity), 0) <= ?
+            ORDER BY CurrentStock ASC
+        """;
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, threshold);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    StockEntryDetail detail = new StockEntryDetail();
+                    detail.setProductID(rs.getInt("ProductID"));
+                    detail.setProductName(rs.getString("ProductName"));
+                    detail.setQuantity(rs.getInt("CurrentStock"));
+                    list.add(detail);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
