@@ -10,8 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-
-
+import java.io.InputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.Locale;
 public class HomeController {
     @FXML private FlowPane productGrid;
     @FXML private TextField searchField;
-
 
     @FXML
     public void initialize() {
@@ -41,14 +39,24 @@ public class HomeController {
         card.setPrefSize(160, 250);
         card.setStyle("-fx-border-color: #ccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 12; -fx-background-color: #fff;");
 
-        // Load ảnh từ resources
         ImageView img = new ImageView();
-        try {
-            String imgName = product.getImage() != null ? product.getImage() : "iphone15.png";
-            Image image = new Image(getClass().getResourceAsStream("/images/" + imgName), 120, 120, true, true);
+        String imgName = product.getImage() != null && !product.getImage().isEmpty() ? product.getImage() : "placeholder.png";
+
+        InputStream imageStream = getClass().getResourceAsStream("/images/" + imgName);
+
+        if (imageStream != null) {
+            Image image = new Image(imageStream, 120, 120, true, true);
             img.setImage(image);
-        } catch (Exception e) {
-            img.setImage(new Image(getClass().getResourceAsStream("/images/iphone15.png"), 120, 120, true, true));
+        } else {
+            System.err.println("Không tìm thấy file ảnh: /images/" + imgName);
+            // Sử dụng hình ảnh mặc định nếu không tìm thấy
+            InputStream defaultImageStream = getClass().getResourceAsStream("/images/placeholder.png");
+            if (defaultImageStream != null) {
+                Image defaultImage = new Image(defaultImageStream, 120, 120, true, true);
+                img.setImage(defaultImage);
+            } else {
+                System.err.println("Không tìm thấy file ảnh mặc định: /images/placeholder.png");
+            }
         }
 
         Label name = new Label(product.getProductName());
@@ -72,7 +80,6 @@ public class HomeController {
         card.getChildren().addAll(img, name, price, detailBtn, addBtn);
         return card;
     }
-
 
     private void showProductDetail(Product product) {
         Stage stage = new Stage();
