@@ -11,11 +11,11 @@
 
 
     <ToolBar fx:id="toolBar" layoutX="14.0" layoutY="-4.0" prefHeight="35.0" prefWidth="230.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="476.0" AnchorPane.topAnchor="-4.0">
-        <Button onAction="#onAddEmployee" text="Add" />
-        <Button onAction="#onEditEmployee" text="Edit" />
-        <Button onAction="#onDeleteEmployee" text="Delete" />
+        <Button onAction="#onAddEmployee" style="-fx-background-color: #2584f8;" text="Add" />
+        <Button onAction="#onEditEmployee" style="-fx-background-color: #00CC00;" text="Edit" />
+        <Button onAction="#onDeleteEmployee" style="-fx-background-color: red;" text="Delete" />
         <Separator />
-        <Button onAction="#onRefresh" text="Refresh" />
+        <Button onAction="#onRefresh" style="-fx-background-color: #3498db;" text="Refresh" />
     </ToolBar>
 
     <TableView fx:id="tableView" layoutX="10.0" layoutY="35.0" prefHeight="497.0" prefWidth="700.0" AnchorPane.bottomAnchor="17.799999999999955" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="35.0">

@@ -12,7 +12,8 @@
 <?import javafx.scene.text.Font?>
 
 
-<BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css"
+<?import javafx.scene.layout.StackPane?>
+<BorderPane prefHeight="700.0" prefWidth="1020.0" stylesheets="@../../css/scenemain.css"
             xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.staff.StaffController">
 
@@ -22,20 +23,18 @@
             <padding>
                 <Insets bottom="10" left="10" right="10" top="20" />
             </padding>
+<!--            info-->
+            <StackPane fx:id="userCard" styleClass="user-card">
+                <VBox alignment="CENTER" spacing="10">
+                    <!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
+                    <Label fx:id="usernameLabel" text="Admin" styleClass="username-label"/>
+                    <Label fx:id="roleLabel" text="Vai Trò" styleClass="role-label"/>
+                </VBox>
+            </StackPane>
 
-            <!-- Logo -->
-            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../../images/register_logo.png" />
-                </image>
-            </ImageView>
-
-            <!-- Info -->
-            <Label text="Nhân viên" textFill="WHITE" />
-            <Label text="Vai Trò" textFill="WHITE" />
 
             <!-- Buttons -->
-            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" styleClass="sidebar-button">
+            <Button fx:id="btnHome" maxWidth="180" text="Home" onAction="#loadHome" styleClass="sidebar-button">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
@@ -71,7 +70,7 @@
 
     <!-- Main Content -->
     <center>
-        <AnchorPane fx:id="contentArea" prefHeight="580.0" prefWidth="800.0" />
+        <AnchorPane fx:id="contentArea" prefHeight="680.0" prefWidth="980.0" />
     </center>
 
 </BorderPane>

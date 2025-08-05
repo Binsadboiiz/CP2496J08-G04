@@ -1,11 +1,79 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import model.Invoice;
+
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
+import java.sql.Date;
+
 
 public class InvoiceDAO {
+
+    public int insertInvoice(Invoice invoice) {
+        String sql = "INSERT INTO Invoice (CustomerID, UserID, Date, TotalAmount, Discount, Status, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, invoice.getCustomerID());
+            stmt.setInt(2, invoice.getUserID());
+            stmt.setTimestamp(3, Timestamp.valueOf(invoice.getDate()));
+            stmt.setBigDecimal(4, invoice.getTotalAmount());
+            stmt.setBigDecimal(5, invoice.getDiscount());
+            stmt.setString(6, invoice.getStatus());
+            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+
+            int rows = stmt.executeUpdate();
+            if (rows > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1); // return generated InvoiceID
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public List<Invoice> getAllInvoices() {
+        List<Invoice> list = new ArrayList<>();
+        String sql = "SELECT * FROM Invoice ORDER BY Date DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Invoice inv = new Invoice();
+                inv.setInvoiceID(rs.getInt("InvoiceID"));
+                inv.setCustomerID(rs.getInt("CustomerID"));
+                inv.setUserID(rs.getInt("UserID"));
+                inv.setDate(rs.getTimestamp("Date").toLocalDateTime());
+                inv.setTotalAmount(rs.getBigDecimal("TotalAmount"));
+                inv.setDiscount(rs.getBigDecimal("Discount"));
+                inv.setStatus(rs.getString("Status"));
+                list.add(inv);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static int countInvoices() {
+        String sql = "SELECT COUNT(*) FROM Invoice";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public static double getTodaysSales() {
         String sql = ""
                 + "SELECT ISNULL(SUM(TotalAmount), 0) "
@@ -21,4 +89,92 @@ public class InvoiceDAO {
             return 0.0;
         }
     }
+
+    public List<Invoice> searchInvoices(String keyword) {
+        List<Invoice> list = new ArrayList<>();
+        String sql = "SELECT i.* FROM Invoice i " +
+                "JOIN Customer c ON i.CustomerID = c.CustomerID " +
+                "WHERE c.CustomerName LIKE ? " +
+                "OR EXISTS (SELECT 1 FROM InvoiceDetail d " +
+                "JOIN Product p ON d.ProductID = p.ProductID " +
+                "WHERE d.InvoiceID = i.InvoiceID AND p.ProductName LIKE ?) " +
+                "ORDER BY i.Date DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String likeKeyword = "%" + keyword + "%";
+            stmt.setString(1, likeKeyword);
+            stmt.setString(2, likeKeyword);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Invoice inv = new Invoice();
+                inv.setInvoiceID(rs.getInt("InvoiceID"));
+                inv.setCustomerID(rs.getInt("CustomerID"));
+                inv.setUserID(rs.getInt("UserID"));
+                inv.setDate(rs.getTimestamp("Date").toLocalDateTime());
+                inv.setTotalAmount(rs.getBigDecimal("TotalAmount"));
+                inv.setDiscount(rs.getBigDecimal("Discount"));
+                inv.setStatus(rs.getString("Status"));
+                list.add(inv);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Invoice> filterInvoices(String customerName, String productName, LocalDate from, LocalDate to) {
+        List<Invoice> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT DISTINCT i.* FROM Invoice i " +
+                        "LEFT JOIN Customer c ON i.CustomerID = c.CustomerID " +
+                        "LEFT JOIN InvoiceDetail d ON i.InvoiceID = d.InvoiceID " +
+                        "LEFT JOIN Product p ON d.ProductID = p.ProductID WHERE 1=1"
+        );
+        List<Object> params = new ArrayList<>();
+
+        if (customerName != null && !customerName.isEmpty()) {
+            sql.append(" AND c.CustomerName LIKE ?");
+            params.add("%" + customerName + "%");
+        }
+        if (productName != null && !productName.isEmpty()) {
+            sql.append(" AND p.ProductName LIKE ?");
+            params.add("%" + productName + "%");
+        }
+        if (from != null) {
+            sql.append(" AND i.Date >= ?");
+            params.add(java.sql.Date.valueOf(from));
+        }
+        if (to != null) {
+            sql.append(" AND i.Date <= ?");
+            params.add(java.sql.Date.valueOf(to));
+        }
+
+        sql.append(" ORDER BY i.Date DESC");
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Invoice inv = new Invoice();
+                inv.setInvoiceID(rs.getInt("InvoiceID"));
+                inv.setCustomerID(rs.getInt("CustomerID"));
+                inv.setUserID(rs.getInt("UserID"));
+                inv.setDate(rs.getTimestamp("Date").toLocalDateTime());
+                inv.setTotalAmount(rs.getBigDecimal("TotalAmount"));
+                inv.setDiscount(rs.getBigDecimal("Discount"));
+                inv.setStatus(rs.getString("Status"));
+                list.add(inv);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 }

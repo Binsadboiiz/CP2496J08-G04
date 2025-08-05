@@ -191,4 +191,31 @@ public class ProductDAO {
             return rs.getInt(1);
         } catch (SQLException e) {e.printStackTrace(); return 0;}
     }
+    public static Product getProductByName(String productName) {
+        String sql = "SELECT * FROM Product WHERE ProductName = ?";
+        Product product = null;
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, productName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    product = new Product(
+                            rs.getInt("ProductID"),
+                            rs.getString("ProductName"),
+                            rs.getString("ProductCode"),
+                            rs.getString("Brand"),
+                            rs.getString("Type"),
+                            rs.getDouble("Price"),
+                            rs.getString("Description"),
+                            rs.getString("Image"),
+                            rs.getString("CreatedAt"),
+                            rs.getString("UpdatedAt")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tìm sản phẩm theo tên: " + e.getMessage());
+        }
+        return product;
+    }
 }

@@ -23,7 +23,7 @@
                 <ComboBox fx:id="cbBrand" promptText="Brand" />
                 <ComboBox fx:id="cbType" promptText="Type" />
                 <Region prefHeight="26.0" prefWidth="151.0" HBox.hgrow="ALWAYS" />
-                <Button onAction="#onRefresh" text="Refresh" />
+                <Button onAction="#onRefresh" style="-fx-background-color: #3498db;" text="Refresh" />
             </HBox>
 
             <!-- Bảng danh sách sản phẩm -->
@@ -45,9 +45,9 @@
 
             <!-- Hàng nút hành động -->
             <HBox alignment="CENTER_RIGHT" spacing="10">
-                <Button onAction="#onAdd" text="Add" />
-                <Button onAction="#onEdit" text="Edit" />
-                <Button onAction="#onDelete" text="Delete" />
+                <Button onAction="#onAdd" style="-fx-background-color: #2584f8;" text="Add" />
+                <Button onAction="#onEdit" style="-fx-background-color: #00CC00;" text="Edit" />
+                <Button onAction="#onDelete" style="-fx-background-color: red;" text="Delete" />
             </HBox>
         </VBox>
     </children>

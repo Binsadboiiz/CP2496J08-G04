@@ -11,10 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="650.0" prefWidth="820.0"
-            xmlns="http://javafx.com/javafx/24.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.admin.DashboardController">
+<AnchorPane prefHeight="650.0" prefWidth="820.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.DashboardController">
 
    <children>
       <!-- Top bar -->
@@ -27,7 +24,7 @@
             <HBox spacing="0.0">
                <children>
                   <TextField fx:id="searchField" prefHeight="26.0" prefWidth="333.0" promptText="Search..." />
-                  <Button fx:id="clearButton" onAction="#onClearSearch" text="✕" />
+                  <Button fx:id="clearButton" onAction="#onClearSearch" style="-fx-background-color: red;" text="✕" />
                </children>
             </HBox>
             <Label style="-fx-font-size:18px;" text="🔔" />
