@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane prefHeight="650.0" prefWidth="820.0" xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.staff.CustomerManagementController">
     <top>
         <VBox spacing="10">
@@ -12,10 +12,10 @@
             </padding>
             <Label text="QUẢN LÝ KHÁCH HÀNG" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
             <HBox spacing="10">
-                <TextField fx:id="searchField" promptText="Tìm theo tên hoặc loại khách"/>
-                <Button text="Tìm kiếm" onAction="#handleSearch"/>
-                <Button text="Làm mới" onAction="#handleReset"/>
-                <Button text="Thêm khách hàng" onAction="#handleAddCustomer"/>
+                <TextField fx:id="searchField" promptText="Tìm theo tên hoặc SĐT"/>
+                <Button text="Tìm kiếm" onAction="#searchCustomer"/>
+                <Button text="Làm mới" onAction="#refresh"/>
+                <Button text="Thêm khách hàng" onAction="#addCustomer"/>
             </HBox>
         </VBox>
     </top>

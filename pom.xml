@@ -16,24 +16,14 @@
     </properties>
 
     <dependencies>
-<<<<<<< HEAD
+
         <!-- JavaFX 24 dependencies -->
-=======
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
             <version>12.2.0.jre11</version> <!-- nếu bạn dùng Java 11 -->
         </dependency>
-        <dependency>
-            <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx</artifactId>
-            <version>8.15</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>9.4.0</version>
-        </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -47,11 +37,7 @@
             <version>12.4.0</version>
         </dependency>
         <!-- Ikonli JavaFX -->
-        <dependency>
-            <groupId>org.kordamp.ikonli</groupId>
-            <artifactId>ikonli-javafx</artifactId>
-            <version>12.4.0</version>
-        </dependency>
+
         <!-- FontAwesome Pack (ví dụ) -->
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
@@ -59,7 +45,6 @@
             <version>12.4.0</version>
         </dependency>
 
->>>>>>> 10c8559b5a3a1d3e7f90ffe3d4242acb068c6c29
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>

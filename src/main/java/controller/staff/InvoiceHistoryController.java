@@ -1,55 +1,69 @@
 package controller.staff;
 
+import dao.InvoiceDAO;
+import model.Invoice;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+import javafx.scene.control.cell.PropertyValueFactory;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class InvoiceHistoryController {
-
-    @FXML private TextField customerFilterField;
-    @FXML private TextField productFilterField;
+    @FXML private TableView<Invoice> invoiceTable;
     @FXML private DatePicker dateFilterPicker;
+    @FXML private TextField customerFilterField, productFilterField;
+    @FXML private TableColumn<Invoice, Integer> invoiceIdColumn;
+    @FXML private TableColumn<Invoice, Integer> customerIdColumn;
+    @FXML private TableColumn<Invoice, Integer> userIdColumn;
+    @FXML private TableColumn<Invoice, String> dateColumn;
+    @FXML private TableColumn<Invoice, String> totalAmountColumn;
+    @FXML private TableColumn<Invoice, String> discountColumn;
+    @FXML private TableColumn<Invoice, String> statusColumn;
 
-    @FXML private TableView<InvoiceRecord> invoiceTable;
-    @FXML private TableColumn<InvoiceRecord, String> invoiceIdColumn;
-    @FXML private TableColumn<InvoiceRecord, String> customerNameColumn;
-    @FXML private TableColumn<InvoiceRecord, String> productListColumn;
-    @FXML private TableColumn<InvoiceRecord, String> dateColumn;
-    @FXML private TableColumn<InvoiceRecord, Double> totalColumn;
-
-    private ObservableList<InvoiceRecord> allInvoices = FXCollections.observableArrayList();
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
     @FXML
     public void initialize() {
-        invoiceIdColumn.setCellValueFactory(data -> data.getValue().invoiceIdProperty());
-        customerNameColumn.setCellValueFactory(data -> data.getValue().customerNameProperty());
-        productListColumn.setCellValueFactory(data -> data.getValue().productListProperty());
-        dateColumn.setCellValueFactory(data -> data.getValue().dateProperty());
-        totalColumn.setCellValueFactory(data -> data.getValue().totalAmountProperty().asObject());
+        invoiceIdColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceID"));
+        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        userIdColumn.setCellValueFactory(new PropertyValueFactory<>("userID"));
+        dateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDate().toLocalDate().toString())
+        );
 
-        // Giả lập dữ liệu hóa đơn
-        allInvoices.addAll(InvoiceRecord.sampleData());
-        invoiceTable.setItems(allInvoices);
+        // Khởi tạo NumberFormat với Locale của Đức để sử dụng dấu chấm cho phần nghìn
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("de", "DE"));
+        numberFormat.setMinimumFractionDigits(0);
+        numberFormat.setMaximumFractionDigits(0);
+
+        totalAmountColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(numberFormat.format(cellData.getValue().getTotalAmount()) + " VND")
+        );
+        discountColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(numberFormat.format(cellData.getValue().getDiscount()) + " VND")
+        );
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        loadInvoices();
+    }
+
+    private void loadInvoices() {
+        invoiceTable.setItems(FXCollections.observableArrayList(invoiceDAO.getAllInvoices()));
     }
 
     @FXML
     private void handleFilter() {
-        String customer = customerFilterField.getText().trim().toLowerCase();
-        String product = productFilterField.getText().trim().toLowerCase();
+        String customer = customerFilterField.getText();
+        String product = productFilterField.getText();
         LocalDate date = dateFilterPicker.getValue();
 
-        List<InvoiceRecord> filtered = allInvoices.stream()
-                .filter(i -> i.getCustomerName().toLowerCase().contains(customer))
-                .filter(i -> i.getProductList().toLowerCase().contains(product))
-                .filter(i -> date == null || i.getDate().equals(date.toString()))
-                .collect(Collectors.toList());
-
-        invoiceTable.setItems(FXCollections.observableArrayList(filtered));
+        List<Invoice> invoices = invoiceDAO.filterInvoices(customer, product, date, date);
+        invoiceTable.setItems(FXCollections.observableArrayList(invoices));
     }
 
     @FXML
@@ -57,6 +71,6 @@ public class InvoiceHistoryController {
         customerFilterField.clear();
         productFilterField.clear();
         dateFilterPicker.setValue(null);
-        invoiceTable.setItems(allInvoices);
+        loadInvoices();
     }
 }
