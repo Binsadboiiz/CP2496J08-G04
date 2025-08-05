@@ -5,7 +5,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import dao.UserDAO;
 
 import java.io.IOException;
 
@@ -13,6 +15,8 @@ public class WarehouseStaffDashboardController {
 
     @FXML
     private StackPane contentArea;
+    @FXML private Label usernameLabel;
+    @FXML private Label roleLabel;
 
     private void loadView(String fxmlFile) {
         try {
@@ -67,5 +71,10 @@ public class WarehouseStaffDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    public void setUserInfo(String name, String role) {
+        usernameLabel.setText(name);
+        roleLabel.setText(role);
     }
 }

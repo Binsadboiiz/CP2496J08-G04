@@ -14,11 +14,8 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-<<<<<<< HEAD
-        Parent root = FXMLLoader.load(getClass().getResource("/view/warehousestaff/WarehouseStaffDashboard.fxml"));
-=======
-        Parent root = FXMLLoader.load(getClass().getResource("/view/staff/SceneStaff.fxml"));
->>>>>>> 48623bdbe06c1d41030e78be161a777827088e4f
+
+        Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
         primaryStage.getIcons().add(
                 new Image(getClass().getResourceAsStream("/images/logo-app.png"))
         );

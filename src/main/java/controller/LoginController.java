@@ -2,6 +2,7 @@ package controller;
 
 import controller.admin.AdminController;
 import controller.staff.StaffController;
+import controller.warehousestaff.WarehouseStaffDashboardController;
 import dao.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -140,9 +141,9 @@ public class LoginController implements Initializable {
                     }
                 } else if ("Warehouse".equalsIgnoreCase(role)) {
                     try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/warehouse/SceneWare.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/warehousestaff/WarehouseStaffDashboard.fxml"));
                         Parent root = loader.load();
-                        AdminController adminController = loader.getController();
+                        WarehouseStaffDashboardController adminController = loader.getController();
                         adminController.setUserInfo(user.getUsername(), user.getRole());
 
                         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

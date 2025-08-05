@@ -184,8 +184,7 @@ FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID);
 INSERT INTO [User] (Username, Password, Role) VALUES ('admin', '123456', 'Admin')
 insert into [User] (Username, Password, Role) values ('staff', '123456', 'Staff')
 insert into [User] (Username, Password, Role) values ('cashier', '123456', 'Cashier')
-<<<<<<< HEAD
-insert into [User] (Username, Password, Role) values ('warehousestaff', '123456', 'Warehousestaff')
+insert into [User] (Username, Password, Role) values ('warehouse', '123456', 'Warehouse')
 
 
 CREATE TABLE LossReport (
@@ -204,6 +203,4 @@ LossDate DATETIME DEFAULT GETDATE(),
 PRIMARY KEY (ReportID, ProductID),
 FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
 );
-=======
-insert into [User] (Username, Password, Role) values ('warehouse', '123456', 'Warehouse')
->>>>>>> 48623bdbe06c1d41030e78be161a777827088e4f
+
