@@ -1,0 +1,91 @@
+/* --- Tổng thể nền sáng --- */
+.anchor-pane {
+    -fx-background-color: linear-gradient(to bottom, #f4f8fb 85%, #e9f2fa 100%);
+}
+
+/* --- Toolbar (dãy nút) --- */
+.tool-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 14 0 12 10;
+    -fx-spacing: 10;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: transparent transparent #e0e7ef transparent;
+    -fx-effect: dropshadow(gaussian, #c6e2fa44, 3, 0.10, 0, 2);
+}
+.button {
+    -fx-background-radius: 10;
+    -fx-font-size: 15px;
+    -fx-font-family: "Montserrat", Arial, sans-serif;
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+    -fx-padding: 6 22 6 22;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, #c3dafe77, 4, 0.10, 0, 2);
+    transition: box-shadow 0.15s;
+}
+.button:hover { opacity: 0.89; }
+.button[text="Edit"], .btn-edit {
+    -fx-background-color: #FFD600;   /* Vàng nhẹ, không gắt */
+    -fx-text-fill: #333;
+    -fx-font-weight: 700;
+}
+.button[text="Edit"]:hover, .btn-edit:hover {
+    -fx-background-color: #ffe066;   /* Vàng nhạt hơn khi hover */
+}
+.button[text="Refresh"], .btn-refresh {
+    -fx-background-color: #90caf9;  /* Xanh dương nhạt */
+    -fx-text-fill: #333;
+}
+.button[text="Refresh"]:hover, .btn-refresh:hover {
+    -fx-background-color: #cbe7fd;
+}
+
+.button[text="Add"], .btn-add {
+    -fx-background-color: #42A5F5;   /* Xanh dương dịu */
+}
+.button[text="Add"]:hover, .btn-add:hover {
+    -fx-background-color: #90caf9;
+}
+.button[text="Delete"], .btn-delete {
+    -fx-background-color: #ff6363;   /* Đỏ dịu */
+}
+.button[text="Delete"]:hover, .btn-delete:hover {
+    -fx-background-color: #ff9696;
+}
+
+
+/* --- TableView cực mượt --- */
+.table-view {
+    -fx-background-radius: 16px;
+    -fx-background-color: #fff;
+    -fx-border-radius: 16px;
+    -fx-border-color: #2584f8;
+    -fx-padding: 8 8 8 8;
+    -fx-effect: dropshadow(gaussian, #b3e5fc66, 6, 0.08, 0, 3);
+}
+.table-view .column-header-background {
+    -fx-background-color: #f2f9fe;
+    -fx-background-radius: 14px 14px 0 0;
+}
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+}
+.table-view .table-cell {
+    -fx-font-size: 16px;
+    -fx-text-fill: #23272e;
+    -fx-padding: 8 4 8 16;
+}
+.table-view .column-header .label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2584f8;
+    -fx-font-family: "Montserrat", Arial, sans-serif;
+}
+.table-row-cell:selected {
+    -fx-background-color: #d6f5e7 !important;
+}
+.table-row-cell:empty {
+    -fx-background-color: #f5f8fa;
+}

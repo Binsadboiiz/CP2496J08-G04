@@ -34,6 +34,8 @@ public class AdminController {
         }
     }
     @FXML
+    private void initialize() {loadUI("Dashboard");}
+    @FXML
     private void loadEmployeeManagement(ActionEvent event) {
         loadUI("EmployeeManagement");
     }

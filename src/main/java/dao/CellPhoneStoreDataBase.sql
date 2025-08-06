@@ -14,7 +14,7 @@ CREATE TABLE Customer
 (
     CustomerID    INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
     FullName      VARCHAR(100)                   NOT NULL,
-    Phone         VARCHAR(15),
+    Phone         VARCHAR(15) unique,
     Email         VARCHAR(50),
     Address       VARCHAR(200),
     LoyaltyPoints INT DEFAULT 0
