@@ -204,7 +204,6 @@ PRIMARY KEY (ReportID, ProductID),
 FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
 );
 
-GO
 CREATE VIEW vw_ProfitReport AS
 SELECT
     i.InvoiceID,
@@ -275,7 +274,7 @@ CREATE TABLE SalaryConfig (
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
-USE CellPhoneStore;
+
 CREATE TABLE Promotion (
     PromotionID INT IDENTITY(1,1) PRIMARY KEY,
     PromotionName NVARCHAR(255),
