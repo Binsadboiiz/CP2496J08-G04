@@ -204,3 +204,83 @@ PRIMARY KEY (ReportID, ProductID),
 FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
 );
 
+GO
+CREATE VIEW vw_ProfitReport AS
+SELECT
+    i.InvoiceID,
+    i.Date AS InvoiceDate,
+    SUM(id.Quantity * (id.UnitPrice - se.UnitCost)) AS Profit
+FROM Invoice i
+JOIN InvoiceDetail id ON i.InvoiceID = id.InvoiceID
+JOIN StockEntryDetail se ON id.ProductID = se.ProductID
+GROUP BY i.InvoiceID, i.Date;
+
+CREATE TABLE ProductReturn (
+    ReturnID INT PRIMARY KEY IDENTITY(1,1),
+    InvoiceID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    ReturnDate DATETIME DEFAULT GETDATE(),
+    Reason NVARCHAR(500),
+    FOREIGN KEY (InvoiceID) REFERENCES Invoice(InvoiceID),
+    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+);
+CREATE TABLE SalaryHistory (
+    SalaryID INT PRIMARY KEY IDENTITY(1,1),
+    EmployeeID INT NOT NULL,
+    Month INT NOT NULL,
+    Year INT NOT NULL,
+    BasicSalary DECIMAL(18, 2) NOT NULL,
+    WorkingDays INT NOT NULL,
+    Bonus DECIMAL(18, 2) NOT NULL,
+    Penalty DECIMAL(18, 2) NOT NULL,
+    TotalSalary DECIMAL(18, 2) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_SalaryHistory_Employee FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+);
+
+CREATE TABLE ReturnPolicy (
+    PolicyID INT PRIMARY KEY IDENTITY(1,1),
+    PolicyName VARCHAR(100) NOT NULL,
+    Description NVARCHAR(500),
+    DaysAllowed INT NOT NULL CHECK (DaysAllowed >= 0),
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME
+);
+
+CREATE TABLE ControlPanelConfig (
+    ConfigID INT PRIMARY KEY IDENTITY(1,1),
+    ConfigName VARCHAR(100) NOT NULL,
+    ConfigValue VARCHAR(200) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME
+);
+
+CREATE TABLE RevenueReports (
+    ReportID INT PRIMARY KEY IDENTITY(1,1),
+    ReportType VARCHAR(50) NOT NULL CHECK (ReportType IN ('Monthly', 'Yearly')),
+    ReportDate DATE NOT NULL,
+    TotalRevenue DECIMAL(18, 2) NOT NULL,
+    TotalInvoices INT NOT NULL,
+    TopSellingProductID INT,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (TopSellingProductID) REFERENCES Product(ProductID)
+);
+
+
+CREATE TABLE SalaryConfig (
+    ConfigID INT PRIMARY KEY IDENTITY(1,1),
+    ConfigName VARCHAR(100) NOT NULL,
+    ConfigValue DECIMAL(18,2) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+USE CellPhoneStore;
+CREATE TABLE Promotion (
+    PromotionID INT IDENTITY(1,1) PRIMARY KEY,
+    PromotionName NVARCHAR(255),
+    AppliedProductID INT,
+    DiscountPercent FLOAT,
+    StartDate DATE,
+    EndDate DATE
+);
