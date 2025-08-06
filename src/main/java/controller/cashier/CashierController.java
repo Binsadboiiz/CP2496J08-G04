@@ -1,108 +1,55 @@
 package controller.cashier;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import model.Order;
-import model.RevenueReport;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CashierController {
 
-    @FXML private AnchorPane contentArea;
-    @FXML private Button btnLogout;
-
-    @FXML private TextField searchField;
-    @FXML private Button clearButton;
-    @FXML private TableView<Order> orderTable;
-    @FXML private TableColumn<Order, String> colOrderId;
-    @FXML private TableColumn<Order, String> colCustomer;
-    @FXML private TableColumn<Order, String> colStatus;
-    @FXML private TableColumn<Order, String> colAmount;
-    @FXML private TableColumn<Order, String> colDate;
+    @FXML
+    private AnchorPane contentArea;
     @FXML private Label usernameLabel;
     @FXML private Label roleLabel;
 
     @FXML
-    private void onClearSearch() {
-        searchField.clear();
+    void loadControlPanel(ActionEvent event) throws IOException {
+        loadPage("/view/cashier/ControlPanelConfig.fxml");
     }
 
-    /**
-     * Load UI into contentArea and return FXMLLoader for controller access
-     */
-    private FXMLLoader loadUI(String fxml) {
+    @FXML
+    void loadReturnPolicy(ActionEvent event) throws IOException {
+        loadPage("/view/cashier/ReturnPolicy.fxml");
+    }
+
+    @FXML
+    void loadPromotionManagement(ActionEvent event) throws IOException {
+        loadPage("/view/cashier/PomotionManagement.fxml");
+    }
+
+    @FXML
+    void loadRevenueReports(ActionEvent event) throws IOException {
+        loadPage("/view/cashier/RevenueReport.fxml");
+    }
+
+    @FXML
+    void loadSalaryCalculation(ActionEvent event) throws IOException {
+        loadPage("/view/cashier/SalaryHistory.fxml");
+    }
+
+    @FXML
+    void logout(ActionEvent event) {
+        System.exit(0);
+    }
+
+    public void loadPage(String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cashier/" + fxml + ".fxml"));
-            Parent root = loader.load();
-            contentArea.getChildren().setAll(root);
-            AnchorPane.setTopAnchor(root, 10.0);
-            AnchorPane.setBottomAnchor(root, 10.0);
-            AnchorPane.setLeftAnchor(root, 10.0);
-            AnchorPane.setRightAnchor(root, 10.0);
-            return loader;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    @FXML
-    private void initialize() {
-        loadUI("ControlPanel");
-    }
-    @FXML
-    private void loadControlPanel() {
-        loadUI("ControlPanel");
-    }
-
-    @FXML
-    private void loadPromotionManagement() {
-        loadUI("PromotionManagement");
-    }
-
-    @FXML
-    private void loadReturnPolicy() {
-        loadUI("ReturnPolicy");
-    }
-
-    /**
-     * Load Revenue Reports View & Pass Data to Controller
-     */
-    @FXML
-    private void loadRevenueReports() {
-        FXMLLoader loader = loadUI("RevenueReports");
-        if (loader != null) {
-            RevenueReportsController controller = loader.getController();
-            List<RevenueReport> reports = fetchDetailedRevenueReports();
-            controller.loadData(reports);
-        }
-    }
-
-    private List<RevenueReport> fetchDetailedRevenueReports() {
-        List<RevenueReport> reports = new ArrayList<>();
-        reports.add(new RevenueReport("2025-07-25", "iPhone 15", 5000.0, "Credit Card"));
-        reports.add(new RevenueReport("2025-07-26", "Samsung S24", 7500.0, "Cash"));
-        return reports;
-    }
-
-    @FXML
-    private void loadCalculateSalary() {
-        loadUI("CalculatorSalary");
-    }
-
-    @FXML
-    private void logout() {
-        try {
-            Stage stage = (Stage) btnLogout.getScene().getWindow();
-            Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
-            stage.setScene(new Scene(root));
+            Parent pane = FXMLLoader.load(getClass().getResource(fxmlPath));
+            contentArea.getChildren().setAll(pane);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,5 +58,14 @@ public class CashierController {
     public void setUserInfo(String name, String role) {
         usernameLabel.setText(name);
         roleLabel.setText(role);
+    }
+
+    public void loadControlPanel() {
+        try {
+            Parent pane = FXMLLoader.load(getClass().getResource("/view/cashier/ControlPanelConfig.fxml"));
+            contentArea.getChildren().setAll(pane);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

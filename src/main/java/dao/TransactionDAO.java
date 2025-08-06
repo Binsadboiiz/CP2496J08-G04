@@ -1,27 +1,37 @@
 package dao;
 
 import model.Transaction;
-
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionDAO {
+    public static List<Transaction> getAllTransactions() {
+        List<Transaction> list = new ArrayList<>();
+        String sql = "SELECT i.InvoiceID, c.CustomerName, i.Date, SUM(id.Quantity * id.UnitPrice) AS TotalAmount " +
+                "FROM Invoice i " +
+                "JOIN Customer c ON i.CustomerID = c.CustomerID " +
+                "JOIN InvoiceDetail id ON i.InvoiceID = id.InvoiceID " +
+                "GROUP BY i.InvoiceID, c.CustomerName, i.Date";
 
-    public static List<Transaction> getRecentTransactions() {
-        List<Transaction> transactions = new ArrayList<>();
-        transactions.add(new Transaction(1001, "Nguyễn Văn A", "2025-07-28 10:00", 500000, "Completed"));
-        transactions.add(new Transaction(1002, "Trần Thị B", "2025-07-28 11:30", 750000, "Completed"));
-        transactions.add(new Transaction(1003, "Lê Văn C", "2025-07-28 12:45", 250000, "Pending"));
-        return transactions;
-    }
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
-    public static double getTodayRevenue() {
-        // Dummy data: Tổng doanh thu hôm nay
-        return 1500000; // 1,500,000 VND
-    }
+            while (rs.next()) {
+                Transaction t = new Transaction(
+                        rs.getInt("InvoiceID"),
+                        rs.getString("CustomerName"),
+                        rs.getDate("Date").toLocalDate(),
+                        rs.getDouble("TotalAmount")
+                );
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-    public static int getTodayTransactionCount() {
-        // Dummy data: Số lượng giao dịch hôm nay
-        return 3;
+        return list;
     }
 }

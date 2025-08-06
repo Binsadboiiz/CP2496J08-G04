@@ -109,4 +109,53 @@ public class EmployeeDAO {
             return rs.getInt(1);
         } catch (SQLException e) {e.printStackTrace(); return 0;}
     }
+    public static List<String> getAllEmployeeNames() {
+        List<String> employeeNames = new ArrayList<>();
+        String sql = "SELECT Name FROM Employee";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                employeeNames.add(rs.getString("Name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return employeeNames;
+    }
+
+    // Lấy EmployeeID từ Name
+    public static int getEmployeeIDByName(String name) {
+        String sql = "SELECT EmployeeID FROM Employee WHERE Name = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("EmployeeID");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Không tìm thấy
+    }
+    public static String getEmployeeNameByID(int employeeID) {
+        String sql = "SELECT Name FROM Employee WHERE EmployeeID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, employeeID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "Unknown";
+    }
 }

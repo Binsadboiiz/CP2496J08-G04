@@ -1,104 +1,97 @@
 package controller.cashier;
 
+import dao.ProductDAO;
+import dao.PromotionDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.*;
+import model.Promotion;
+import java.time.LocalDate;
 
 public class PromotionManagementController {
 
-    @FXML private TableView<Promotion> tblPromotions;
-    @FXML private TableColumn<Promotion, String> colName;
-    @FXML private TableColumn<Promotion, String> colDescription;
-    @FXML private TableColumn<Promotion, String> colStartDate;
-    @FXML private TableColumn<Promotion, String> colEndDate;
-    @FXML private TableColumn<Promotion, String> colStatus;
+    @FXML private TextField promotionNameField, discountField;
+    @FXML private ComboBox<String> productNameComboBox;
+    @FXML private DatePicker startDatePicker, endDatePicker;
+    @FXML private TableView<Promotion> promotionTable;
+    @FXML private TableColumn<Promotion, String> promotionNameColumn;
+    @FXML private TableColumn<Promotion, Integer> productIDColumn;
+    @FXML private TableColumn<Promotion, Double> discountColumn;
+    @FXML private TableColumn<Promotion, LocalDate> startDateColumn, endDateColumn;
 
-    @FXML private TextField txtName;
-    @FXML private TextField txtDescription;
-    @FXML private TextField txtStartDate;
-    @FXML private TextField txtEndDate;
-    @FXML private TextField txtStatus;
-
-    private ObservableList<Promotion> promotions = FXCollections.observableArrayList();
+    private ObservableList<Promotion> promotionList;
 
     @FXML
     public void initialize() {
-        setupTableColumns();
-        loadDummyData();
-    }
+        productNameComboBox.setItems(FXCollections.observableArrayList(ProductDAO.getAllProductNames()));
+        productNameComboBox.setEditable(true);
+        loadPromotions();
 
-    private void setupTableColumns() {
-        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
-        colEndDate.setCellValueFactory(new PropertyValueFactory<>("endDate"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-    }
-
-    private void loadDummyData() {
-        promotions.addAll(
-                new Promotion("Summer promotion", "20% off all products", "01/06/2023", "30/06/2025", "took place"),
-                new Promotion("Buy 1 Get 1 Free", "Buy any 1 product, get 1 free of the same type", "01/07/2025", "15/07/2025", "took place"),
-                new Promotion("Birthday discount", "15% discount for customers whose birthday is this month", "01/07/2025", "31/07/2025", "Ongoing"),
-                new Promotion("Year-end promotion", "30% off all products for the end of year holidays", "15/12/2025", "31/12/2025", "Coming soon")
-        );
-        tblPromotions.setItems(promotions);
+        promotionNameColumn.setCellValueFactory(cell -> cell.getValue().promotionNameProperty());
+        productIDColumn.setCellValueFactory(cell -> cell.getValue().appliedProductIDProperty().asObject());
+        discountColumn.setCellValueFactory(cell -> cell.getValue().discountPercentProperty().asObject());
+        startDateColumn.setCellValueFactory(cell -> cell.getValue().startDateProperty());
+        endDateColumn.setCellValueFactory(cell -> cell.getValue().endDateProperty());
     }
 
     @FXML
-    private void addPromotion() {
-        String name = txtName.getText();
-        String description = txtDescription.getText();
-        String startDate = txtStartDate.getText();
-        String endDate = txtEndDate.getText();
-        String status = txtStatus.getText();
+    private void handleAddPromotion() {
+        String promoName = promotionNameField.getText();
+        String selectedProduct = productNameComboBox.getEditor().getText();
 
-        if (!name.isEmpty() && !description.isEmpty() && !startDate.isEmpty() && !endDate.isEmpty() && !status.isEmpty()) {
-            Promotion newPromotion = new Promotion(name, description, startDate, endDate, status);
-            promotions.add(newPromotion);
+        if (promoName.isEmpty() || selectedProduct.isEmpty() || discountField.getText().isEmpty()
+                || startDatePicker.getValue() == null || endDatePicker.getValue() == null) {
+            showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin.");
+            return;
+        }
 
-            txtName.clear();
-            txtDescription.clear();
-            txtStartDate.clear();
-            txtEndDate.clear();
-            txtStatus.clear();
+        double discount;
+        try {
+            discount = Double.parseDouble(discountField.getText());
+        } catch (NumberFormatException e) {
+            showAlert("Lỗi", "Giảm giá phải là số.");
+            return;
+        }
 
-            System.out.println("Promotion added: " + name);
+        LocalDate startDate = startDatePicker.getValue();
+        LocalDate endDate = endDatePicker.getValue();
+
+        int productID = ProductDAO.getProductIDByName(selectedProduct);
+        if (productID == -1) {
+            showAlert("Lỗi", "Không tìm thấy sản phẩm.");
+            return;
+        }
+
+        Promotion promo = new Promotion(0, promoName, productID, discount, startDate, endDate);
+        boolean success = PromotionDAO.insertPromotion(promo);
+        if (success) {
+            showAlert("Thành Công", "Đã thêm chương trình khuyến mãi.");
+            loadPromotions();
+            clearForm();
         } else {
-            System.out.println("Please fill in all information.");
+            showAlert("Lỗi", "Không thể thêm chương trình khuyến mãi.");
         }
     }
 
-    @FXML
-    private void deletePromotion() {
-        Promotion selectedPromotion = tblPromotions.getSelectionModel().getSelectedItem();
-        if (selectedPromotion != null) {
-            promotions.remove(selectedPromotion);
-            System.out.println("Promotion removed: " + selectedPromotion.getName());
-        } else {
-            System.out.println("Please select a promotion to delete.");
-        }
+    private void loadPromotions() {
+        promotionList = FXCollections.observableArrayList(PromotionDAO.getAllPromotions());
+        promotionTable.setItems(promotionList);
     }
 
-    public static class Promotion {
-        private final String name, description, startDate, endDate, status;
+    private void clearForm() {
+        promotionNameField.clear();
+        discountField.clear();
+        productNameComboBox.getSelectionModel().clearSelection();
+        productNameComboBox.getEditor().clear();
+        startDatePicker.setValue(null);
+        endDatePicker.setValue(null);
+    }
 
-        public Promotion(String name, String description, String startDate, String endDate, String status) {
-            this.name = name;
-            this.description = description;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.status = status;
-        }
-
-        public String getName() { return name; }
-        public String getDescription() { return description; }
-        public String getStartDate() { return startDate; }
-        public String getEndDate() { return endDate; }
-        public String getStatus() { return status; }
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

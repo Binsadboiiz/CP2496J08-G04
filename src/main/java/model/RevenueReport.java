@@ -1,28 +1,26 @@
-// src/model/RevenueReport.java
 package model;
 
-public class RevenueReport {
-    private String date;
-    private String product;
-    private double amount;
-    private String paymentMethod;
+import java.time.LocalDate;
 
-    public RevenueReport(String date, String product, double amount, String paymentMethod) {
-        this.date = date;
-        this.product = product;
-        this.amount = amount;
-        this.paymentMethod = paymentMethod;
+public class RevenueReport {
+    private int reportID;
+    private String reportType;
+    private LocalDate reportDate;
+    private double totalRevenue;
+    private int totalInvoices;
+
+    public RevenueReport(int reportID, String reportType, LocalDate reportDate, double totalRevenue, int totalInvoices) {
+        this.reportID = reportID;
+        this.reportType = reportType;
+        this.reportDate = reportDate;
+        this.totalRevenue = totalRevenue;
+        this.totalInvoices = totalInvoices;
     }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
-
-    public String getProduct() { return product; }
-    public void setProduct(String product) { this.product = product; }
-
-    public double getAmount() { return amount; }
-    public void setAmount(double amount) { this.amount = amount; }
-
-    public String getPaymentMethod() { return paymentMethod; }
-    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    // Getters and Setters
+    public int getReportID() { return reportID; }
+    public String getReportType() { return reportType; }
+    public LocalDate getReportDate() { return reportDate; }
+    public double getTotalRevenue() { return totalRevenue; }
+    public int getTotalInvoices() { return totalInvoices; }
 }

@@ -12,16 +12,18 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.StackPane?>
-<BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.cashier.CashierController">
+<BorderPane prefHeight="700.0" prefWidth="1020.0"
+            stylesheets="@../../css/scenemain.css"
+            xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.cashier.CashierController">
 
     <!-- Sidebar -->
     <left>
-        <VBox id="sidebar" fx:id="sidebar" alignment="TOP_CENTER" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
+        <VBox id="sidebar" fx:id="sidebar" alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
             <padding>
-                <Insets top="20.0" right="10.0" bottom="10.0" left="10.0" />
+                <Insets bottom="10" left="10" right="10" top="20" />
             </padding>
 
-<!--            user info-->
             <StackPane fx:id="userCard" styleClass="user-card">
                 <VBox alignment="CENTER" spacing="10">
                     <!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
@@ -30,52 +32,48 @@
                 </VBox>
             </StackPane>
 
-            <!-- Navigation Buttons -->
-            <Button fx:id="btnHome" maxWidth="180.0" onAction="#loadControlPanel" styleClass="sidebar-button" text="Control Panel">
+            <Button fx:id="btnControlPanelConfig" maxWidth="180" onAction="#loadControlPanel" styleClass="sidebar-button" text="ControlPanelConfig">
                 <font>
-                    <Font name="Times New Roman Bold" size="18.0" />
+                    <Font name="Times New Roman Bold" size="18" />
                 </font>
             </Button>
 
-            <Button fx:id="btnPromotion" maxWidth="180.0" onAction="#loadPromotionManagement" styleClass="sidebar-button" text="Promotion Management">
+            <Button fx:id="btnReturnPolicy" maxWidth="180" onAction="#loadReturnPolicy" styleClass="sidebar-button" text="Return Policy">
                 <font>
-                    <Font name="Times New Roman Bold" size="18.0" />
+                    <Font name="Times New Roman Bold" size="18" />
                 </font>
             </Button>
 
-            <Button fx:id="btnPolicy" maxWidth="180.0" onAction="#loadReturnPolicy" styleClass="sidebar-button" text="Return Policy">
+            <Button fx:id="btnPromotion" maxWidth="180" onAction="#loadPromotionManagement" styleClass="sidebar-button" text="Promotion">
                 <font>
-                    <Font name="Times New Roman Bold" size="18.0" />
+                    <Font name="Times New Roman Bold" size="18" />
                 </font>
             </Button>
 
-            <Button fx:id="btnReports" maxWidth="180.0" onAction="#loadRevenueReports" styleClass="sidebar-button" text="Revenue Reports">
+            <Button fx:id="btnRevenueReport" maxWidth="180" onAction="#loadRevenueReports" styleClass="sidebar-button" text="Revenue Report">
                 <font>
-                    <Font name="Times New Roman Bold" size="18.0" />
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+            <Button fx:id="btnSalaryHistory" maxWidth="180" onAction="#loadSalaryCalculation" styleClass="sidebar-button" text="Salary History">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
                 </font>
             </Button>
 
-            <Button fx:id="btnSalary" maxWidth="180.0" onAction="#loadCalculateSalary" styleClass="sidebar-button" text="Calculate Salary">
-                <font>
-                    <Font name="Times New Roman Bold" size="18.0" />
-                </font>
-            </Button>
-
-            <!-- Spacer to push logout button to bottom -->
             <Pane VBox.vgrow="ALWAYS" />
 
-            <!-- Logout Button -->
-            <Button fx:id="btnLogout" maxWidth="180.0" onAction="#logout" styleClass="logout-button" text="Logout">
+            <Button fx:id="btnLogout" maxWidth="180" onAction="#logout" styleClass="logout-button" text="Logout">
                 <font>
-                    <Font name="Times New Roman Bold" size="18.0" />
+                    <Font name="Times New Roman Bold" size="18" />
                 </font>
             </Button>
         </VBox>
     </left>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <center>
-        <AnchorPane fx:id="contentArea" prefHeight="580.0" prefWidth="740.0" />
+        <AnchorPane fx:id="contentArea" prefHeight="680" prefWidth="980.0" />
     </center>
 
 </BorderPane>
