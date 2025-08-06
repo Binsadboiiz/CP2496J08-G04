@@ -27,6 +27,8 @@ public class CashierController {
     @FXML private TableColumn<Order, String> colStatus;
     @FXML private TableColumn<Order, String> colAmount;
     @FXML private TableColumn<Order, String> colDate;
+    @FXML private Label usernameLabel;
+    @FXML private Label roleLabel;
 
     @FXML
     private void onClearSearch() {
@@ -41,17 +43,20 @@ public class CashierController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cashier/" + fxml + ".fxml"));
             Parent root = loader.load();
             contentArea.getChildren().setAll(root);
-            AnchorPane.setTopAnchor(root, 0.0);
-            AnchorPane.setBottomAnchor(root, 0.0);
-            AnchorPane.setLeftAnchor(root, 0.0);
-            AnchorPane.setRightAnchor(root, 0.0);
+            AnchorPane.setTopAnchor(root, 10.0);
+            AnchorPane.setBottomAnchor(root, 10.0);
+            AnchorPane.setLeftAnchor(root, 10.0);
+            AnchorPane.setRightAnchor(root, 10.0);
             return loader;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
-
+    @FXML
+    private void initialize() {
+        loadUI("ControlPanel");
+    }
     @FXML
     private void loadControlPanel() {
         loadUI("ControlPanel");
@@ -101,5 +106,10 @@ public class CashierController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    public void setUserInfo(String name, String role) {
+        usernameLabel.setText(name);
+        roleLabel.setText(role);
     }
 }

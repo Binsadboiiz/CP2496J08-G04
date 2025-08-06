@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.cashier.CashierController">
 
     <!-- Sidebar -->
@@ -20,16 +21,14 @@
                 <Insets top="20.0" right="10.0" bottom="10.0" left="10.0" />
             </padding>
 
-            <!-- Logo -->
-            <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../../images/register_logo.png" />
-                </image>
-            </ImageView>
-
-            <!-- User Info -->
-            <Label text="Thu Ngân" textFill="WHITE" />
-            <Label text="Vai Trò" textFill="WHITE" />
+<!--            user info-->
+            <StackPane fx:id="userCard" styleClass="user-card">
+                <VBox alignment="CENTER" spacing="10">
+                    <!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
+                    <Label fx:id="usernameLabel" text="Admin" styleClass="username-label"/>
+                    <Label fx:id="roleLabel" text="Vai Trò" styleClass="role-label"/>
+                </VBox>
+            </StackPane>
 
             <!-- Navigation Buttons -->
             <Button fx:id="btnHome" maxWidth="180.0" onAction="#loadControlPanel" styleClass="sidebar-button" text="Control Panel">
