@@ -134,17 +134,16 @@ public class ProductDAO {
         return list;
     }
     public static boolean update(Product product) {
-        String sql = "UPDATE Product SET ProductName = ?, ProductCode = ?, Brand = ?, Type = ?, Price = ?, Description = ?, Image = ?, UpdatedAt = GETDATE() WHERE ProductID = ?";
+        String sql = "UPDATE Product SET ProductName = ?, Brand = ?, Type = ?, Price = ?, Description = ?, Image = ?, UpdatedAt = GETDATE() WHERE ProductID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, product.getProductName());
-            ps.setString(2, product.getProductCode());
-            ps.setString(3, product.getBrand());
-            ps.setString(4, product.getType());
-            ps.setDouble(5, product.getPrice());
-            ps.setString(6, product.getDescription());
-            ps.setString(7, product.getImage());
-            ps.setInt(8, product.getProductID());
+            ps.setString(2, product.getBrand());
+            ps.setString(3, product.getType());
+            ps.setDouble(4, product.getPrice());
+            ps.setString(5, product.getDescription());
+            ps.setString(6, product.getImage());
+            ps.setInt(7, product.getProductID());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();

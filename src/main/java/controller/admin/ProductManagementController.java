@@ -165,11 +165,11 @@ public class ProductManagementController implements Initializable {
     private void onEdit() {
         Product selected = tblProducts.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Vui lòng chọn sản phẩm cần sửa!");
+            showAlert("Please select the product you want to repair!");
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/AddProduct.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/EditProduct.fxml"));
             Parent root = loader.load();
             AddProductController controller = loader.getController();
             controller.setEditProduct(selected);
@@ -178,7 +178,10 @@ public class ProductManagementController implements Initializable {
             dialog.setScene(new Scene(root));
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setResizable(false);
+            controller.setDialogStage(dialog);
             dialog.showAndWait();
+            loadData();
+            tblProducts.setItems(masterList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -190,7 +193,7 @@ public class ProductManagementController implements Initializable {
     private void onDelete(ActionEvent e) {
         Product sel = tblProducts.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            showAlert("Vui lòng chọn sản phẩm để delete.");
+            showAlert("Please select a product to delete.");
             return;
         }
         boolean ok = DialogUtil.confirm("Confirm", "Are you sure you want to delete this product?");

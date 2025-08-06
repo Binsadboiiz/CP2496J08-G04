@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import model.Product;
 import dao.ProductDAO;
-import util.DialogUtil;  // nếu bạn có class util này
 
 public class AddProductController {
     @FXML private TextField txtName;
@@ -18,117 +17,105 @@ public class AddProductController {
     @FXML private TextField txtPrice;
     @FXML private TextField txtDescription;
     @FXML private TextField txtImage;
-    private Product editingProduct = null;
 
     private Stage dialogStage;
+    private Product editingProduct = null;
 
-    /** Setter để AdminController truyền stage vào */
-    public void setDialogStage(Stage stage) {
-        this.dialogStage = stage;
+    public void setDialogStage(Stage dialogStage) {
+        this.dialogStage = dialogStage;
     }
 
+    /** Gọi khi mở dialog cho EDIT */
+    public void setEditProduct(Product product) {
+        this.editingProduct = product;
+        if (product != null) {
+            txtName.setText(product.getProductName());
+            txtCode.setText(product.getProductCode());
+            txtBrand.setText(product.getBrand());
+            txtType.setText(product.getType());
+            txtPrice.setText(String.valueOf(product.getPrice()));
+            txtDescription.setText(product.getDescription());
+            txtImage.setText(product.getImage());
+        }
+    }
+
+    /** Gọi khi mở dialog cho ADD (không cần setEditProduct) */
     @FXML
     private void onSave(ActionEvent e) {
+        String name = txtName.getText().trim();
+        String code = txtCode.getText().trim();
+        String brand = txtBrand.getText().trim();
+        String type = txtType.getText().trim();
+        String desc = txtDescription.getText().trim();
+        String img = txtImage.getText().trim();
+        double price;
+
         try {
-            // 1. Đọc dữ liệu từ form
-            String name  = txtName.getText().trim();
-            String code  = txtCode.getText().trim();
-            String brand = txtBrand.getText().trim();
-            String type  = txtType.getText().trim();
-            double price = Double.parseDouble(txtPrice.getText().trim());
-            String desc  = txtDescription.getText().trim();
-            String img   = txtImage.getText().trim();
-
-            // 2. Tạo model và lưu vào DB
-            Product p = new Product();
-            p.setProductName(name);
-            p.setProductCode(code);
-            p.setBrand(brand);
-            p.setType(type);
-            p.setPrice(price);
-            p.setDescription(desc);
-            p.setImage(img);
-            // CreatedAt, UpdatedAt sẽ mặc định DB set GETDATE()
-
-            boolean ok = ProductDAO.insert(p);
-            if (ok) {
-                DialogUtil.info("Success", "New product has been added.");
-            } else {
-                DialogUtil.error("Error", "Unable to add the product.");
-            }
+            price = Double.parseDouble(txtPrice.getText().trim());
         } catch (NumberFormatException ex) {
-            DialogUtil.error("Invalid Format", "Price must be a number.");
+            showAlert("Product price is invalid!");
+            return;
         }
+
+        if (name.isEmpty() || code.isEmpty() || brand.isEmpty() || type.isEmpty()) {
+            showAlert("Please fill all required fields!");
+            return;
+        }
+
+        Product product = new Product();
+        product.setProductName(name);
+        product.setProductCode(code);
+        product.setBrand(brand);
+        product.setType(type);
+        product.setPrice(price);
+        product.setDescription(desc);
+        product.setImage(img);
+
+        boolean ok = ProductDAO.insert(product);
+        showAlert(ok ? "Added new product successfully!" : "Add failed!");
+        if (ok && dialogStage != null) dialogStage.close();
+    }
+
+    /** Gọi khi mở dialog cho EDIT (setEditProduct xong) */
+    @FXML
+    private void onUpdate(ActionEvent e) {
+        if (editingProduct == null) {
+            showAlert("Error: No product is being edited!");
+            return;
+        }
+        String name = txtName.getText().trim();
+        String code = txtCode.getText().trim();
+        String brand = txtBrand.getText().trim();
+        String type = txtType.getText().trim();
+        String desc = txtDescription.getText().trim();
+        String img = txtImage.getText().trim();
+        double price;
+        try {
+            price = Double.parseDouble(txtPrice.getText().trim());
+        } catch (NumberFormatException ex) {
+            showAlert("Product price is invalid!");
+            return;
+        }
+
+        editingProduct.setProductName(name);
+        editingProduct.setBrand(brand);
+        editingProduct.setType(type);
+        editingProduct.setPrice(price);
+        editingProduct.setDescription(desc);
+        editingProduct.setImage(img);
+
+        boolean ok = ProductDAO.update(editingProduct);
+        showAlert(ok ? "Product updated successfully!" : "Update failed!");
+        if (ok && dialogStage != null) dialogStage.close();
     }
 
     @FXML
     private void onCancel(ActionEvent e) {
-        dialogStage.close();
+        if (dialogStage != null) dialogStage.close();
     }
 
-    public void setProduct(Product product) {
-        this.editingProduct = product;
-        // Gán dữ liệu lên form
-        txtName.setText(product.getProductName());
-        txtPrice.setText(String.valueOf(product.getPrice()));
-
-    }
-    public void setEditProduct(Product product) {
-        this.editingProduct = product;
-        txtName.setText(product.getProductName());
-        txtCode.setText(product.getProductCode());
-        txtBrand.setText(product.getBrand());
-        txtType.setText(product.getType());
-        txtPrice.setText(String.valueOf(product.getPrice()));
-        txtDescription.setText(product.getDescription());
-        txtImage.setText(product.getImage());
-    }
-    @FXML
-    private void onSave() {
-        String name = txtName.getText().trim();
-        String brand = txtBrand.getText().trim();
-        String type = txtType.getText().trim();
-        String priceStr = txtPrice.getText().trim();
-        String desc = txtDescription.getText().trim();
-        String image = txtImage.getText().trim();
-        double price = 0;
-
-        try {
-            price = Double.parseDouble(priceStr);
-            if (price < 0) throw new Exception();
-        } catch (Exception e) {
-            showAlert("Giá sản phẩm không hợp lệ!");
-            return;
-        }
-
-        if (editingProduct != null) {
-            // EDIT
-            editingProduct.setProductName(name);
-            editingProduct.setBrand(brand);
-            editingProduct.setType(type);
-            editingProduct.setPrice(price);
-            editingProduct.setDescription(desc);
-            editingProduct.setImage(image);
-            boolean ok1 = ProductDAO.update(editingProduct);
-            showAlert(ok1 ? "Cập nhật thành công!" : "Cập nhật thất bại!");
-        } else {
-            // ADD
-            Product product = new Product();
-            product.setProductName(name);
-            product.setBrand(brand);
-            product.setType(type);
-            product.setPrice(price);
-            product.setDescription(desc);
-            product.setImage(image);
-            boolean ok2 = ProductDAO.insert(product);
-            showAlert(ok2 ? "Thêm mới thành công!" : "Thêm mới thất bại!");
-        }
-
-        ((Stage) txtName.getScene().getWindow()).close();
-    }
     private void showAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, msg, ButtonType.OK);
         alert.showAndWait();
     }
-
 }
