@@ -1,4 +1,3 @@
-
 package controller.cashier;
 
 import dao.DatabaseConnection;
@@ -12,8 +11,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import model.Invoice;
 import model.Product;
+import javafx.scene.control.cell.PropertyValueFactory;
 
+
+import java.math.BigDecimal;
 import java.sql.Connection;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ControlPanelConfigController {
@@ -22,7 +25,7 @@ public class ControlPanelConfigController {
     @FXML private TableColumn<Invoice, Integer> invoiceIDColumn;
     @FXML private TableColumn<Invoice, String> customerColumn;
     @FXML private TableColumn<Invoice, String> dateColumn;
-    @FXML private TableColumn<Invoice, Double> totalAmountColumn;
+    @FXML private TableColumn<Invoice, String> totalAmountColumn;
     @FXML private TableColumn<Invoice, String> statusColumn;
 
     @FXML private Label totalInvoicesLabel;
@@ -36,17 +39,30 @@ public class ControlPanelConfigController {
     @FXML
     public void initialize() {
         try {
-            // Kết nối cơ sở dữ liệu
+
             Connection conn = DatabaseConnection.getConnection();
-            invoiceDAO = new InvoiceDAO(conn);
+            invoiceDAO = new InvoiceDAO();
             productDAO = new ProductDAO(conn);
 
-            // Cấu hình các cột bảng
-            invoiceIDColumn.setCellValueFactory(data -> data.getValue().invoiceIDProperty().asObject());
-            customerColumn.setCellValueFactory(data -> data.getValue().customerNameProperty());
-            dateColumn.setCellValueFactory(data -> data.getValue().dateProperty());
-            totalAmountColumn.setCellValueFactory(data -> data.getValue().totalAmountProperty().asObject());
-            statusColumn.setCellValueFactory(data -> data.getValue().statusProperty());
+            // Set cell value factories dùng getter thường
+            invoiceIDColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceID"));
+            customerColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+            // Custom: Hiển thị ngày dạng dd/MM/yyyy HH:mm
+            dateColumn.setCellValueFactory(data -> {
+                if (data.getValue().getDate() != null) {
+                    String dateString = data.getValue().getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+                    return new javafx.beans.property.SimpleStringProperty(dateString);
+                } else {
+                    return new javafx.beans.property.SimpleStringProperty("");
+                }
+            });
+            // Custom: Hiển thị tiền có dấu phẩy
+            totalAmountColumn.setCellValueFactory(data -> {
+                BigDecimal amount = data.getValue().getTotalAmount();
+                String money = (amount != null) ? String.format("%,.0f", amount.doubleValue()) : "";
+                return new javafx.beans.property.SimpleStringProperty(money);
+            });
+            statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
             // Load dữ liệu hóa đơn
             loadInvoiceTable();
@@ -66,9 +82,12 @@ public class ControlPanelConfigController {
         // Hiển thị tổng số hóa đơn
         totalInvoicesLabel.setText(String.valueOf(invoices.size()));
 
-        // Tính tổng doanh thu
-        double totalRevenue = invoices.stream().mapToDouble(Invoice::getTotalAmount).sum();
-        totalRevenueLabel.setText(String.format("%,.0f VNĐ", totalRevenue));
+        // Tính tổng doanh thu (dùng BigDecimal)
+        BigDecimal totalRevenue = invoices.stream()
+                .map(Invoice::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        totalRevenueLabel.setText(String.format("%,.0f VNĐ", totalRevenue.doubleValue()));
     }
 
     private void handleInvoiceClick(MouseEvent event) {

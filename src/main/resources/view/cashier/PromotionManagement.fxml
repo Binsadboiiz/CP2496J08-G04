@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/24.0.1"
             xmlns:fx="http://javafx.com/fxml"
@@ -15,30 +13,24 @@
            style="-fx-font-size: 20px; -fx-font-weight: bold;" />
 
     <!-- Table of Promotions -->
-    <TableView fx:id="promotionTable" layoutX="20" layoutY="60" prefWidth="760" prefHeight="280">
+    <TableView fx:id="tblPromotion" layoutX="20" layoutY="60" prefWidth="760" prefHeight="280">
         <columns>
-            <TableColumn fx:id="promotionNameColumn" text="Promotion Name" prefWidth="200"/>
-            <TableColumn fx:id="productIDColumn" text="Product ID" prefWidth="100"/>
-            <TableColumn fx:id="discountColumn" text="Discount (%)" prefWidth="100"/>
-            <TableColumn fx:id="startDateColumn" text="Start Date" prefWidth="100"/>
-            <TableColumn fx:id="endDateColumn" text="End Date" prefWidth="100"/>
+            <TableColumn fx:id="colID" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colName" text="Tên khuyến mãi" prefWidth="180"/>
+            <TableColumn fx:id="colDesc" text="Mô tả" prefWidth="200"/>
+            <TableColumn fx:id="colDiscount" text="Giảm (%)" prefWidth="80"/>
+            <TableColumn fx:id="colStart" text="Bắt đầu" prefWidth="120"/>
+            <TableColumn fx:id="colEnd" text="Kết thúc" prefWidth="120"/>
         </columns>
     </TableView>
 
-    <!-- Input Fields -->
-    <TextField fx:id="promotionNameField" layoutX="20" layoutY="360" promptText="Promotion Name" prefWidth="200"/>
-    <ComboBox fx:id="productNameComboBox" layoutX="240" layoutY="360" promptText="Select Product" prefWidth="200"/>
-    <TextField fx:id="discountField" layoutX="460" layoutY="360" promptText="Discount (%)" prefWidth="100"/>
-    <DatePicker fx:id="startDatePicker" layoutX="580" layoutY="360" prefWidth="100"/>
-    <DatePicker fx:id="endDatePicker" layoutX="690" layoutY="360" prefWidth="100"/>
-
     <!-- Buttons -->
-    <HBox layoutX="20" layoutY="420" spacing="10">
+    <HBox layoutX="20" layoutY="360" spacing="10">
         <children>
-            <Button text="Add Promotion" onAction="#handleAddPromotion" prefWidth="120"/>
-            <Button text="Clear" onAction="#handleClearForm" prefWidth="80"/>
-            <Button text="Delete" onAction="#handleDeletePromotion" prefWidth="80"/>
-            <Button text="Update" onAction="#handleUpdatePromotion" prefWidth="80"/>
+            <Button text="Thêm" fx:id="btnAdd" prefWidth="120"/>
+            <Button text="Làm mới" fx:id="btnRefresh" prefWidth="80"/>
+            <Button text="Xóa" fx:id="btnDelete" prefWidth="80"/>
+            <Button text="Sửa" fx:id="btnEdit" prefWidth="80"/>
         </children>
     </HBox>
 

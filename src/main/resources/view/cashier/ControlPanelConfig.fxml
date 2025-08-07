@@ -9,7 +9,10 @@
             fx:controller="controller.cashier.ControlPanelConfigController">
 
     <top>
-        <HBox spacing="20" padding="10">
+        <HBox spacing="20">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
             <VBox spacing="5">
                 <Label text="Tổng số hóa đơn:"/>
                 <Label fx:id="totalInvoicesLabel" style="-fx-font-weight: bold;"/>
@@ -34,7 +37,10 @@
     </center>
 
     <bottom>
-        <HBox spacing="20" padding="10">
+        <HBox spacing="20">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
             <VBox spacing="5">
                 <Label text="Tên sản phẩm"/>
                 <Label fx:id="productNameLabel" style="-fx-font-weight: bold;"/>

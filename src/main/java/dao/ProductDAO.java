@@ -271,7 +271,14 @@ public class ProductDAO {
                     return new Product(
                             rs.getInt("ProductID"),
                             rs.getString("ProductName"),
-                            rs.getString("Image")
+                            rs.getString("ProductCode"),
+                            rs.getString("Brand"),
+                            rs.getString("Type"),
+                            rs.getDouble("Price"),
+                            rs.getString("Description"),
+                            rs.getString("Image"),
+                            rs.getString("CreatedAt"),
+                            rs.getString("UpdatedAt")
                     );
                 }
             }

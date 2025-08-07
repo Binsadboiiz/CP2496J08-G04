@@ -4,8 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -15,6 +18,10 @@ public class CashierController {
     private AnchorPane contentArea;
     @FXML private Label usernameLabel;
     @FXML private Label roleLabel;
+    @FXML private Button btnLogout;
+
+    @FXML
+    private void initialize() {loadPage("/view/cashier/ControlPanelConfig.fxml");}
 
     @FXML
     void loadControlPanel(ActionEvent event) throws IOException {
@@ -42,8 +49,14 @@ public class CashierController {
     }
 
     @FXML
-    void logout(ActionEvent event) {
-        System.exit(0);
+    private void logout() {
+        try {
+            Stage stage = (Stage) btnLogout.getScene().getWindow();
+            Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void loadPage(String fxmlPath) {

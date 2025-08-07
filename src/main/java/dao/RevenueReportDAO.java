@@ -12,42 +12,51 @@ public class RevenueReportDAO {
         this.conn = conn;
     }
 
+    // Doanh thu hôm nay theo phương thức thanh toán
     public List<RevenueReport> getTodayRevenueByPaymentMethod() throws SQLException {
         String sql = """
-            SELECT PaymentMethod, SUM(TotalAmount) AS Total 
-            FROM Invoice 
-            WHERE DATE(InvoiceDate) = CURDATE()
-            GROUP BY PaymentMethod
+            SELECT p.PaymentMethod, SUM(p.Amount) AS Total
+            FROM Payment p
+            JOIN Invoice i ON p.InvoiceID = i.InvoiceID
+            WHERE CONVERT(date, i.Date) = CONVERT(date, GETDATE())
+            GROUP BY p.PaymentMethod
         """;
         return executeQuery(sql);
     }
 
+    // Doanh thu tuần này theo phương thức thanh toán
     public List<RevenueReport> getWeekRevenueByPaymentMethod() throws SQLException {
         String sql = """
-            SELECT PaymentMethod, SUM(TotalAmount) AS Total 
-            FROM Invoice 
-            WHERE YEARWEEK(InvoiceDate, 1) = YEARWEEK(CURDATE(), 1)
-            GROUP BY PaymentMethod
+            SELECT p.PaymentMethod, SUM(p.Amount) AS Total
+            FROM Payment p
+            JOIN Invoice i ON p.InvoiceID = i.InvoiceID
+            WHERE DATEPART(ISO_WEEK, i.Date) = DATEPART(ISO_WEEK, GETDATE())
+              AND YEAR(i.Date) = YEAR(GETDATE())
+            GROUP BY p.PaymentMethod
         """;
         return executeQuery(sql);
     }
 
+    // Doanh thu tháng này theo phương thức thanh toán
     public List<RevenueReport> getMonthRevenueByPaymentMethod() throws SQLException {
         String sql = """
-            SELECT PaymentMethod, SUM(TotalAmount) AS Total 
-            FROM Invoice 
-            WHERE MONTH(InvoiceDate) = MONTH(CURDATE()) AND YEAR(InvoiceDate) = YEAR(CURDATE())
-            GROUP BY PaymentMethod
+            SELECT p.PaymentMethod, SUM(p.Amount) AS Total
+            FROM Payment p
+            JOIN Invoice i ON p.InvoiceID = i.InvoiceID
+            WHERE MONTH(i.Date) = MONTH(GETDATE()) AND YEAR(i.Date) = YEAR(GETDATE())
+            GROUP BY p.PaymentMethod
         """;
         return executeQuery(sql);
     }
 
+    // Doanh thu từng tháng trong năm nay (không phân biệt phương thức)
     public List<RevenueReport> getYearRevenueByMonth() throws SQLException {
         String sql = """
-            SELECT MONTH(InvoiceDate) AS MonthNumber, SUM(TotalAmount) AS Total
-            FROM Invoice
-            WHERE YEAR(InvoiceDate) = YEAR(CURDATE())
-            GROUP BY MONTH(InvoiceDate)
+            SELECT MONTH(i.Date) AS MonthNumber, SUM(p.Amount) AS Total
+            FROM Payment p
+            JOIN Invoice i ON p.InvoiceID = i.InvoiceID
+            WHERE YEAR(i.Date) = YEAR(GETDATE())
+            GROUP BY MONTH(i.Date)
             ORDER BY MonthNumber
         """;
 

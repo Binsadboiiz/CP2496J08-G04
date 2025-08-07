@@ -19,20 +19,31 @@ public class RevenueReportsController {
     @FXML private ToggleButton weekButton;
     @FXML private ToggleButton monthButton;
     @FXML private ToggleButton yearButton;
-    @FXML private ToggleGroup timeToggleGroup;
 
     @FXML private PieChart pieChart;
     @FXML private BarChart<String, Number> barChart;
     @FXML private StackPane chartContainer;
 
     private RevenueReportDAO revenueReportDAO;
+    private ToggleGroup timeToggleGroup; // Tạo ToggleGroup bằng code
 
     @FXML
     public void initialize() {
         try {
             Connection conn = DatabaseConnection.getConnection();
             revenueReportDAO = new RevenueReportDAO(conn);
+
+            // Tạo ToggleGroup và add các ToggleButton vào
+            timeToggleGroup = new ToggleGroup();
+            todayButton.setToggleGroup(timeToggleGroup);
+            weekButton.setToggleGroup(timeToggleGroup);
+            monthButton.setToggleGroup(timeToggleGroup);
+            yearButton.setToggleGroup(timeToggleGroup);
+
             setupToggleGroup();
+
+            // Mặc định chọn Today
+            todayButton.setSelected(true);
             loadTodayData();
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,10 +56,10 @@ public class RevenueReportsController {
             ToggleButton selected = (ToggleButton) newToggle;
             String label = selected.getText();
             switch (label) {
-                case "Hôm nay" -> loadTodayData();
-                case "Tuần này" -> loadWeekData();
-                case "Tháng này" -> loadMonthData();
-                case "Năm nay" -> loadYearData();
+                case "Today" -> loadTodayData();
+                case "This Week" -> loadWeekData();
+                case "This Month" -> loadMonthData();
+                case "This Year" -> loadYearData();
             }
         });
     }
@@ -56,7 +67,7 @@ public class RevenueReportsController {
     private void loadTodayData() {
         try {
             List<RevenueReport> data = revenueReportDAO.getTodayRevenueByPaymentMethod();
-            showPieChart(data, "Phương thức thanh toán hôm nay");
+            showPieChart(data, "Today's Payment Methods");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -65,7 +76,7 @@ public class RevenueReportsController {
     private void loadWeekData() {
         try {
             List<RevenueReport> data = revenueReportDAO.getWeekRevenueByPaymentMethod();
-            showPieChart(data, "Phương thức thanh toán tuần này");
+            showPieChart(data, "This Week's Payment Methods");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -74,7 +85,7 @@ public class RevenueReportsController {
     private void loadMonthData() {
         try {
             List<RevenueReport> data = revenueReportDAO.getMonthRevenueByPaymentMethod();
-            showPieChart(data, "Phương thức thanh toán tháng này");
+            showPieChart(data, "This Month's Payment Methods");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,7 +94,7 @@ public class RevenueReportsController {
     private void loadYearData() {
         try {
             List<RevenueReport> data = revenueReportDAO.getYearRevenueByMonth();
-            showBarChart(data, "Doanh thu theo tháng năm nay");
+            showBarChart(data, "Revenue by Month (This Year)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
