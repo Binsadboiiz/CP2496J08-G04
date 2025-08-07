@@ -146,7 +146,7 @@ public class HomeController {
         if (staffController != null) {
             try {
                 staffController.loadCreateInvoice();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
