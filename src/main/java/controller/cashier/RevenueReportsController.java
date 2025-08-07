@@ -1,11 +1,17 @@
 package controller.cashier;
 
+import dao.RevenueReportDAO;
+import dao.DatabaseConnection;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.StackPane;
+import model.RevenueReport;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 public class RevenueReportsController {
 
@@ -13,98 +19,96 @@ public class RevenueReportsController {
     @FXML private ToggleButton weekButton;
     @FXML private ToggleButton monthButton;
     @FXML private ToggleButton yearButton;
+    @FXML private ToggleGroup timeToggleGroup;
+
     @FXML private PieChart pieChart;
     @FXML private BarChart<String, Number> barChart;
-    @FXML private StackPane chartContainer; // StackPane chung
+    @FXML private StackPane chartContainer;
 
-    private ToggleGroup viewToggleGroup;
+    private RevenueReportDAO revenueReportDAO;
 
     @FXML
     public void initialize() {
-        // Group Toggle Buttons
-        viewToggleGroup = new ToggleGroup();
-        todayButton.setToggleGroup(viewToggleGroup);
-        weekButton.setToggleGroup(viewToggleGroup);
-        monthButton.setToggleGroup(viewToggleGroup);
-        yearButton.setToggleGroup(viewToggleGroup);
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            revenueReportDAO = new RevenueReportDAO(conn);
+            setupToggleGroup();
+            loadTodayData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        // Default state: PieChart visible, BarChart hidden
-        pieChart.setVisible(true);
-        barChart.setVisible(false);
-        loadRevenuePieChart("ThisMonth");
-
-        // Toggle Listener
-        viewToggleGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (newToggle != null) {
-                String mode = newToggle.getUserData().toString();
-                switchChartView(mode);
-
-                if (mode.equals("ThisYear")) {
-                    loadRevenueBarChart();
-                } else {
-                    loadRevenuePieChart(mode);
-                }
+    private void setupToggleGroup() {
+        timeToggleGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
+            if (newToggle == null) return;
+            ToggleButton selected = (ToggleButton) newToggle;
+            String label = selected.getText();
+            switch (label) {
+                case "Hôm nay" -> loadTodayData();
+                case "Tuần này" -> loadWeekData();
+                case "Tháng này" -> loadMonthData();
+                case "Năm nay" -> loadYearData();
             }
         });
     }
 
-    private void switchChartView(String mode) {
-        if (mode.equals("ThisYear")) {
-            pieChart.setVisible(false);
-            barChart.setVisible(true);
-        } else {
-            pieChart.setVisible(true);
-            barChart.setVisible(false);
+    private void loadTodayData() {
+        try {
+            List<RevenueReport> data = revenueReportDAO.getTodayRevenueByPaymentMethod();
+            showPieChart(data, "Phương thức thanh toán hôm nay");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    private void loadRevenuePieChart(String mode) {
+    private void loadWeekData() {
+        try {
+            List<RevenueReport> data = revenueReportDAO.getWeekRevenueByPaymentMethod();
+            showPieChart(data, "Phương thức thanh toán tuần này");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadMonthData() {
+        try {
+            List<RevenueReport> data = revenueReportDAO.getMonthRevenueByPaymentMethod();
+            showPieChart(data, "Phương thức thanh toán tháng này");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadYearData() {
+        try {
+            List<RevenueReport> data = revenueReportDAO.getYearRevenueByMonth();
+            showBarChart(data, "Doanh thu theo tháng năm nay");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showPieChart(List<RevenueReport> data, String title) {
         pieChart.getData().clear();
-
-        switch (mode) {
-            case "Today":
-                pieChart.setTitle("Revenue Today (2023)");
-                pieChart.getData().addAll(
-                        new PieChart.Data("January", 1000),
-                        new PieChart.Data("February", 1500),
-                        new PieChart.Data("March", 800)
-                );
-                break;
-
-            case "ThisWeek":
-                pieChart.setTitle("Revenue This Week (2024)");
-                pieChart.getData().addAll(
-                        new PieChart.Data("April", 2000),
-                        new PieChart.Data("May", 2500),
-                        new PieChart.Data("June", 1800)
-                );
-                break;
-
-            case "ThisMonth":
-                pieChart.setTitle("Revenue This Month (2025)");
-                pieChart.getData().addAll(
-                        new PieChart.Data("July", 3000),
-                        new PieChart.Data("August", 3500),
-                        new PieChart.Data("September", 2800)
-                );
-                break;
+        for (RevenueReport r : data) {
+            PieChart.Data slice = new PieChart.Data(r.getLabel(), r.getTotal());
+            pieChart.getData().add(slice);
         }
-
-        // Dummy Summary Info (You will fetch from DB later)"iPhone 15 Pro");
+        pieChart.setTitle(title);
+        pieChart.setVisible(true);
+        barChart.setVisible(false);
     }
 
-    private void loadRevenueBarChart() {
+    private void showBarChart(List<RevenueReport> data, String title) {
         barChart.getData().clear();
-        barChart.setTitle("Revenue by Year");
-
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Annual Revenue");
-
-        series.getData().add(new XYChart.Data<>("2022", 50000));
-        series.getData().add(new XYChart.Data<>("2023", 60000));
-        series.getData().add(new XYChart.Data<>("2024", 70000));
-        series.getData().add(new XYChart.Data<>("2025", 80000));
-
+        for (RevenueReport r : data) {
+            series.getData().add(new XYChart.Data<>(r.getLabel(), r.getTotal()));
+        }
         barChart.getData().add(series);
+        barChart.setTitle(title);
+        barChart.setVisible(true);
+        pieChart.setVisible(false);
     }
 }

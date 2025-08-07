@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css"
             xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.staff.StaffController">
@@ -34,16 +33,11 @@
             <Label text="Nhân viên" textFill="WHITE" />
             <Label text="Vai Trò" textFill="WHITE" />
 
-<<<<<<< HEAD
             <!-- Buttons -->
-            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" styleClass="sidebar-button">
+            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" onAction="#loadHome" styleClass="sidebar-button">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
-=======
-            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" onAction="#loadHome" textFill="WHITE">
-                <font><Font name="Times New Roman Bold" size="18" /></font>
->>>>>>> 1889364dc2cd75299f26fcb2d159f66021e7afff
             </Button>
 
             <Button fx:id="btnProducts" maxWidth="180" text="InvoiceHistory" onAction="#loadInvoiceHistory" styleClass="sidebar-button">

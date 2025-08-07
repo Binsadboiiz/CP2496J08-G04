@@ -20,6 +20,7 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.sql.Connection;
 
 public class CreateInvoiceController {
 
@@ -39,7 +40,7 @@ public class CreateInvoiceController {
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
     private final InvoiceDetailDAO invoiceDetailDAO = new InvoiceDetailDAO();
-    private final ProductDAO productDAO = new ProductDAO(); // Khai báo ProductDAO
+//    private final ProductDAO productDAO = new ProductDAO(); // Khai báo ProductDAO
 
     private StaffController staffController;
 

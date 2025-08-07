@@ -175,6 +175,34 @@ public class InvoiceDAO {
         }
         return list;
     }
+    public List<Invoice> getAllInvoicesWithCustomerName() {
+        List<Invoice> list = new ArrayList<>();
+        String sql = """
+            SELECT i.*, c.CustomerName
+            FROM Invoice i
+            LEFT JOIN Customer c ON i.CustomerID = c.CustomerID
+            ORDER BY i.Date DESC
+            """;
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Invoice inv = new Invoice();
+                inv.setInvoiceID(rs.getInt("InvoiceID"));
+                inv.setCustomerID(rs.getInt("CustomerID"));
+                inv.setUserID(rs.getInt("UserID"));
+                inv.setDate(rs.getTimestamp("Date").toLocalDateTime());
+                inv.setTotalAmount(rs.getBigDecimal("TotalAmount"));
+                inv.setDiscount(rs.getBigDecimal("Discount"));
+                inv.setStatus(rs.getString("Status"));
+                inv.setCustomerName(rs.getString("CustomerName"));
+                list.add(inv);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 
 }

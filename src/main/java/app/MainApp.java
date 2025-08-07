@@ -1,5 +1,6 @@
 package app;
 
+import dao.ProductDAO;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,9 +16,9 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/staff/SceneStaff.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
         primaryStage.getIcons().add(
-                new Image(getClass().getResourceAsStream("/images/text-logo.png"))
+                new Image(getClass().getResourceAsStream("/images/logo-app.png"))
         );
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
@@ -27,6 +28,7 @@ public class MainApp extends Application {
     public static void main(String[] args) {
         try (Connection conn = DatabaseConnection.getConnection()) {
             System.out.println("SQLServer Connected Successfully!");
+            ProductDAO productDAO = new ProductDAO(conn);
         } catch (Exception e) {
             e.printStackTrace();
         }

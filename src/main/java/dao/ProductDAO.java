@@ -7,9 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDAO {
-    /**
-     * 1) Lấy tất cả sản phẩm
-     */
+
+    private final Connection conn;
+
+    // Constructor nhận Connection
+    public ProductDAO(Connection conn) {
+        this.conn = conn;
+    }
+
+    // 1. Lấy tất cả sản phẩm (STATIC)
     public static List<Product> getAll() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product";
@@ -37,28 +43,43 @@ public class ProductDAO {
         }
         return list;
     }
-    public static Connection getConnection() {
-        try {
-            return DatabaseConnection.getConnection();
+
+    // 2. Lấy tất cả tên sản phẩm (Instance method)
+    public List<String> getAllProductNames() {
+        List<String> productNames = new ArrayList<>();
+        String sql = "SELECT ProductName FROM Product";
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                productNames.add(rs.getString("ProductName"));
+            }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to connect to DB", e);
+            e.printStackTrace();
         }
+        return productNames;
     }
 
+    // 3. Lấy ProductID theo ProductName (Instance method)
+    public int getProductIDByName(String productName) {
+        String sql = "SELECT ProductID FROM Product WHERE ProductName = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, productName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("ProductID");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Not found
+    }
 
-    /**
-     * 2) Thêm sản phẩm mới
-     */
+    // 4. Thêm sản phẩm (STATIC)
     public static boolean insert(Product p) {
         String sql = """
                 INSERT INTO Product(
-                  ProductName,
-                  ProductCode,
-                  Brand,
-                  Type,
-                  Price,
-                  Description,
-                  Image
+                  ProductName, ProductCode, Brand, Type, Price, Description, Image
                 ) VALUES(?,?,?,?,?,?,?)
                 """;
         try (Connection conn = DatabaseConnection.getConnection();
@@ -79,9 +100,7 @@ public class ProductDAO {
         }
     }
 
-    /**
-     * 3) Xóa sản phẩm theo ID
-     */
+    // 5. Xóa sản phẩm (STATIC)
     public static boolean delete(int productID) {
         String sql = "DELETE FROM Product WHERE ProductID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -95,9 +114,7 @@ public class ProductDAO {
         }
     }
 
-    /**
-     * 4) Tìm sản phẩm theo từ khóa
-     */
+    // 6. Tìm kiếm sản phẩm (STATIC)
     public static List<Product> search(String keyword) {
         List<Product> list = new ArrayList<>();
         String sql = """
@@ -133,6 +150,8 @@ public class ProductDAO {
         }
         return list;
     }
+
+    // 7. Cập nhật sản phẩm (STATIC)
     public static boolean update(Product product) {
         String sql = "UPDATE Product SET ProductName = ?, Brand = ?, Type = ?, Price = ?, Description = ?, Image = ?, UpdatedAt = GETDATE() WHERE ProductID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -151,17 +170,16 @@ public class ProductDAO {
         }
     }
 
-
+    // 8. Lấy sản phẩm bán chạy (STATIC)
     public static List<Product> getTopSellingProducts() {
         List<Product> list = new ArrayList<>();
         String sql = """
-    SELECT TOP 5 p.ProductID, p.ProductName, p.Image, SUM(d.Quantity) AS Sales
-    FROM InvoiceDetail d
-    JOIN Product p ON d.ProductID = p.ProductID
-    GROUP BY p.ProductID, p.ProductName, p.Image
-    ORDER BY Sales DESC
-    """;
-
+                    SELECT TOP 5 p.ProductID, p.ProductName, p.Image, SUM(d.Quantity) AS Sales
+                    FROM InvoiceDetail d
+                    JOIN Product p ON d.ProductID = p.ProductID
+                    GROUP BY p.ProductID, p.ProductName, p.Image
+                    ORDER BY Sales DESC
+                """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -181,15 +199,22 @@ public class ProductDAO {
         }
         return list;
     }
+
+    // 9. Tổng số sản phẩm (STATIC)
     public static int getTotalProducts() {
         String sql = "SELECT COUNT(*) FROM Product";
-        try(Connection conn = DatabaseConnection.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             rs.next();
             return rs.getInt(1);
-        } catch (SQLException e) {e.printStackTrace(); return 0;}
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
+
+    // 10. Tìm sản phẩm theo tên (STATIC)
     public static Product getProductByName(String productName) {
         String sql = "SELECT * FROM Product WHERE ProductName = ?";
         Product product = null;
@@ -217,4 +242,43 @@ public class ProductDAO {
         }
         return product;
     }
+
+    public String getProductNameByID(int appliedProductID) {
+        String sql = "SELECT ProductName FROM Product WHERE ProductID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, appliedProductID);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("ProductName");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Nếu không tìm thấy
+    }
+    public Product getFirstProductByInvoiceID(int invoiceID) {
+        String sql = "SELECT p.ProductID, p.ProductName, p.Image " +
+                "FROM InvoiceDetail d JOIN Product p ON d.ProductID = p.ProductID " +
+                "WHERE d.InvoiceID = ? LIMIT 1";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, invoiceID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Product(
+                            rs.getInt("ProductID"),
+                            rs.getString("ProductName"),
+                            rs.getString("Image")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

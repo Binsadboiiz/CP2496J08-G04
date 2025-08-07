@@ -1,29 +1,47 @@
 package model;
 
+import javafx.beans.property.*;
 import java.time.LocalDate;
 
 public class Promotion {
-    private int promotionID;
-    private String promotionName;
-    private String description;
-    private double discountPercentage;
-    private LocalDate startDate;
-    private LocalDate endDate;
 
-    public Promotion(int promotionID, String promotionName, String description, double discountPercentage, LocalDate startDate, LocalDate endDate) {
-        this.promotionID = promotionID;
-        this.promotionName = promotionName;
-        this.description = description;
-        this.discountPercentage = discountPercentage;
-        this.startDate = startDate;
-        this.endDate = endDate;
+    private final IntegerProperty promotionID;
+    private final StringProperty promotionName;
+    private final IntegerProperty appliedProductID;
+    private final DoubleProperty discountPercent;
+    private final ObjectProperty<LocalDate> startDate;
+    private final ObjectProperty<LocalDate> endDate;
+
+    public Promotion(int promotionID, String promotionName, int appliedProductID, double discountPercent, LocalDate startDate, LocalDate endDate) {
+        this.promotionID = new SimpleIntegerProperty(promotionID);
+        this.promotionName = new SimpleStringProperty(promotionName);
+        this.appliedProductID = new SimpleIntegerProperty(appliedProductID);
+        this.discountPercent = new SimpleDoubleProperty(discountPercent);
+        this.startDate = new SimpleObjectProperty<>(startDate);
+        this.endDate = new SimpleObjectProperty<>(endDate);
     }
 
-    // Getters and Setters
-    public int getPromotionID() { return promotionID; }
-    public String getPromotionName() { return promotionName; }
-    public String getDescription() { return description; }
-    public double getDiscountPercentage() { return discountPercentage; }
-    public LocalDate getStartDate() { return startDate; }
-    public LocalDate getEndDate() { return endDate; }
+    // Getters (Property for Table Binding)
+    public IntegerProperty promotionIDProperty() { return promotionID; }
+    public StringProperty promotionNameProperty() { return promotionName; }
+    public IntegerProperty appliedProductIDProperty() { return appliedProductID; }
+    public DoubleProperty discountPercentProperty() { return discountPercent; }
+    public ObjectProperty<LocalDate> startDateProperty() { return startDate; }
+    public ObjectProperty<LocalDate> endDateProperty() { return endDate; }
+
+    // Normal Getters
+    public int getPromotionID() { return promotionID.get(); }
+    public String getPromotionName() { return promotionName.get(); }
+    public int getAppliedProductID() { return appliedProductID.get(); }
+    public double getDiscountPercent() { return discountPercent.get(); }
+    public LocalDate getStartDate() { return startDate.get(); }
+    public LocalDate getEndDate() { return endDate.get(); }
+
+    // Setters
+    public void setPromotionID(int value) { promotionID.set(value); }
+    public void setPromotionName(String value) { promotionName.set(value); }
+    public void setAppliedProductID(int value) { appliedProductID.set(value); }
+    public void setDiscountPercent(double value) { discountPercent.set(value); }
+    public void setStartDate(LocalDate value) { startDate.set(value); }
+    public void setEndDate(LocalDate value) { endDate.set(value); }
 }

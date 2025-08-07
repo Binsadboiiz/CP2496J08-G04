@@ -23,12 +23,12 @@ public class CashierController {
 
     @FXML
     void loadReturnPolicy(ActionEvent event) throws IOException {
-        loadPage("/view/cashier/ReturnPolicy.fxml");
+        loadPage("/view/cashier/ReturnPolicyManagement.fxml");
     }
 
     @FXML
     void loadPromotionManagement(ActionEvent event) throws IOException {
-        loadPage("/view/cashier/PomotionManagement.fxml");
+        loadPage("/view/cashier/PromotionManagement.fxml");
     }
 
     @FXML
