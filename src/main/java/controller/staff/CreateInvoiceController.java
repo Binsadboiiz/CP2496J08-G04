@@ -20,17 +20,26 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
-<<<<<<< HEAD
+
 import dao.PromotionDAO;
 import model.Promotion;
 import javafx.collections.FXCollections;
 import javafx.util.StringConverter;
 
-=======
+
 import java.sql.Connection;
->>>>>>> 6c7bc4d090894ca6e4362000dad1257d31be0e70
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.util.StringConverter;
+
 
 public class CreateInvoiceController {
+
+    @FXML private ListView<Promotion> promotionListView;
+    private final ObservableList<Promotion> selectedPromotions = FXCollections.observableArrayList();
+
 
     @FXML private TextField productNameField;
     @FXML private TextField quantityField;
@@ -42,7 +51,6 @@ public class CreateInvoiceController {
     @FXML private TableColumn<InvoiceItem, Double> totalColumn;
     @FXML private Label totalLabel;
     @FXML private ComboBox<Customer> customerComboBox;
-    @FXML private ComboBox<Promotion> comboDiscount;
 
     private double originalTotal = 0;
 
@@ -102,6 +110,8 @@ public class CreateInvoiceController {
                     setText(numberFormat.format(total) + " VND");
                 }
             }
+
+
         });
 
         if (!selectedProducts.isEmpty()) {
@@ -114,21 +124,33 @@ public class CreateInvoiceController {
         invoiceTable.setItems(invoiceItems);
         calculateAndDisplayTotal();
 
-        comboDiscount.setItems(FXCollections.observableArrayList(PromotionDAO.getAllPromotions()));
+        ObservableList<Promotion> allPromotions = FXCollections.observableArrayList(PromotionDAO.getAll());
+        promotionListView.setItems(allPromotions);
 
-        comboDiscount.setConverter(new StringConverter<Promotion>() {
+// Hiển thị checkbox cho mỗi khuyến mãi
+        promotionListView.setCellFactory(CheckBoxListCell.forListView(promo -> {
+            BooleanProperty selected = new SimpleBooleanProperty();
+            selected.addListener((obs, wasSelected, isNowSelected) -> {
+                if (isNowSelected) {
+                    selectedPromotions.add(promo);
+                } else {
+                    selectedPromotions.remove(promo);
+                }
+                applyMultipleDiscounts(); // Cập nhật giảm giá
+            });
+            return selected;
+        }, new StringConverter<Promotion>() {
             @Override
             public String toString(Promotion promo) {
-                return promo != null ? promo.getPromotionName() + " (" + (promo.getDiscountPercentage()) + "%)" : "";
+                return promo.getPromotionName() + " (" + promo.getDiscountPercentage() + "%)";
             }
 
             @Override
             public Promotion fromString(String string) {
                 return null;
             }
-        });
+        }));
 
-        comboDiscount.setOnAction(event -> applyDiscount());
 
     }
 
@@ -314,15 +336,24 @@ public class CreateInvoiceController {
     }
 
     private void applyDiscount() {
-        Promotion selected = comboDiscount.getValue();
-        if (selected != null) {
-            discountField.setText(String.valueOf(selected.getDiscountPercentage()));
-        } else {
-            discountField.clear();
-        }
+        double totalDiscount = selectedPromotions.stream()
+                .mapToDouble(Promotion::getDiscountPercentage)
+                .sum();
 
-        calculateAndDisplayTotal(); // Cập nhật lại tổng tiền
+        discountField.setText(String.valueOf(totalDiscount));
+        calculateAndDisplayTotal();
     }
+
+
+    private void applyMultipleDiscounts() {
+        double totalDiscount = selectedPromotions.stream()
+                .mapToDouble(Promotion::getDiscountPercentage)
+                .sum();
+
+        discountField.setText(String.valueOf(totalDiscount));
+        calculateAndDisplayTotal();
+    }
+
 
 
 }

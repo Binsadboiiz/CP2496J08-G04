@@ -36,7 +36,7 @@
 
             <HBox spacing="10">
                 <Label text="Khuyến mãi:"/>
-                <ListView fx:id="promotionListView" prefWidth="300" prefHeight="100"/>
+                <ListView fx:id="promotionListView" prefHeight="100" prefWidth="250" />
             </HBox>
 
             <HBox spacing="10">
