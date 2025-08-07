@@ -42,22 +42,37 @@ public class HomeController {
         ImageView img = new ImageView();
         String imgName = product.getImage() != null && !product.getImage().isEmpty() ? product.getImage() : "placeholder.png";
 
-        InputStream imageStream = getClass().getResourceAsStream("/images/" + imgName);
+        Image image = null;
 
-        if (imageStream != null) {
-            Image image = new Image(imageStream, 120, 120, true, true);
-            img.setImage(image);
+// Nếu đường dẫn là URL (bắt đầu bằng http hoặc https)
+        if (imgName.startsWith("http://") || imgName.startsWith("https://")) {
+            try {
+                image = new Image(imgName, 120, 120, true, true);
+            } catch (Exception e) {
+                System.err.println("Không thể tải ảnh từ link: " + imgName);
+            }
         } else {
-            System.err.println("Không tìm thấy file ảnh: /images/" + imgName);
-            // Sử dụng hình ảnh mặc định nếu không tìm thấy
-            InputStream defaultImageStream = getClass().getResourceAsStream("/images/placeholder.png");
-            if (defaultImageStream != null) {
-                Image defaultImage = new Image(defaultImageStream, 120, 120, true, true);
-                img.setImage(defaultImage);
+            // Ảnh local từ resources (/images/)
+            InputStream imageStream = getClass().getResourceAsStream("/images/" + imgName);
+            if (imageStream != null) {
+                image = new Image(imageStream, 120, 120, true, true);
             } else {
-                System.err.println("Không tìm thấy file ảnh mặc định: /images/placeholder.png");
+                System.err.println("Không tìm thấy ảnh local: /images/" + imgName);
             }
         }
+
+// Nếu không có ảnh nào được tải, dùng placeholder
+        if (image == null) {
+            InputStream placeholder = getClass().getResourceAsStream("/images/placeholder.png");
+            if (placeholder != null) {
+                image = new Image(placeholder, 120, 120, true, true);
+            } else {
+                System.err.println("Không tìm thấy placeholder.png");
+            }
+        }
+
+        img.setImage(image);
+
 
         Label name = new Label(product.getProductName());
         name.setStyle("-fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true; -fx-text-alignment: center;");
