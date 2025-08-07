@@ -11,35 +11,35 @@
 
     <!-- Title -->
     <Label layoutX="20" layoutY="10"
-           text="Thêm Nhân Viên"
+           text="Add Employee"
            style="-fx-font-size:18px; -fx-font-weight:bold;"/>
 
-    <!-- Họ và tên -->
-    <Label layoutX="20" layoutY="50" text="Họ và tên:*"/>
+    <!-- Full Name -->
+    <Label layoutX="20" layoutY="50" text="Full Name:*"/>
     <TextField fx:id="fullNameField"
                layoutX="140" layoutY="46"
                prefWidth="220"/>
 
-    <!-- Ngày sinh -->
-    <Label layoutX="20" layoutY="90" text="Ngày sinh:*"/>
+    <!-- Date of Birth -->
+    <Label layoutX="20" layoutY="90" text="Date of Birth:*"/>
     <DatePicker fx:id="dobPicker"
                 layoutX="140" layoutY="86"
                 prefWidth="220"/>
 
-    <!-- CCCD -->
-    <Label layoutX="20" layoutY="130" text="CCCD:*"/>
+    <!-- ID Card -->
+    <Label layoutX="20" layoutY="130" text="ID Card:*"/>
     <TextField fx:id="idCardField"
                layoutX="140" layoutY="126"
                prefWidth="220"/>
 
-    <!-- Quê quán -->
-    <Label layoutX="20" layoutY="170" text="Quê quán:"/>
+    <!-- Hometown -->
+    <Label layoutX="20" layoutY="170" text="Hometown:"/>
     <TextField fx:id="hometownField"
                layoutX="140" layoutY="166"
                prefWidth="220"/>
 
-    <!-- SĐT -->
-    <Label layoutX="20" layoutY="210" text="SĐT:"/>
+    <!-- Phone -->
+    <Label layoutX="20" layoutY="210" text="Phone:"/>
     <TextField fx:id="phoneField"
                layoutX="140" layoutY="206"
                prefWidth="220"/>
@@ -62,8 +62,8 @@
                    layoutX="140" layoutY="326"
                    prefWidth="220"/>
 
-    <!-- Chức vụ -->
-    <Label layoutX="20" layoutY="370" text="Chức vụ:*"/>
+    <!-- Role -->
+    <Label layoutX="20" layoutY="370" text="Role:*"/>
     <ComboBox fx:id="roleBox"
               layoutX="140" layoutY="366"
               prefWidth="220"/>

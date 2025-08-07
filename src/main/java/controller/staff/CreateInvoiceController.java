@@ -272,7 +272,7 @@ public class CreateInvoiceController {
             if (staffController != null) {
                 try {
                     staffController.loadInvoiceHistory();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     showAlert("Lỗi", "Không thể chuyển trang Lịch sử hóa đơn.");
                 }

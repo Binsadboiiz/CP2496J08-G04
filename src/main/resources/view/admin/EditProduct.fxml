@@ -14,13 +14,13 @@
         <VBox spacing="10" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
             <Label text="Edit Product" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-            <TextField fx:id="txtName"        promptText="Tên sản phẩm"/>
-            <TextField fx:id="txtCode"        promptText="Mã sản phẩm"/>
-            <TextField fx:id="txtBrand"       promptText="Thương hiệu"/>
-            <TextField fx:id="txtType"        promptText="Loại"/>
-            <TextField fx:id="txtPrice"       promptText="Giá"/>
-            <TextField fx:id="txtDescription" promptText="Mô tả"/>
-            <TextField fx:id="txtImage"       promptText="URL hình ảnh"/>
+            <TextField fx:id="txtName"        promptText="Product Name"/>
+            <TextField fx:id="txtCode"        promptText="Product Code"/>
+            <TextField fx:id="txtBrand"       promptText="Brand"/>
+            <TextField fx:id="txtType"        promptText="Type"/>
+            <TextField fx:id="txtPrice"       promptText="Price"/>
+            <TextField fx:id="txtDescription" promptText="Description"/>
+            <TextField fx:id="txtImage"       promptText="Image URL"/>
 
             <HBox spacing="10" style="-fx-alignment: center-right;">
                 <Button text="Cancel" onAction="#onCancel"/>
