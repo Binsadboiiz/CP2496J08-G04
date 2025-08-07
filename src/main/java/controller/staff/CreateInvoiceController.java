@@ -20,7 +20,15 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+<<<<<<< HEAD
+import dao.PromotionDAO;
+import model.Promotion;
+import javafx.collections.FXCollections;
+import javafx.util.StringConverter;
+
+=======
 import java.sql.Connection;
+>>>>>>> 6c7bc4d090894ca6e4362000dad1257d31be0e70
 
 public class CreateInvoiceController {
 
@@ -34,6 +42,10 @@ public class CreateInvoiceController {
     @FXML private TableColumn<InvoiceItem, Double> totalColumn;
     @FXML private Label totalLabel;
     @FXML private ComboBox<Customer> customerComboBox;
+    @FXML private ComboBox<Promotion> comboDiscount;
+
+    private double originalTotal = 0;
+
 
     private ObservableList<InvoiceItem> invoiceItems = FXCollections.observableArrayList();
 
@@ -101,6 +113,23 @@ public class CreateInvoiceController {
 
         invoiceTable.setItems(invoiceItems);
         calculateAndDisplayTotal();
+
+        comboDiscount.setItems(FXCollections.observableArrayList(PromotionDAO.getAllPromotions()));
+
+        comboDiscount.setConverter(new StringConverter<Promotion>() {
+            @Override
+            public String toString(Promotion promo) {
+                return promo != null ? promo.getPromotionName() + " (" + (promo.getDiscountPercentage()) + "%)" : "";
+            }
+
+            @Override
+            public Promotion fromString(String string) {
+                return null;
+            }
+        });
+
+        comboDiscount.setOnAction(event -> applyDiscount());
+
     }
 
     private void loadCustomers() {
@@ -247,6 +276,11 @@ public class CreateInvoiceController {
         double discount = calculateDiscount();
         return subTotal - subTotal * (discount / 100);
     }
+    private void updateTotal() {
+        originalTotal = invoiceItems.stream().mapToDouble(InvoiceItem::getTotal).sum();
+        applyDiscount();
+    }
+
 
     private double calculateDiscount() {
         double discount = 0;
@@ -278,4 +312,17 @@ public class CreateInvoiceController {
         public double getTotal() { return quantity * price; }
         public int getProductID() { return productID; }
     }
+
+    private void applyDiscount() {
+        Promotion selected = comboDiscount.getValue();
+        if (selected != null) {
+            discountField.setText(String.valueOf(selected.getDiscountPercentage()));
+        } else {
+            discountField.clear();
+        }
+
+        calculateAndDisplayTotal(); // Cập nhật lại tổng tiền
+    }
+
+
 }

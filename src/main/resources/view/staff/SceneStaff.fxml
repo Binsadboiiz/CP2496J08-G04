@@ -15,8 +15,12 @@
 =======
 
 <?import javafx.scene.layout.StackPane?>
+<<<<<<< HEAD
+<BorderPane prefHeight="700.0" prefWidth="1020.0" stylesheets="@../../css/scenemain.css"
+=======
 >>>>>>> fcc711cc46e21f7d45d0db56b46efeb653b15ea4
 <BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css"
+>>>>>>> 6c7bc4d090894ca6e4362000dad1257d31be0e70
             xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.staff.StaffController">
 
@@ -79,7 +83,7 @@
 
     <!-- Main Content -->
     <center>
-        <AnchorPane fx:id="contentArea" prefHeight="580.0" prefWidth="800.0" />
+        <AnchorPane fx:id="contentArea" prefHeight="680.0" prefWidth="980.0" />
     </center>
 
 </BorderPane>
