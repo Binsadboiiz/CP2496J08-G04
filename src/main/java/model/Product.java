@@ -1,4 +1,3 @@
-// src/model/Product.java
 package model;
 
 public class Product {
@@ -12,9 +11,12 @@ public class Product {
     private String image;
     private String createdAt;
     private String updatedAt;
-    private String name;
-    private int sales;
+    private String name;   // For BestSellingProduct
+    private int sales;     // For BestSellingProduct
 
+    // === CONSTRUCTORS ===
+
+    // 1. Full Constructor (12 params)
     public Product(int productID, String productName, String productCode, String brand, String type, double price, String description, String image, String createdAt, String updatedAt, String name, int sales) {
         this.productID = productID;
         this.productName = productName;
@@ -29,43 +31,31 @@ public class Product {
         this.name = name;
         this.sales = sales;
     }
-    public Product() {
-        // Constructor mặc định (không tham số)
+
+    // 2. Constructor cho DashboardDAO (8 params - CHUẨN hóa thứ tự)
+    public Product(int productID, String productCode, String productName, String brand, String type, double price, String description, String image) {
+        this.productID = productID;
+        this.productCode = productCode;
+        this.productName = productName;
+        this.brand = brand;
+        this.type = type;
+        this.price = price;
+        this.description = description;
+        this.image = image;
     }
 
+    // 3. Constructor cho BestSellingProductDAO (name, sales)
     public Product(String name, int sales) {
         this.name = name;
         this.sales = sales;
     }
 
-    // Getter
-    public String getName() {
-        return name;
+    // 4. Default Constructor
+    public Product() {
     }
-
-    public int getSales() {
-        return sales;
-    }
-
-    // Setter (nếu cần)
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSales(int sales) {
-        this.sales = sales;
-    }
-
-    public Product(int productID,
-                   String productName,
-                   String productCode,
-                   String brand,
-                   String type,
-                   double price,
-                   String description,
-                   String image,
-                   String createdAt,
-                   String updatedAt) {
+    // 5. Constructor chuẩn 10 tham số (ProductManagement / Promotion dùng)
+    public Product(int productID, String productName, String productCode, String brand, String type,
+                   double price, String description, String image, String createdAt, String updatedAt) {
         this.productID = productID;
         this.productName = productName;
         this.productCode = productCode;
@@ -78,90 +68,47 @@ public class Product {
         this.updatedAt = updatedAt;
     }
 
-    // getters & setters
-    public int getProductID() {
-        return productID;
-    }
+    // === GETTERS & SETTERS ===
+    // (Keep as bạn đang có)
 
-    public void setProductID(int productID) {
-        this.productID = productID;
-    }
+    public int getProductID() { return productID; }
+    public void setProductID(int productID) { this.productID = productID; }
 
-    public String getProductName() {
-        return productName;
-    }
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
+    public String getProductCode() { return productCode; }
+    public void setProductCode(String productCode) { this.productCode = productCode; }
 
-    public String getProductCode() {
-        return productCode;
-    }
+    public String getBrand() { return brand; }
+    public void setBrand(String brand) { this.brand = brand; }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public String getBrand() {
-        return brand;
-    }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getType() {
-        return type;
-    }
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 
-    public double getPrice() {
-        return price;
-    }
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public int getSales() { return sales; }
+    public void setSales(int sales) { this.sales = sales; }
 
     @Override
     public String toString() {
         return productName;
     }
-
 }

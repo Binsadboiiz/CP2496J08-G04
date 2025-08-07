@@ -20,11 +20,15 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+<<<<<<< HEAD
 import dao.PromotionDAO;
 import model.Promotion;
 import javafx.collections.FXCollections;
 import javafx.util.StringConverter;
 
+=======
+import java.sql.Connection;
+>>>>>>> 6c7bc4d090894ca6e4362000dad1257d31be0e70
 
 public class CreateInvoiceController {
 
@@ -48,7 +52,7 @@ public class CreateInvoiceController {
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
     private final InvoiceDetailDAO invoiceDetailDAO = new InvoiceDetailDAO();
-    private final ProductDAO productDAO = new ProductDAO(); // Khai báo ProductDAO
+//    private final ProductDAO productDAO = new ProductDAO(); // Khai báo ProductDAO
 
     private StaffController staffController;
 

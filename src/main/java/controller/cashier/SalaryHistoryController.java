@@ -1,77 +1,101 @@
-//package controller.cashier;
-//
-//import dao.SalaryHistoryDAO;
-//import javafx.collections.FXCollections;
-//import javafx.collections.ObservableList;
-//import javafx.fxml.FXML;
-//import javafx.fxml.FXMLLoader;
-//import javafx.scene.Parent;
-//import javafx.scene.Scene;
-//import javafx.scene.control.TableColumn;
-//import javafx.scene.control.TableView;
-//import javafx.scene.control.cell.PropertyValueFactory;
-//import javafx.stage.Modality;
-//import javafx.stage.Stage;
-//import model.SalaryHistory;
-//import java.io.IOException;
-//
-//public class SalaryHistoryController {
-//
-//    @FXML private TableView<SalaryHistory> salaryTable;
-//    @FXML private TableColumn<SalaryHistory, Integer> idColumn;
-//    @FXML private TableColumn<SalaryHistory, String> nameColumn;
-//    @FXML private TableColumn<SalaryHistory, Integer> monthColumn;
-//    @FXML private TableColumn<SalaryHistory, Integer> yearColumn;
-//    @FXML private TableColumn<SalaryHistory, Double> basicSalaryColumn;
-//    @FXML private TableColumn<SalaryHistory, Integer> workingDaysColumn;
-//    @FXML private TableColumn<SalaryHistory, Double> bonusColumn;
-//    @FXML private TableColumn<SalaryHistory, Double> penaltyColumn;
-//    @FXML private TableColumn<SalaryHistory, Double> totalSalaryColumn;
-//
-//    private ObservableList<SalaryHistory> salaryData;
-//
-//    @FXML
-//    public void initialize() {
-//        idColumn.setCellValueFactory(new PropertyValueFactory<>("salaryID"));
-//        nameColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
-//        monthColumn.setCellValueFactory(new PropertyValueFactory<>("month"));
-//        yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
-//        basicSalaryColumn.setCellValueFactory(new PropertyValueFactory<>("basicSalary"));
-//        workingDaysColumn.setCellValueFactory(new PropertyValueFactory<>("workingDays"));
-//        bonusColumn.setCellValueFactory(new PropertyValueFactory<>("bonus"));
-//        penaltyColumn.setCellValueFactory(new PropertyValueFactory<>("penalty"));
-//        totalSalaryColumn.setCellValueFactory(new PropertyValueFactory<>("totalSalary"));
-//
-//        loadSalaryHistories();
-//    }
-//
-//    private void loadSalaryHistories() {
-//        salaryData = FXCollections.observableArrayList(SalaryHistoryDAO.getAllSalaryHistories());
-//        salaryTable.setItems(salaryData);
-//    }
-//
-//    @FXML
-//    private void openAddSalaryForm() {
-//        try {
-//            FXMLLoader loader = new FXMLLoader();
-//            loader.setLocation(getClass().getResource("/view/cashier/SalaryHistoryForm.fxml"));  // <== Quan trọng!
-//            Parent form = loader.load();
-//
-//            Stage stage = new Stage();
-//            stage.setTitle("Thêm Lịch Sử Lương");
-//            stage.setScene(new Scene(form));
-//            stage.showAndWait();
-//
-//            // Sau khi đóng form, reload lại bảng
-//            loadSalaryHistoryTable();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void loadSalaryHistoryTable() {
-//
-//    }
-//
-//}
+
+package controller.cashier;
+
+import dao.SalaryHistoryDAO;
+import dao.DatabaseConnection;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import model.SalaryHistory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+public class SalaryHistoryController {
+
+    @FXML private ComboBox<String> employeeNameCombo;
+    @FXML private TextField monthField;
+    @FXML private TextField yearField;
+    @FXML private TextField basicSalaryField;
+    @FXML private TextField workingDaysField;
+    @FXML private TextField bonusField;
+    @FXML private TextField penaltyField;
+
+    private SalaryHistoryDAO dao;
+
+    @FXML
+    public void initialize() {
+        try {
+            Connection conn = DatabaseConnection.getConnection(); // Có thể ném SQLException
+            dao = new SalaryHistoryDAO(conn);
+            loadEmployeeNames();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to connect to database.");
+        }
+    }
+
+    private void loadEmployeeNames() {
+        try {
+            List<String> names = dao.getAllEmployeeNames();
+            employeeNameCombo.getItems().setAll(names);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Load Error", "Could not load employee names.");
+        }
+    }
+
+    @FXML
+    public void handleAddSalary() {
+        try {
+            String employeeName = employeeNameCombo.getValue();
+            if (employeeName == null || employeeName.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Validation Error", "Please select an employee.");
+                return;
+            }
+
+            int month = Integer.parseInt(monthField.getText());
+            int year = Integer.parseInt(yearField.getText());
+            double basicSalary = Double.parseDouble(basicSalaryField.getText());
+            int workingDays = Integer.parseInt(workingDaysField.getText());
+            double bonus = Double.parseDouble(bonusField.getText());
+            double penalty = Double.parseDouble(penaltyField.getText());
+
+            double totalSalary = basicSalary / 26 * workingDays + bonus - penalty;
+
+            SalaryHistory salary = new SalaryHistory(0, employeeName, month, year, basicSalary, workingDays, bonus, penalty, totalSalary);
+
+            int employeeID = dao.getEmployeeIDByName(employeeName);
+            if (employeeID == -1) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Employee not found in database.");
+                return;
+            }
+
+            if (dao.insertSalaryHistory(salary, employeeID)) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Salary history added successfully.");
+                closeForm();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Failure", "Failed to add salary history.");
+            }
+
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Input Error", "Please enter valid numbers.");
+        }
+    }
+
+    private void closeForm() {
+        Stage stage = (Stage) employeeNameCombo.getScene().getWindow();
+        stage.close();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}

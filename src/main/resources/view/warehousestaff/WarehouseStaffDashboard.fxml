@@ -30,35 +30,32 @@
             <StackPane fx:id="userCard" styleClass="user-card">
                 <VBox alignment="CENTER" spacing="10">
                     <!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
-                    <Label fx:id="usernameLabel" text="Admin" styleClass="username-label"/>
-                    <Label fx:id="roleLabel" text="Vai Trò" styleClass="role-label"/>
+                    <Label fx:id="usernameLabel" text="📦" styleClass="username-label"/>
+                    <Label fx:id="roleLabel" text="WAREHOUSE STAFF" styleClass="role-label"/>
                 </VBox>
             </StackPane>
 
             <!-- Sidebar Buttons -->
-            <Button fx:id="btnHome" text="Trang chủ" onAction="#handleHome"
+            <Button fx:id="btnHome" text="Home" onAction="#handleHome"
                     prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnRole" text="Vai Trò" onAction="#handleRole"
+            <Button fx:id="btnStockEntryList" text="Stock Entry List" onAction="#handleStockEntryList"
                     prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnStockEntryList" text="Danh sách nhập" onAction="#handleStockEntryList"
+            <Button fx:id="btnLossManagement" text="Loss Management" onAction="#handleLossManagement"
                     prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnLossManagement" text="Quản lý tổn thất" onAction="#handleLossManagement"
+            <Button fx:id="btnInventoryManagement" text="Inventory Management" onAction="#handleInventoryManagement"
                     prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnInventoryManagement" text="Quản lý tồn kho" onAction="#handleInventoryManagement"
+            <Button fx:id="btnWarehouseReport" text="Warehouse Report" onAction="#handleWarehouseReport"
                     prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnProductUpdate" text="Cập nhật chi tiết SP" onAction="#handleProductUpdate"
-                    prefWidth="180.0" styleClass="sidebar-button" />
-
             <!-- Spacer + Logout -->
             <Pane VBox.vgrow="ALWAYS" />
-            <Button fx:id="btnLogout" text="Đăng xuất" onAction="#handleLogout"
+            <Button fx:id="btnLogout" text="Logout" onAction="#handleLogout"
                     prefWidth="180.0" styleClass="sidebar-button" />
         </VBox>
     </left>
 
     <!-- Center content -->
     <center>
-        <StackPane fx:id="contentArea" />
+        <StackPane fx:id="contentArea" prefHeight="680" prefWidth="980.0" />
     </center>
 
 </BorderPane>

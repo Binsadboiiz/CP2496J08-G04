@@ -1,26 +1,19 @@
 package model;
 
-import java.time.LocalDate;
-
 public class RevenueReport {
-    private int reportID;
-    private String reportType;
-    private LocalDate reportDate;
-    private double totalRevenue;
-    private int totalInvoices;
+    private String label; // Ví dụ: "Cash", "Credit Card" hoặc "Tháng 1", "Tháng 2", v.v.
+    private double total;
 
-    public RevenueReport(int reportID, String reportType, LocalDate reportDate, double totalRevenue, int totalInvoices) {
-        this.reportID = reportID;
-        this.reportType = reportType;
-        this.reportDate = reportDate;
-        this.totalRevenue = totalRevenue;
-        this.totalInvoices = totalInvoices;
+    public RevenueReport(String label, double total) {
+        this.label = label;
+        this.total = total;
     }
 
-    // Getters and Setters
-    public int getReportID() { return reportID; }
-    public String getReportType() { return reportType; }
-    public LocalDate getReportDate() { return reportDate; }
-    public double getTotalRevenue() { return totalRevenue; }
-    public int getTotalInvoices() { return totalInvoices; }
+    public String getLabel() {
+        return label;
+    }
+
+    public double getTotal() {
+        return total;
+    }
 }

@@ -43,7 +43,7 @@ public class ControlPanelConfigDAO {
             ps.setInt(2, config.getConfigID());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // <-- xử lý lỗi tại đây
         }
         return false;
     }

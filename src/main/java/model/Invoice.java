@@ -15,10 +15,30 @@ public class Invoice {
     private LocalDateTime updatedAt;
     private Integer updatedBy;
 
+
+    // Optional: For displaying customer name in UI
+    private String customerName;
+
     // Constructors
     public Invoice() {}
 
-    public Invoice(int customerID, int userID, LocalDateTime date, BigDecimal totalAmount, BigDecimal discount, String status) {
+    public Invoice(int invoiceID, int customerID, int userID, LocalDateTime date,
+                   BigDecimal totalAmount, BigDecimal discount, String status,
+                   LocalDateTime createdAt, LocalDateTime updatedAt, Integer updatedBy) {
+        this.invoiceID = invoiceID;
+        this.customerID = customerID;
+        this.userID = userID;
+        this.date = date;
+        this.totalAmount = totalAmount;
+        this.discount = discount;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.updatedBy = updatedBy;
+    }
+
+    public Invoice(int customerID, int userID, LocalDateTime date, BigDecimal totalAmount,
+                   BigDecimal discount, String status) {
         this.customerID = customerID;
         this.userID = userID;
         this.date = date;
@@ -57,4 +77,13 @@ public class Invoice {
 
     public Integer getUpdatedBy() { return updatedBy; }
     public void setUpdatedBy(Integer updatedBy) { this.updatedBy = updatedBy; }
+
+    // Optional: customerName for UI TableView or Report
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 }

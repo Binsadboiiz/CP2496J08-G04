@@ -33,6 +33,8 @@ public class AdminController {
             e.printStackTrace();
         }
     }
+
+    //Cường Lồn
     @FXML
     private void initialize() {loadUI("Dashboard");}
     @FXML

@@ -1,20 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane prefHeight="600.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/24.0.1"
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.cashier.ControlPanelConfigController">
 
-    <TableView fx:id="configTable" layoutX="20" layoutY="20" prefHeight="300" prefWidth="700">
-        <columns>
-            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="nameColumn" text="Config Name" prefWidth="250"/>
-            <TableColumn fx:id="valueColumn" text="Config Value" prefWidth="250"/>
-        </columns>
-    </TableView>
+    <top>
+        <HBox spacing="20">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <VBox spacing="5">
+                <Label text="Tổng số hóa đơn:"/>
+                <Label fx:id="totalInvoicesLabel" style="-fx-font-weight: bold;"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Tổng doanh thu:"/>
+                <Label fx:id="totalRevenueLabel" style="-fx-font-weight: bold;"/>
+            </VBox>
+        </HBox>
+    </top>
 
-    <TextField fx:id="valueField" layoutX="20" layoutY="350" promptText="New Config Value" prefWidth="300"/>
-    <Button text="Update" layoutX="340" layoutY="350" onAction="#handleUpdateConfig"/>
-</AnchorPane>
+    <center>
+        <TableView fx:id="invoiceTable" prefHeight="350" prefWidth="700">
+            <columns>
+                <TableColumn fx:id="invoiceIDColumn" text="Mã HĐ" prefWidth="80"/>
+                <TableColumn fx:id="customerColumn" text="Khách hàng" prefWidth="150"/>
+                <TableColumn fx:id="dateColumn" text="Ngày" prefWidth="150"/>
+                <TableColumn fx:id="totalAmountColumn" text="Tổng tiền" prefWidth="120"/>
+                <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="100"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="20">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <VBox spacing="5">
+                <Label text="Tên sản phẩm"/>
+                <Label fx:id="productNameLabel" style="-fx-font-weight: bold;"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Hình ảnh sản phẩm"/>
+                <ImageView fx:id="productImageView" fitHeight="100" fitWidth="100"/>
+            </VBox>
+        </HBox>
+    </bottom>
+</BorderPane>

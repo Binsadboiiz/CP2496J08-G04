@@ -1,124 +1,115 @@
-//package controller.cashier;
-//
-//import dao.BestSellingProductDAO;
-//import dao.DashboardDAO;
-//import dao.DatabaseConnection;
-//import javafx.fxml.FXML;
-//import javafx.scene.control.*;
-//import javafx.scene.image.Image;
-//import javafx.scene.image.ImageView;
-//import javafx.scene.layout.FlowPane;
-//import javafx.scene.layout.VBox;
-//import model.BestSellingProduct;
-//import model.Product;
-//import model.TransactionDetail;
-//
-//import java.io.File;
-//import java.math.BigDecimal;
-//import java.sql.SQLException;
-//import java.util.List;
-//
-//public class ControlPanelConfigController {
-//
-//    @FXML private Label revenueLabel, invoiceCountLabel;
-//    @FXML private FlowPane productCardContainer;
-//    @FXML private ImageView productImageView;
-//    @FXML private Label detailProductName, detailProductCode, detailBrand, detailType, detailPrice, detailDescription;
-//
-//    @FXML private TableView<TransactionDetail> transactionTable;
-//    @FXML private TableColumn<TransactionDetail, String> productNameCol;
-//    @FXML private TableColumn<TransactionDetail, String> customerNameCol;
-//    @FXML private TableColumn<TransactionDetail, String> paymentMethodCol;
-//    @FXML private TableColumn<TransactionDetail, Number> priceCol;
-//    @FXML private TableColumn<TransactionDetail, Number> quantityCol;
-//
-//
-//    private final DashboardDAO dashboardDAO = new DashboardDAO();
-//    private final BestSellingProductDAO bestSellingProductDAO;
-//
-//    {
-//        try {
-//            bestSellingProductDAO = new BestSellingProductDAO(DatabaseConnection.getConnection());
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    @FXML
-//    public void initialize() {
-//        loadRevenueAndInvoices();
-//        loadProductCards();
-//    }
-//
-//    private void loadRevenueAndInvoices() {
-//        try {
-//            double totalRevenue = dashboardDAO.getTotalRevenue();
-//            int invoiceCount = dashboardDAO.getInvoiceCount();
-//            revenueLabel.setText(String.format("$%.2f", totalRevenue));
-//            invoiceCountLabel.setText(String.valueOf(invoiceCount));
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            showAlert(Alert.AlertType.ERROR, "Failed to load revenue and invoice count.");
-//        }
-//    }
-//
-//    private void loadProductCards() {
-//        productCardContainer.getChildren().clear();
-//        try {
-//            List<Product> products = dashboardDAO.getAllProducts();
-//            for (Product product : products) {
-//                VBox productCard = createProductCard(product);
-//                productCardContainer.getChildren().add(productCard);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            showAlert(Alert.AlertType.ERROR, "Failed to load product cards.");
-//        }
-//    }
-//
-//    private VBox createProductCard(Product product) {
-//        VBox card = new VBox(5);
-//        card.setPrefWidth(120);
-//        card.setStyle("-fx-border-color: #ccc; -fx-border-radius: 8; -fx-padding: 10; -fx-background-radius: 8; -fx-background-color: #f9f9f9;");
-//
-//        ImageView imageView = new ImageView();
-//        File imageFile = new File(product.getImage());
-//        if (imageFile.exists()) {
-//            imageView.setImage(new Image(imageFile.toURI().toString()));
-//        }
-//        imageView.setFitWidth(100);
-//        imageView.setFitHeight(100);
-//        imageView.setPreserveRatio(true);
-//
-//        Label nameLabel = new Label(product.getProductName());
-//        nameLabel.setStyle("-fx-font-weight: bold; -fx-wrap-text: true;");
-//        Label priceLabel = new Label(String.format("$%.2f", product.getPrice()));
-//
-//        card.getChildren().addAll(imageView, nameLabel, priceLabel);
-//
-//        card.setOnMouseClicked(event -> showProductDetails(product));
-//        return card;
-//    }
-//
-//    private void showProductDetails(Product product) {
-//        detailProductName.setText("Name: " + product.getProductName());
-//        detailProductCode.setText("Code: " + product.getProductCode());
-//        detailBrand.setText("Brand: " + product.getBrand());
-//        detailType.setText("Type: " + product.getType());
-//        detailPrice.setText("Price: $" + product.getPrice());
-//        detailDescription.setText("Description: " + product.getDescription());
-//
-//        File imageFile = new File(product.getImage());
-//        if (imageFile.exists()) {
-//            productImageView.setImage(new Image(imageFile.toURI().toString()));
-//        } else {
-//            productImageView.setImage(null);
-//        }
-//    }
-//
-//    private void showAlert(Alert.AlertType type, String message) {
-//        Alert alert = new Alert(type);
-//        alert.setContentText(message);
-//        alert.showAndWait();
-//    }
-//}
+package controller.cashier;
+
+import dao.DatabaseConnection;
+import dao.InvoiceDAO;
+import dao.ProductDAO;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import model.Invoice;
+import model.Product;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class ControlPanelConfigController {
+
+    @FXML private TableView<Invoice> invoiceTable;
+    @FXML private TableColumn<Invoice, Integer> invoiceIDColumn;
+    @FXML private TableColumn<Invoice, String> customerColumn;
+    @FXML private TableColumn<Invoice, String> dateColumn;
+    @FXML private TableColumn<Invoice, String> totalAmountColumn;
+    @FXML private TableColumn<Invoice, String> statusColumn;
+
+    @FXML private Label totalInvoicesLabel;
+    @FXML private Label totalRevenueLabel;
+    @FXML private Label productNameLabel;
+    @FXML private ImageView productImageView;
+
+    private InvoiceDAO invoiceDAO;
+    private ProductDAO productDAO;
+
+    @FXML
+    public void initialize() {
+        try {
+
+            Connection conn = DatabaseConnection.getConnection();
+            invoiceDAO = new InvoiceDAO();
+            productDAO = new ProductDAO(conn);
+
+            // Set cell value factories dùng getter thường
+            invoiceIDColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceID"));
+            customerColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+            // Custom: Hiển thị ngày dạng dd/MM/yyyy HH:mm
+            dateColumn.setCellValueFactory(data -> {
+                if (data.getValue().getDate() != null) {
+                    String dateString = data.getValue().getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+                    return new javafx.beans.property.SimpleStringProperty(dateString);
+                } else {
+                    return new javafx.beans.property.SimpleStringProperty("");
+                }
+            });
+            // Custom: Hiển thị tiền có dấu phẩy
+            totalAmountColumn.setCellValueFactory(data -> {
+                BigDecimal amount = data.getValue().getTotalAmount();
+                String money = (amount != null) ? String.format("%,.0f", amount.doubleValue()) : "";
+                return new javafx.beans.property.SimpleStringProperty(money);
+            });
+            statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+            // Load dữ liệu hóa đơn
+            loadInvoiceTable();
+
+            // Gán sự kiện khi click dòng
+            invoiceTable.setOnMouseClicked(this::handleInvoiceClick);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadInvoiceTable() {
+        List<Invoice> invoices = invoiceDAO.getAllInvoicesWithCustomerName();
+        invoiceTable.setItems(FXCollections.observableArrayList(invoices));
+
+        // Hiển thị tổng số hóa đơn
+        totalInvoicesLabel.setText(String.valueOf(invoices.size()));
+
+        // Tính tổng doanh thu (dùng BigDecimal)
+        BigDecimal totalRevenue = invoices.stream()
+                .map(Invoice::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        totalRevenueLabel.setText(String.format("%,.0f VNĐ", totalRevenue.doubleValue()));
+    }
+
+    private void handleInvoiceClick(MouseEvent event) {
+        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            // Lấy sản phẩm đầu tiên thuộc hóa đơn được chọn
+            Product product = productDAO.getFirstProductByInvoiceID(selected.getInvoiceID());
+            if (product != null) {
+                productNameLabel.setText(product.getProductName());
+                try {
+                    if (product.getImage() != null && !product.getImage().isEmpty()) {
+                        productImageView.setImage(new Image(product.getImage(), true));
+                    } else {
+                        productImageView.setImage(null);
+                    }
+                } catch (Exception e) {
+                    productImageView.setImage(null);
+                }
+            } else {
+                productNameLabel.setText("Không có sản phẩm");
+                productImageView.setImage(null);
+            }
+        }
+    }
+}

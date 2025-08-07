@@ -94,7 +94,7 @@ public class InvoiceDAO {
         List<Invoice> list = new ArrayList<>();
         String sql = "SELECT i.* FROM Invoice i " +
                 "JOIN Customer c ON i.CustomerID = c.CustomerID " +
-                "WHERE c.CustomerName LIKE ? " +
+                "WHERE c.FullName LIKE ? " +
                 "OR EXISTS (SELECT 1 FROM InvoiceDetail d " +
                 "JOIN Product p ON d.ProductID = p.ProductID " +
                 "WHERE d.InvoiceID = i.InvoiceID AND p.ProductName LIKE ?) " +
@@ -133,7 +133,7 @@ public class InvoiceDAO {
         List<Object> params = new ArrayList<>();
 
         if (customerName != null && !customerName.isEmpty()) {
-            sql.append(" AND c.CustomerName LIKE ?");
+            sql.append(" AND c.FullName LIKE ?");
             params.add("%" + customerName + "%");
         }
         if (productName != null && !productName.isEmpty()) {
@@ -168,6 +168,34 @@ public class InvoiceDAO {
                 inv.setTotalAmount(rs.getBigDecimal("TotalAmount"));
                 inv.setDiscount(rs.getBigDecimal("Discount"));
                 inv.setStatus(rs.getString("Status"));
+                list.add(inv);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    public List<Invoice> getAllInvoicesWithCustomerName() {
+        List<Invoice> list = new ArrayList<>();
+        String sql = """
+            SELECT i.*, c.FullName
+            FROM Invoice i
+            LEFT JOIN Customer c ON i.CustomerID = c.CustomerID
+            ORDER BY i.Date DESC
+            """;
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Invoice inv = new Invoice();
+                inv.setInvoiceID(rs.getInt("InvoiceID"));
+                inv.setCustomerID(rs.getInt("CustomerID"));
+                inv.setUserID(rs.getInt("UserID"));
+                inv.setDate(rs.getTimestamp("Date").toLocalDateTime());
+                inv.setTotalAmount(rs.getBigDecimal("TotalAmount"));
+                inv.setDiscount(rs.getBigDecimal("Discount"));
+                inv.setStatus(rs.getString("Status"));
+                inv.setCustomerName(rs.getString("FullName"));
                 list.add(inv);
             }
         } catch (SQLException e) {

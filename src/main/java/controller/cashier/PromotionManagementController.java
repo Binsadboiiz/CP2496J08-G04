@@ -1,97 +1,101 @@
-//package controller.cashier;
-//
-//import dao.ProductDAO;
-//import dao.PromotionDAO;
-//import javafx.collections.FXCollections;
-//import javafx.collections.ObservableList;
-//import javafx.fxml.FXML;
-//import javafx.scene.control.*;
-//import model.Promotion;
-//import java.time.LocalDate;
-//
-//public class PromotionManagementController {
-//
-//    @FXML private TextField promotionNameField, discountField;
-//    @FXML private ComboBox<String> productNameComboBox;
-//    @FXML private DatePicker startDatePicker, endDatePicker;
-//    @FXML private TableView<Promotion> promotionTable;
-//    @FXML private TableColumn<Promotion, String> promotionNameColumn;
-//    @FXML private TableColumn<Promotion, Integer> productIDColumn;
-//    @FXML private TableColumn<Promotion, Double> discountColumn;
-//    @FXML private TableColumn<Promotion, LocalDate> startDateColumn, endDateColumn;
-//
-//    private ObservableList<Promotion> promotionList;
-//
-//    @FXML
-//    public void initialize() {
-//        productNameComboBox.setItems(FXCollections.observableArrayList(ProductDAO.getAllProductNames()));
-//        productNameComboBox.setEditable(true);
-//        loadPromotions();
-//
-//        promotionNameColumn.setCellValueFactory(cell -> cell.getValue().promotionNameProperty());
-//        productIDColumn.setCellValueFactory(cell -> cell.getValue().appliedProductIDProperty().asObject());
-//        discountColumn.setCellValueFactory(cell -> cell.getValue().discountPercentProperty().asObject());
-//        startDateColumn.setCellValueFactory(cell -> cell.getValue().startDateProperty());
-//        endDateColumn.setCellValueFactory(cell -> cell.getValue().endDateProperty());
-//    }
-//
-//    @FXML
-//    private void handleAddPromotion() {
-//        String promoName = promotionNameField.getText();
-//        String selectedProduct = productNameComboBox.getEditor().getText();
-//
-//        if (promoName.isEmpty() || selectedProduct.isEmpty() || discountField.getText().isEmpty()
-//                || startDatePicker.getValue() == null || endDatePicker.getValue() == null) {
-//            showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin.");
-//            return;
-//        }
-//
-//        double discount;
-//        try {
-//            discount = Double.parseDouble(discountField.getText());
-//        } catch (NumberFormatException e) {
-//            showAlert("Lỗi", "Giảm giá phải là số.");
-//            return;
-//        }
-//
-//        LocalDate startDate = startDatePicker.getValue();
-//        LocalDate endDate = endDatePicker.getValue();
-//
-//        int productID = ProductDAO.getProductIDByName(selectedProduct);
-//        if (productID == -1) {
-//            showAlert("Lỗi", "Không tìm thấy sản phẩm.");
-//            return;
-//        }
-//
-//        Promotion promo = new Promotion(0, promoName, productID, discount, startDate, endDate);
-//        boolean success = PromotionDAO.insertPromotion(promo);
-//        if (success) {
-//            showAlert("Thành Công", "Đã thêm chương trình khuyến mãi.");
-//            loadPromotions();
-//            clearForm();
-//        } else {
-//            showAlert("Lỗi", "Không thể thêm chương trình khuyến mãi.");
-//        }
-//    }
-//
-//    private void loadPromotions() {
-//        promotionList = FXCollections.observableArrayList(PromotionDAO.getAllPromotions());
-//        promotionTable.setItems(promotionList);
-//    }
-//
-//    private void clearForm() {
-//        promotionNameField.clear();
-//        discountField.clear();
-//        productNameComboBox.getSelectionModel().clearSelection();
-//        productNameComboBox.getEditor().clear();
-//        startDatePicker.setValue(null);
-//        endDatePicker.setValue(null);
-//    }
-//
-//    private void showAlert(String title, String content) {
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle(title);
-//        alert.setContentText(content);
-//        alert.showAndWait();
-//    }
-//}
+package controller.cashier;
+
+import dao.PromotionDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import model.Promotion;
+
+import java.time.LocalDate;
+
+public class PromotionManagementController {
+
+    @FXML private TableView<Promotion> tblPromotion;
+    @FXML private TableColumn<Promotion, Integer> colID;
+    @FXML private TableColumn<Promotion, String> colName;
+    @FXML private TableColumn<Promotion, String> colDesc;
+    @FXML private TableColumn<Promotion, Double> colDiscount;
+    @FXML private TableColumn<Promotion, LocalDate> colStart;
+    @FXML private TableColumn<Promotion, LocalDate> colEnd;
+
+    @FXML private Button btnAdd, btnEdit, btnDelete, btnRefresh;
+
+    private ObservableList<Promotion> promotionList;
+
+    @FXML
+    public void initialize() {
+        colID.setCellValueFactory(new PropertyValueFactory<>("promotionID"));
+        colName.setCellValueFactory(new PropertyValueFactory<>("promotionName"));
+        colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colDiscount.setCellValueFactory(new PropertyValueFactory<>("discountPercentage"));
+        colStart.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        colEnd.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        loadTable();
+
+        btnAdd.setOnAction(e -> showAddDialog());
+        btnEdit.setOnAction(e -> showEditDialog());
+        btnDelete.setOnAction(e -> deleteSelected());
+        btnRefresh.setOnAction(e -> loadTable());
+    }
+
+    private void loadTable() {
+        promotionList = FXCollections.observableArrayList(PromotionDAO.getAll());
+        tblPromotion.setItems(promotionList);
+    }
+
+    private void showAddDialog() {
+        // Hiện dialog nhập thông tin (tạo dialog riêng, ví dụ AddPromotionDialog)
+        AddPromotionDialog dialog = new AddPromotionDialog();
+        Promotion newPromo = dialog.showAndWait();
+        if (newPromo != null) {
+            if (PromotionDAO.insert(newPromo)) {
+                loadTable();
+                showAlert("Thêm thành công!");
+            } else {
+                showAlert("Lỗi khi thêm!");
+            }
+        }
+    }
+
+    private void showEditDialog() {
+        Promotion selected = tblPromotion.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Chọn dòng để sửa!");
+            return;
+        }
+        EditPromotionDialog dialog = new EditPromotionDialog(selected);
+        Promotion updated = dialog.showAndWait();
+        if (updated != null) {
+            if (PromotionDAO.update(updated)) {
+                loadTable();
+                showAlert("Cập nhật thành công!");
+            } else {
+                showAlert("Lỗi khi cập nhật!");
+            }
+        }
+    }
+
+    private void deleteSelected() {
+        Promotion selected = tblPromotion.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Chọn dòng để xóa!");
+            return;
+        }
+        if (PromotionDAO.delete(selected.getPromotionID())) {
+            loadTable();
+            showAlert("Xóa thành công!");
+        } else {
+            showAlert("Lỗi khi xóa!");
+        }
+    }
+
+    private void showAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Thông báo");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+}

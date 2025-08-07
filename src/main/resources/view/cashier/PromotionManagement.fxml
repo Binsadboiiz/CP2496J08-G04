@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.cashier.PromotionManagementController" prefHeight="600.0" prefWidth="800.0">
-    <children>
-        <Label text="Manage Promotions" layoutX="20" layoutY="20" font="System 20 Bold"/>
+<AnchorPane xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.cashier.PromotionManagementController"
+            prefHeight="600.0" prefWidth="800.0">
 
-        <TableView fx:id="promotionTable" layoutX="20" layoutY="60" prefHeight="300" prefWidth="760">
-            <columns>
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-                <TableColumn fx:id="nameColumn" text="Promotion Name" prefWidth="200"/>
-                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="300"/>
-                <TableColumn fx:id="discountColumn" text="Discount (%)" prefWidth="100"/>
-                <TableColumn fx:id="startDateColumn" text="Start Date" prefWidth="100"/>
-                <TableColumn fx:id="endDateColumn" text="End Date" prefWidth="100"/>
-            </columns>
-        </TableView>
+    <!-- Title -->
+    <Label layoutX="20" layoutY="20"
+           text="Manage Promotions"
+           style="-fx-font-size: 20px; -fx-font-weight: bold;" />
 
-        <TextField fx:id="promotionNameField" layoutX="20" layoutY="380" promptText="Promotion Name" prefWidth="200"/>
-        <TextArea fx:id="descriptionField" layoutX="20" layoutY="420" promptText="Description" prefWidth="200" prefHeight="60"/>
-        <TextField fx:id="discountField" layoutX="20" layoutY="490" promptText="Discount (%)" prefWidth="100"/>
-        <DatePicker fx:id="startDateField" layoutX="150" layoutY="490"/>
-        <DatePicker fx:id="endDateField" layoutX="300" layoutY="490"/>
-        <Button text="Add Promotion" layoutX="20" layoutY="550" onAction="#handleAddPromotion"/>
-    </children>
+    <!-- Table of Promotions -->
+    <TableView fx:id="tblPromotion" layoutX="20" layoutY="60" prefWidth="760" prefHeight="280">
+        <columns>
+            <TableColumn fx:id="colID" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colName" text="Tên khuyến mãi" prefWidth="180"/>
+            <TableColumn fx:id="colDesc" text="Mô tả" prefWidth="200"/>
+            <TableColumn fx:id="colDiscount" text="Giảm (%)" prefWidth="80"/>
+            <TableColumn fx:id="colStart" text="Bắt đầu" prefWidth="120"/>
+            <TableColumn fx:id="colEnd" text="Kết thúc" prefWidth="120"/>
+        </columns>
+    </TableView>
+
+    <!-- Buttons -->
+    <HBox layoutX="20" layoutY="360" spacing="10">
+        <children>
+            <Button text="Thêm" fx:id="btnAdd" prefWidth="120"/>
+            <Button text="Làm mới" fx:id="btnRefresh" prefWidth="80"/>
+            <Button text="Xóa" fx:id="btnDelete" prefWidth="80"/>
+            <Button text="Sửa" fx:id="btnEdit" prefWidth="80"/>
+        </children>
+    </HBox>
+
 </AnchorPane>

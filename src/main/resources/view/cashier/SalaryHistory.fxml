@@ -23,6 +23,9 @@
     </TableView>
 
     <!-- Input Fields -->
+    <Label text="Employee Name:" layoutX="20" layoutY="310"/>
+    <ComboBox fx:id="employeeNameCombo" layoutX="120" layoutY="305" prefWidth="200" editable="true"/>
+
     <Label text="Employee ID:" layoutX="20" layoutY="340"/>
     <TextField fx:id="employeeIDField" layoutX="100" layoutY="335" prefWidth="100"/>
 
