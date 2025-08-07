@@ -1,27 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<!--<?import java.lang.*?>-->
+<!--<?import java.util.*?>-->
+<!--<?import javafx.scene.*?>-->
+<!--<?import javafx.scene.control.*?>-->
+<!--<?import javafx.scene.layout.*?>-->
 
-<AnchorPane prefWidth="800" prefHeight="500" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.admin.PromotionController">
-    <children>
-        <TableView fx:id="tblPromotion" layoutX="20" layoutY="70" prefHeight="350" prefWidth="760">
-            <columns>
-                <TableColumn fx:id="colID" text="ID" prefWidth="50"/>
-                <TableColumn fx:id="colName" text="Tên khuyến mãi" prefWidth="180"/>
-                <TableColumn fx:id="colDesc" text="Mô tả" prefWidth="200"/>
-                <TableColumn fx:id="colDiscount" text="Giảm (%)" prefWidth="80"/>
-                <TableColumn fx:id="colStart" text="Bắt đầu" prefWidth="120"/>
-                <TableColumn fx:id="colEnd" text="Kết thúc" prefWidth="120"/>
-            </columns>
-        </TableView>
-        <Button fx:id="btnAdd" layoutX="20" layoutY="440" text="Thêm" prefWidth="80"/>
-        <Button fx:id="btnEdit" layoutX="110" layoutY="440" text="Sửa" prefWidth="80"/>
-        <Button fx:id="btnDelete" layoutX="200" layoutY="440" text="Xóa" prefWidth="80"/>
-        <Button fx:id="btnRefresh" layoutX="290" layoutY="440" text="Làm mới" prefWidth="100"/>
-    </children>
-</AnchorPane>
+<!--<AnchorPane prefWidth="800" prefHeight="500" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.admin.PromotionController">-->
+<!--    <children>-->
+<!--        <TableView fx:id="tblPromotion" layoutX="20" layoutY="70" prefHeight="350" prefWidth="760">-->
+<!--            <columns>-->
+<!--                <TableColumn fx:id="colID" text="ID" prefWidth="50"/>-->
+<!--                <TableColumn fx:id="colName" text="Tên khuyến mãi" prefWidth="180"/>-->
+<!--                <TableColumn fx:id="colDesc" text="Mô tả" prefWidth="200"/>-->
+<!--                <TableColumn fx:id="colDiscount" text="Giảm (%)" prefWidth="80"/>-->
+<!--                <TableColumn fx:id="colStart" text="Bắt đầu" prefWidth="120"/>-->
+<!--                <TableColumn fx:id="colEnd" text="Kết thúc" prefWidth="120"/>-->
+<!--            </columns>-->
+<!--        </TableView>-->
+<!--        <Button fx:id="btnAdd" layoutX="20" layoutY="440" text="Thêm" prefWidth="80"/>-->
+<!--        <Button fx:id="btnEdit" layoutX="110" layoutY="440" text="Sửa" prefWidth="80"/>-->
+<!--        <Button fx:id="btnDelete" layoutX="200" layoutY="440" text="Xóa" prefWidth="80"/>-->
+<!--        <Button fx:id="btnRefresh" layoutX="290" layoutY="440" text="Làm mới" prefWidth="100"/>-->
+<!--    </children>-->
+<!--</AnchorPane>-->
 

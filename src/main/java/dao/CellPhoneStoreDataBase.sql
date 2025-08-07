@@ -5,7 +5,7 @@ GO
 CREATE TABLE [User]
 (
     UserID   INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-    Username VARCHAR(50)                    NOT NULL,
+    Username VARCHAR(50)                   UNIQUE,
     Password VARCHAR(50)                    NOT NULL,
     Role VARCHAR(50) NOT NULL
 );
@@ -14,7 +14,7 @@ CREATE TABLE Customer
 (
     CustomerID    INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
     FullName      VARCHAR(100)                   NOT NULL,
-    Phone         VARCHAR(15),
+    Phone         VARCHAR(15) unique,
     Email         VARCHAR(50),
     Address       VARCHAR(200),
     LoyaltyPoints INT DEFAULT 0
@@ -72,7 +72,7 @@ CREATE TABLE Supplier
     Email NVARCHAR(200) NULL,
     Note NVARCHAR(255) NULL,
     CreatedDate DATETIME2 DEFAULT GETDATE() NOT NULL,
-    IsActive BIT DEFAULT 1 NOT NULL;
+    IsActive BIT DEFAULT 1 NOT NULL
 );
 
 CREATE TABLE Invoice
@@ -181,6 +181,102 @@ ALTER TABLE [User]
 ADD CONSTRAINT FK_User_Employee
 FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID);
 
-INSERT INTO [User] (Username, Password, Role) VALUES ('admin', '123456', 'Admin')
+CREATE TABLE LossReport (
+ReportID INT PRIMARY KEY IDENTITY(1,1),
+UserID INT,
+ReportDate DATETIME DEFAULT GETDATE(),
+FOREIGN KEY (UserID) REFERENCES [User](UserID)
+);
+
+CREATE TABLE LossReportDetail (
+ReportID INT NOT NULL,
+ProductID INT NOT NULL,
+Quantity INT NOT NULL CHECK (Quantity >= 0),
+Note NVARCHAR(255),
+LossDate DATETIME DEFAULT GETDATE(),
+PRIMARY KEY (ReportID, ProductID),
+FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+);
+
+CREATE VIEW vw_ProfitReport AS
+SELECT
+    i.InvoiceID,
+    i.Date AS InvoiceDate,
+    SUM(id.Quantity * (id.UnitPrice - se.UnitCost)) AS Profit
+FROM Invoice i
+JOIN InvoiceDetail id ON i.InvoiceID = id.InvoiceID
+JOIN StockEntryDetail se ON id.ProductID = se.ProductID
+GROUP BY i.InvoiceID, i.Date;
+
+CREATE TABLE ProductReturn (
+    ReturnID INT PRIMARY KEY IDENTITY(1,1),
+    InvoiceID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    ReturnDate DATETIME DEFAULT GETDATE(),
+    Reason NVARCHAR(500),
+    FOREIGN KEY (InvoiceID) REFERENCES Invoice(InvoiceID),
+    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+);
+CREATE TABLE SalaryHistory (
+    SalaryID INT PRIMARY KEY IDENTITY(1,1),
+    EmployeeID INT NOT NULL,
+    Month INT NOT NULL,
+    Year INT NOT NULL,
+    BasicSalary DECIMAL(18, 2) NOT NULL,
+    WorkingDays INT NOT NULL,
+    Bonus DECIMAL(18, 2) NOT NULL,
+    Penalty DECIMAL(18, 2) NOT NULL,
+    TotalSalary DECIMAL(18, 2) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_SalaryHistory_Employee FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+);
+
+CREATE TABLE ReturnPolicy (
+    PolicyID INT PRIMARY KEY IDENTITY(1,1),
+    PolicyName VARCHAR(100) NOT NULL,
+    Description NVARCHAR(500),
+    DaysAllowed INT NOT NULL CHECK (DaysAllowed >= 0),
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME
+);
+
+CREATE TABLE ControlPanelConfig (
+    ConfigID INT PRIMARY KEY IDENTITY(1,1),
+    ConfigName VARCHAR(100) NOT NULL,
+    ConfigValue VARCHAR(200) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME
+);
+
+CREATE TABLE RevenueReports (
+    ReportID INT PRIMARY KEY IDENTITY(1,1),
+    ReportType VARCHAR(50) NOT NULL CHECK (ReportType IN ('Monthly', 'Yearly')),
+    ReportDate DATE NOT NULL,
+    TotalRevenue DECIMAL(18, 2) NOT NULL,
+    TotalInvoices INT NOT NULL,
+    TopSellingProductID INT,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (TopSellingProductID) REFERENCES Product(ProductID)
+);
+
+
+CREATE TABLE SalaryConfig (
+    ConfigID INT PRIMARY KEY IDENTITY(1,1),
+    ConfigName VARCHAR(100) NOT NULL,
+    ConfigValue DECIMAL(18,2) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE Promotion (
+    PromotionID INT IDENTITY(1,1) PRIMARY KEY,
+    PromotionName NVARCHAR(255),
+    AppliedProductID INT,
+    DiscountPercent FLOAT,
+    StartDate DATE,
+    EndDate DATE
+);
+INSERT INTO [User] (Username, Password, Role) VALUES ('manager', '123456', 'Manager')
 insert into [User] (Username, Password, Role) values ('staff', '123456', 'Staff')
 insert into [User] (Username, Password, Role) values ('cashier', '123456', 'Cashier')
+insert into [User] (Username, Password, Role) values ('warehouse', '123456', 'Warehouse')
