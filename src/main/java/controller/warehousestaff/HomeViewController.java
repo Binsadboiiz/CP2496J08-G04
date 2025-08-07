@@ -22,44 +22,37 @@ public class HomeViewController implements Initializable {
 
     private static final int LOW_STOCK_THRESHOLD = 10;
 
-    // FXML Elements
+    // FXML Elements - Overview Information
     @FXML private Label totalProductsLabel;
     @FXML private Label lowStockLabel;
     @FXML private Label totalStockEntriesLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Load dữ liệu thống kê
+        // Load statistical data
         loadHomeDataAsync();
 
-        // Thêm hiệu ứng fade in
+        // Add fade in effect for labels
         addFadeInEffect(totalProductsLabel);
         addFadeInEffect(lowStockLabel);
         addFadeInEffect(totalStockEntriesLabel);
     }
 
     /**
-     * Load dữ liệu trang chủ bất đồng bộ
+     * Load home page data asynchronously
      */
     private void loadHomeDataAsync() {
         Task<int[]> task = new Task<int[]>() {
             @Override
             protected int[] call() throws Exception {
                 try {
-                    // Lấy tổng số sản phẩm
                     int totalProducts = ProductDAO.getTotalProducts();
-
-                    // Lấy số sản phẩm sắp hết hàng (≤ 10)
                     int lowStock = InventoryDAO.getStockAlerts(LOW_STOCK_THRESHOLD);
-
-                    // Lấy tổng số phiếu nhập hàng
                     int totalEntries = StockEntryDAO.getAll().size();
 
                     return new int[]{totalProducts, lowStock, totalEntries};
-
                 } catch (Exception e) {
                     e.printStackTrace();
-                    // Trả về giá trị mặc định nếu có lỗi
                     return new int[]{0, 0, 0};
                 }
             }
@@ -75,7 +68,7 @@ public class HomeViewController implements Initializable {
             @Override
             protected void failed() {
                 Platform.runLater(() -> {
-                    showErrorAlert("Không thể tải dữ liệu trang chủ. Hiển thị giá trị mặc định.");
+                    showErrorAlert("Unable to load data. Displaying default values.");
                     updateLabels(0, 0, 0);
                 });
             }
@@ -87,7 +80,7 @@ public class HomeViewController implements Initializable {
     }
 
     /**
-     * Cập nhật các label với dữ liệu mới
+     * Update labels with new data
      */
     private void updateLabels(int totalProducts, int lowStock, int totalEntries) {
         if (totalProductsLabel != null) {
@@ -102,90 +95,69 @@ public class HomeViewController implements Initializable {
     }
 
     /**
-     * Thêm hiệu ứng fade in cho node
+     * Add fade in effect for node
      */
     private void addFadeInEffect(Node node) {
         if (node != null) {
-            FadeTransition fade = new FadeTransition(Duration.millis(1000), node);
+            FadeTransition fade = new FadeTransition(Duration.millis(800), node);
             fade.setFromValue(0.0);
             fade.setToValue(1.0);
             fade.play();
         }
     }
 
-    // ==================== 4 CHỨC NĂNG CHÍNH ====================
+    // ==================== 3 MAIN FUNCTIONS ====================
 
     /**
-     * Xử lý chức năng Quản lý tồn kho
+     * Handle Inventory Management function
      */
     @FXML
     private void handleInventoryManagement(MouseEvent event) {
         addClickEffect((Node) event.getSource());
 
-        showInfoAlert("📦 Quản lý tồn kho",
-                "Chức năng này sẽ cho phép bạn:\n" +
-                        "• Xem danh sách sản phẩm trong kho\n" +
-                        "• Kiểm tra số lượng tồn kho\n" +
-                        "• Theo dõi sản phẩm sắp hết hàng\n" +
-                        "• Cập nhật thông tin tồn kho");
+        showInfoAlert("📦 Inventory Management",
+                "View product list in warehouse\n" +
+                        "Check inventory quantities\n" +
+                        "Monitor low stock products");
     }
 
     /**
-     * Xử lý chức năng Cập nhật sản phẩm
-     */
-    @FXML
-    private void handleProductUpdate(MouseEvent event) {
-        addClickEffect((Node) event.getSource());
-
-        showInfoAlert("✏️ Cập nhật sản phẩm",
-                "Chức năng này sẽ cho phép bạn:\n" +
-                        "• Chỉnh sửa thông tin sản phẩm\n" +
-                        "• Cập nhật giá và mô tả\n" +
-                        "• Quản lý hình ảnh sản phẩm");
-    }
-
-    /**
-     * Xử lý chức năng Phiếu nhập hàng
+     * Handle Stock Entry function
      */
     @FXML
     private void handleStockEntry(MouseEvent event) {
         addClickEffect((Node) event.getSource());
 
-        showInfoAlert("📋 Phiếu nhập hàng",
-                "Chức năng này sẽ cho phép bạn:\n" +
-                        "• Tạo phiếu nhập hàng mới\n" +
-                        "• Xem lịch sử các phiếu nhập\n" +
-                        "• Quản lý thông tin nhà cung cấp ");
+        showInfoAlert("📋 Stock Entry",
+                "Create new stock entries\n" +
+                        "View stock entry history");
     }
 
     /**
-     * Xử lý chức năng Báo cáo hao hụt
+     * Handle Loss Management function
      */
     @FXML
     private void handleLossManagement(MouseEvent event) {
         addClickEffect((Node) event.getSource());
 
-        showInfoAlert("⚠️ Báo cáo hao hụt",
-                "Chức năng này sẽ cho phép bạn:\n" +
-                        "• Ghi nhận hàng hóa bị hao hụt\n" +
-                        "• Theo dõi nguyên nhân hao hụt\n" +
-                        "• Tạo báo cáo thống kê\n" +
-                        "• Phân tích xu hướng hao hụt");
+        showInfoAlert("⚠️ Loss Report",
+                "Record damaged or lost goods\n" +
+                        "Track loss reasons\n" +
+                        "Generate statistical reports");
     }
 
     // ==================== UTILITY METHODS ====================
 
     /**
-     * Thêm hiệu ứng click cho node
+     * Add click effect for node
      */
     private void addClickEffect(Node node) {
         if (node != null) {
-            // Hiệu ứng scale khi click
-            ScaleTransition scale = new ScaleTransition(Duration.millis(150), node);
+            ScaleTransition scale = new ScaleTransition(Duration.millis(120), node);
             scale.setFromX(1.0);
             scale.setFromY(1.0);
-            scale.setToX(0.95);
-            scale.setToY(0.95);
+            scale.setToX(0.96);
+            scale.setToY(0.96);
             scale.setAutoReverse(true);
             scale.setCycleCount(2);
             scale.play();
@@ -193,31 +165,31 @@ public class HomeViewController implements Initializable {
     }
 
     /**
-     * Hiển thị thông báo lỗi
+     * Show error alert
      */
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Lỗi");
+        alert.setTitle("Error");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
 
     /**
-     * Hiển thị thông báo thông tin với tiêu đề tùy chỉnh
+     * Show information alert
      */
     private void showInfoAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Thông tin chức năng");
+        alert.setTitle("Function Information");
         alert.setHeaderText(title);
         alert.setContentText(message);
         alert.setResizable(true);
-        alert.getDialogPane().setPrefWidth(400);
+        alert.getDialogPane().setPrefWidth(350);
         alert.showAndWait();
     }
 
     /**
-     * Refresh dữ liệu trang chủ
+     * Refresh home page data
      */
     public void refreshData() {
         loadHomeDataAsync();

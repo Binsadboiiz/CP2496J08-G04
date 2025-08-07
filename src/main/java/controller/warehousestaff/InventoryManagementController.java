@@ -79,16 +79,16 @@ public class InventoryManagementController {
                 } else {
                     setText(status);
                     switch (status) {
-                        case "Hết hàng":
+                        case "Out of Stock":
                             setStyle("-fx-background-color: #ffebee; -fx-text-fill: #c62828;");
                             break;
-                        case "Sắp hết":
+                        case "Critical":
                             setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #ef6c00;");
                             break;
-                        case "Ít hàng":
+                        case "Low Stock":
                             setStyle("-fx-background-color: #fffde7; -fx-text-fill: #f57f17;");
                             break;
-                        case "Đủ hàng":
+                        case "In Stock":
                             setStyle("-fx-background-color: #e8f5e8; -fx-text-fill: #2e7d32;");
                             break;
                         default:
@@ -104,13 +104,13 @@ public class InventoryManagementController {
     private void setupFilters() {
         // Status filter
         cbStatusFilter.setItems(FXCollections.observableArrayList(
-                "Tất cả", "Hết hàng", "Sắp hết", "Ít hàng", "Đủ hàng"
+                "All", "Out of Stock", "Critical", "Low Stock", "In Stock"
         ));
-        cbStatusFilter.setValue("Tất cả");
+        cbStatusFilter.setValue("All");
 
         // Brand filter - will be populated after loading data
-        cbBrandFilter.setItems(FXCollections.observableArrayList("Tất cả"));
-        cbBrandFilter.setValue("Tất cả");
+        cbBrandFilter.setItems(FXCollections.observableArrayList("All"));
+        cbBrandFilter.setValue("All");
 
         // Event handlers for filtering
         txtSearch.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
@@ -120,7 +120,7 @@ public class InventoryManagementController {
 
     private void loadInventoryData() {
         try {
-            // Lấy dữ liệu từ DAO mới
+            // Get data from new DAO
             List<InventorySummary> summaries = InventorySummaryDAO.getAllInventorySummary();
             inventoryList.clear();
 
@@ -134,7 +134,7 @@ public class InventoryManagementController {
                 item.setTotalReceived(summary.totalReceived);
                 item.setTotalLoss(summary.totalLoss);
                 item.setCurrentStock(summary.currentStock);
-                item.setStatus(summary.status);
+                item.setStatus(translateStatusToEnglish(summary.status));
                 item.setValue(summary.value);
                 inventoryList.add(item);
             }
@@ -146,16 +146,27 @@ public class InventoryManagementController {
             applyFilters();
 
         } catch (Exception e) {
-            showAlert("Lỗi khi tải dữ liệu tồn kho: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Error loading inventory data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         }
     }
 
+    private String translateStatusToEnglish(String vietnameseStatus) {
+        switch (vietnameseStatus) {
+            case "Hết hàng": return "Out of Stock";
+            case "Sắp hết": return "Critical";
+            case "Ít hàng": return "Low Stock";
+            case "Đủ hàng": return "In Stock";
+            default: return vietnameseStatus;
+        }
+    }
+
     private void updateBrandFilter() {
-        // Lấy danh sách thương hiệu từ DAO
+        // Get brand list from DAO
         List<String> brands = InventorySummaryDAO.getAllBrands();
+        brands.add(0, "All");
         cbBrandFilter.setItems(FXCollections.observableArrayList(brands));
-        cbBrandFilter.setValue("Tất cả");
+        cbBrandFilter.setValue("All");
     }
 
     private void applyFilters() {
@@ -166,10 +177,10 @@ public class InventoryManagementController {
                     item.getProductName().toLowerCase().contains(txtSearch.getText().toLowerCase()) ||
                     item.getProductCode().toLowerCase().contains(txtSearch.getText().toLowerCase());
 
-            boolean matchesStatus = cbStatusFilter.getValue().equals("Tất cả") ||
+            boolean matchesStatus = cbStatusFilter.getValue().equals("All") ||
                     item.getStatus().equals(cbStatusFilter.getValue());
 
-            boolean matchesBrand = cbBrandFilter.getValue().equals("Tất cả") ||
+            boolean matchesBrand = cbBrandFilter.getValue().equals("All") ||
                     item.getBrand().equals(cbBrandFilter.getValue());
 
             if (matchesSearch && matchesStatus && matchesBrand) {
@@ -184,8 +195,8 @@ public class InventoryManagementController {
 
     private void setupCharts() {
         // Initial chart setup - will be updated in updateCharts()
-        pieStockStatus.setTitle("Phân bố trạng thái tồn kho");
-        barTopProducts.setTitle("Top sản phẩm tồn kho cao nhất");
+        pieStockStatus.setTitle("Stock Status Distribution");
+        barTopProducts.setTitle("Top Products by Stock Level");
     }
 
     private void updateCharts() {
@@ -209,7 +220,7 @@ public class InventoryManagementController {
 
     private void updateBarChart() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Số lượng tồn kho");
+        series.setName("Stock Quantity");
 
         filteredList.stream()
                 .sorted((a, b) -> Integer.compare(b.getCurrentStock(), a.getCurrentStock()))
@@ -229,10 +240,10 @@ public class InventoryManagementController {
     private void updateStatistics() {
         int totalProducts = filteredList.size();
         int lowStockItems = (int) filteredList.stream()
-                .filter(item -> item.getStatus().equals("Ít hàng") || item.getStatus().equals("Sắp hết"))
+                .filter(item -> item.getStatus().equals("Low Stock") || item.getStatus().equals("Critical"))
                 .count();
         int outOfStockItems = (int) filteredList.stream()
-                .filter(item -> item.getStatus().equals("Hết hàng"))
+                .filter(item -> item.getStatus().equals("Out of Stock"))
                 .count();
         double totalValue = filteredList.stream()
                 .mapToDouble(InventoryItem::getValue)
@@ -241,7 +252,7 @@ public class InventoryManagementController {
         lblTotalProducts.setText(String.valueOf(totalProducts));
         lblLowStockItems.setText(String.valueOf(lowStockItems));
         lblOutOfStockItems.setText(String.valueOf(outOfStockItems));
-        lblTotalValue.setText(String.format("%,.0f VND", totalValue));
+        lblTotalValue.setText(String.format("%,.0f USD", totalValue));
     }
 
     @FXML
@@ -252,14 +263,14 @@ public class InventoryManagementController {
     @FXML
     private void handleClearFilters() {
         txtSearch.clear();
-        cbStatusFilter.setValue("Tất cả");
-        cbBrandFilter.setValue("Tất cả");
+        cbStatusFilter.setValue("All");
+        cbBrandFilter.setValue("All");
         applyFilters();
     }
 
     private void showAlert(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle("Thông báo");
+        alert.setTitle("Notification");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

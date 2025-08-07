@@ -5,93 +5,94 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.warehousestaff.HomeViewController">
+<VBox xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.warehousestaff.HomeViewController" prefHeight="650.0" prefWidth="820.0">
     <children>
-        <!-- Tiêu đề chính -->
-        <Label text="TRANG CHỦ NHÂN VIÊN KHO">
+        <!-- Main Title -->
+        <Label text="WAREHOUSE STAFF HOME">
             <font>
                 <Font name="System Bold" size="24.0" />
             </font>
             <VBox.margin>
-                <Insets bottom="40.0" />
+                <Insets bottom="30.0" />
             </VBox.margin>
         </Label>
 
-        <!-- Thông tin tổng quan -->
+        <!-- Overview Information -->
         <VBox spacing="20.0">
             <children>
-                <Label text="THÔNG TIN TỔNG QUAN">
+                <Label text="OVERVIEW INFORMATION">
                     <font>
-                        <Font name="System Bold" size="18.0" />
+                        <Font name="System Bold" size="16.0" />
                     </font>
                 </Label>
 
                 <HBox spacing="20.0">
                     <children>
-                        <!-- Card Tổng sản phẩm -->
-                        <VBox alignment="CENTER" spacing="8.0"
-                              style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #4CAF50 0%, #45a049 100%); -fx-background-radius: 15; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 2);"
+                        <!-- Total Products Card -->
+                        <VBox alignment="CENTER" spacing="10.0"
+                              style="-fx-background-color: linear-gradient(to bottom, #4CAF50, #45a049); -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);"
                               HBox.hgrow="ALWAYS">
                             <children>
                                 <Label text="📦" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font size="28.0" />
+                                        <Font size="24.0" />
                                     </font>
                                 </Label>
                                 <Label fx:id="totalProductsLabel" text="0" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font name="System Bold" size="36.0" />
+                                        <Font name="System Bold" size="30.0" />
                                     </font>
                                 </Label>
-                                <Label text="Tổng sản phẩm" style="-fx-text-fill: white;" textAlignment="CENTER">
+                                <Label text="Total Products" style="-fx-text-fill: white;" textAlignment="CENTER">
                                     <font>
-                                        <Font name="System Bold" size="14.0" />
+                                        <Font name="System Bold" size="12.0" />
                                     </font>
                                 </Label>
                             </children>
                         </VBox>
 
-                        <!-- Card Sản phẩm sắp hết -->
-                        <VBox alignment="CENTER" spacing="8.0"
-                              style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #FF9800 0%, #F57C00 100%); -fx-background-radius: 15; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 2);"
+                        <!-- Low Stock Products Card -->
+                        <VBox alignment="CENTER" spacing="10.0"
+                              style="-fx-background-color: linear-gradient(to bottom, #FF9800, #F57C00); -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);"
                               HBox.hgrow="ALWAYS">
                             <children>
                                 <Label text="⚠️" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font size="28.0" />
+                                        <Font size="24.0" />
                                     </font>
                                 </Label>
                                 <Label fx:id="lowStockLabel" text="0" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font name="System Bold" size="36.0" />
+                                        <Font name="System Bold" size="30.0" />
                                     </font>
                                 </Label>
-                                <Label text="Sản phẩm sắp hết" style="-fx-text-fill: white;" textAlignment="CENTER">
+                                <Label text="Low Stock Products" style="-fx-text-fill: white;" textAlignment="CENTER">
                                     <font>
-                                        <Font name="System Bold" size="14.0" />
+                                        <Font name="System Bold" size="12.0" />
                                     </font>
                                 </Label>
                             </children>
                         </VBox>
 
-                        <!-- Card Phiếu nhập hàng -->
-                        <VBox alignment="CENTER" spacing="8.0"
-                              style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #2196F3 0%, #1976D2 100%); -fx-background-radius: 15; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 2);"
+                        <!-- Stock Entries Card -->
+                        <VBox alignment="CENTER" spacing="10.0"
+                              style="-fx-background-color: linear-gradient(to bottom, #2196F3, #1976D2); -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);"
                               HBox.hgrow="ALWAYS">
                             <children>
                                 <Label text="📋" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font size="28.0" />
+                                        <Font size="24.0" />
                                     </font>
                                 </Label>
                                 <Label fx:id="totalStockEntriesLabel" text="0" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font name="System Bold" size="36.0" />
+                                        <Font name="System Bold" size="30.0" />
                                     </font>
                                 </Label>
-                                <Label text="Phiếu nhập hàng" style="-fx-text-fill: white;" textAlignment="CENTER">
+                                <Label text="Stock Entries" style="-fx-text-fill: white;" textAlignment="CENTER">
                                     <font>
-                                        <Font name="System Bold" size="14.0" />
+                                        <Font name="System Bold" size="12.0" />
                                     </font>
                                 </Label>
                             </children>
@@ -100,155 +101,122 @@
                 </HBox>
             </children>
             <VBox.margin>
-                <Insets bottom="50.0" />
+                <Insets bottom="40.0" />
             </VBox.margin>
         </VBox>
 
-        <!-- Đường phân cách -->
+        <!-- Separator -->
         <Separator>
             <VBox.margin>
-                <Insets bottom="30.0" />
+                <Insets bottom="25.0" />
             </VBox.margin>
         </Separator>
 
-        <!-- 4 chức năng chính -->
-        <VBox spacing="25.0">
+        <!-- Main Functions -->
+        <VBox spacing="20.0">
             <children>
-                <Label text="CÁC CHỨC NĂNG CÓ SẴN">
+                <Label text="MAIN FUNCTIONS">
                     <font>
-                        <Font name="System Bold" size="18.0" />
+                        <Font name="System Bold" size="16.0" />
                     </font>
                 </Label>
 
-                <GridPane hgap="25.0" vgap="25.0">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
+                <!-- Inventory Management Function -->
+                <HBox alignment="CENTER_LEFT" spacing="20.0" onMouseClicked="#handleInventoryManagement"
+                      style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-background-radius: 15; -fx-padding: 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 3);">
                     <children>
-                        <!-- Quản lý tồn kho -->
-                        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#handleInventoryManagement"
-                              style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%); -fx-background-radius: 20; -fx-padding: 30; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);"
-                              GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <VBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 40; -fx-padding: 12;">
                             <children>
-                                <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 50; -fx-padding: 15;">
-                                    <children>
-                                        <Label text="📦" style="-fx-text-fill: white;">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </VBox>
-                                <Label text="Quản lý tồn kho" style="-fx-text-fill: white;" textAlignment="CENTER" wrapText="true">
+                                <Label text="📦" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
-                                <Label text="Xem và quản lý hàng tồn kho" style="-fx-text-fill: rgba(255,255,255,0.8);" textAlignment="CENTER" wrapText="true">
-                                    <font>
-                                        <Font size="13.0" />
+                                        <Font size="28.0" />
                                     </font>
                                 </Label>
                             </children>
                         </VBox>
-
-                        <!-- Cập nhật sản phẩm -->
-                        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#handleProductUpdate"
-                              style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f093fb 0%, #f5576c 100%); -fx-background-radius: 20; -fx-padding: 30; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);"
-                              GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <VBox spacing="5.0">
                             <children>
-                                <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 50; -fx-padding: 15;">
-                                    <children>
-                                        <Label text="✏️" style="-fx-text-fill: white;">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </VBox>
-                                <Label text="Cập nhật sản phẩm" style="-fx-text-fill: white;" textAlignment="CENTER" wrapText="true">
+                                <Label text="Inventory Management" style="-fx-text-fill: white;">
                                     <font>
-                                        <Font name="System Bold" size="18.0" />
+                                        <Font name="System Bold" size="16.0" />
                                     </font>
                                 </Label>
-                                <Label text="Chỉnh sửa thông tin sản phẩm" style="-fx-text-fill: rgba(255,255,255,0.8);" textAlignment="CENTER" wrapText="true">
+                                <Label text="View and manage inventory stock in the system" style="-fx-text-fill: rgba(255,255,255,0.8);" wrapText="true">
                                     <font>
-                                        <Font size="13.0" />
-                                    </font>
-                                </Label>
-                            </children>
-                        </VBox>
-
-                        <!-- Phiếu nhập hàng -->
-                        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#handleStockEntry"
-                              style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4facfe 0%, #00f2fe 100%); -fx-background-radius: 20; -fx-padding: 30; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);"
-                              GridPane.columnIndex="0" GridPane.rowIndex="1">
-                            <children>
-                                <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 50; -fx-padding: 15;">
-                                    <children>
-                                        <Label text="📋" style="-fx-text-fill: white;">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </VBox>
-                                <Label text="Phiếu nhập hàng" style="-fx-text-fill: white;" textAlignment="CENTER" wrapText="true">
-                                    <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
-                                <Label text="Tạo và quản lý phiếu nhập" style="-fx-text-fill: rgba(255,255,255,0.8);" textAlignment="CENTER" wrapText="true">
-                                    <font>
-                                        <Font size="13.0" />
-                                    </font>
-                                </Label>
-                            </children>
-                        </VBox>
-
-                        <!-- Báo cáo hao hụt -->
-                        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#handleLossManagement"
-                              style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #fa709a 0%, #fee140 100%); -fx-background-radius: 20; -fx-padding: 30; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);"
-                              GridPane.columnIndex="1" GridPane.rowIndex="1">
-                            <children>
-                                <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 50; -fx-padding: 15;">
-                                    <children>
-                                        <Label text="⚠️" style="-fx-text-fill: white;">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </VBox>
-                                <Label text="Báo cáo hao hụt" style="-fx-text-fill: white;" textAlignment="CENTER" wrapText="true">
-                                    <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
-                                <Label text="Theo dõi hàng hao hụt" style="-fx-text-fill: rgba(255,255,255,0.8);" textAlignment="CENTER" wrapText="true">
-                                    <font>
-                                        <Font size="13.0" />
+                                        <Font size="12.0" />
                                     </font>
                                 </Label>
                             </children>
                         </VBox>
                     </children>
-                </GridPane>
+                </HBox>
+
+                <!-- Stock Entry Function -->
+                <HBox alignment="CENTER_LEFT" spacing="20.0" onMouseClicked="#handleStockEntry"
+                      style="-fx-background-color: linear-gradient(to right, #4facfe, #00f2fe); -fx-background-radius: 15; -fx-padding: 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 3);">
+                    <children>
+                        <VBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 40; -fx-padding: 12;">
+                            <children>
+                                <Label text="📋" style="-fx-text-fill: white;">
+                                    <font>
+                                        <Font size="28.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Stock Entry" style="-fx-text-fill: white;">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Create and manage stock entries from suppliers" style="-fx-text-fill: rgba(255,255,255,0.8);" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- Loss Report Function -->
+                <HBox alignment="CENTER_LEFT" spacing="20.0" onMouseClicked="#handleLossManagement"
+                      style="-fx-background-color: linear-gradient(to right, #fa709a, #fee140); -fx-background-radius: 15; -fx-padding: 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 3);">
+                    <children>
+                        <VBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 40; -fx-padding: 12;">
+                            <children>
+                                <Label text="⚠️" style="-fx-text-fill: white;">
+                                    <font>
+                                        <Font size="28.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Loss Report" style="-fx-text-fill: white;">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Track and report damaged or lost goods" style="-fx-text-fill: rgba(255,255,255,0.8);" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
             </children>
         </VBox>
 
-        <!-- Spacer để đẩy nội dung lên trên -->
+        <!-- Spacer to push content up -->
         <Region VBox.vgrow="ALWAYS" />
-
-        <!-- Footer -->
-
     </children>
     <padding>
-        <Insets bottom="30.0" left="40.0" right="40.0" top="40.0" />
+        <Insets bottom="25.0" left="30.0" right="30.0" top="30.0" />
     </padding>
 </VBox>

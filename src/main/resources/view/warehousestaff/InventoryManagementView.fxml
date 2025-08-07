@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controller.warehousestaff.InventoryManagementController"
       prefHeight="700.0" prefWidth="820.0">
     <padding>
@@ -17,57 +17,57 @@
 
     <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #f8f9fa; -fx-padding: 10; -fx-background-radius: 8;">
-        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="📦 Quản lý tồn kho" />
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="📦 Inventory Management" />
         <Region HBox.hgrow="ALWAYS" />
-        <Button onAction="#handleClearFilters" style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 12px;" text="🗑️ Xóa bộ lọc" />
+        <Button onAction="#handleClearFilters" style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 12px;" text="🗑️ Clear Filters" />
     </HBox>
 
     <!-- Statistics Cards -->
     <HBox spacing="10.0" prefHeight="60.0">
         <!-- Total Products Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #3498db; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Tổng sản phẩm" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Total Products" />
             <Label fx:id="lblTotalProducts" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" text="0" />
         </VBox>
 
         <!-- Low Stock Items Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #f39c12; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Sản phẩm ít hàng" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Low Stock Products" />
             <Label fx:id="lblLowStockItems" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" text="0" />
         </VBox>
 
         <!-- Out of Stock Items Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #e74c3c; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Hết hàng" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Out of Stock" />
             <Label fx:id="lblOutOfStockItems" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" text="0" />
         </VBox>
 
         <!-- Total Value Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #27ae60; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Tổng giá trị tồn kho" />
-            <Label fx:id="lblTotalValue" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;" text="0 VND" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Total Stock Value" />
+            <Label fx:id="lblTotalValue" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;" text="0 USD" />
         </VBox>
     </HBox>
 
     <!-- Filter Section -->
     <HBox spacing="10.0" alignment="CENTER_LEFT" style="-fx-background-color: #e3f2fd; -fx-border-color: #2196f3; -fx-padding: 10; -fx-background-radius: 8;">
-        <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" text="🔍 Bộ lọc:" />
+        <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" text="🔍 Filters:" />
 
         <!-- Search Field -->
         <VBox spacing="2.0">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Tìm kiếm:" />
-            <TextField fx:id="txtSearch" prefWidth="150.0" promptText="Mã hoặc tên SP..." style="-fx-font-size: 11px;" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Search:" />
+            <TextField fx:id="txtSearch" prefWidth="150.0" promptText="Code or Product Name..." style="-fx-font-size: 11px;" />
         </VBox>
 
         <!-- Status Filter -->
         <VBox spacing="2.0">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Trạng thái:" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Status:" />
             <ComboBox fx:id="cbStatusFilter" prefWidth="120.0" style="-fx-font-size: 11px;" />
         </VBox>
 
         <!-- Brand Filter -->
         <VBox spacing="2.0">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Thương hiệu:" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Brand:" />
             <ComboBox fx:id="cbBrandFilter" prefWidth="120.0" style="-fx-font-size: 11px;" />
         </VBox>
     </HBox>
@@ -78,16 +78,16 @@
         <!-- Left Panel - Inventory Table -->
         <VBox spacing="8.0" prefWidth="480.0">
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 10; -fx-background-radius: 8;">
-                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;" text="📋 Danh sách tồn kho" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;" text="📋 Inventory List" />
                 <TableView fx:id="tblInventory" prefHeight="450.0">
                     <columns>
-                        <TableColumn fx:id="colProductCode" prefWidth="70.0" text="Mã SP" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colProductName" prefWidth="150.0" text="Tên sản phẩm" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colBrand" prefWidth="80.0" text="Thương hiệu" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colTotalReceived" prefWidth="60.0" text="T.Nhập" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colTotalLoss" prefWidth="60.0" text="T.Xuất" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colCurrentStock" prefWidth="60.0" text="Tồn kho" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colStatus" prefWidth="80.0" text="Trạng thái" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colProductCode" prefWidth="70.0" text="Product ID" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colProductName" prefWidth="150.0" text="Product Name" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colBrand" prefWidth="80.0" text="Brand" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colTotalReceived" prefWidth="60.0" text="Received" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colTotalLoss" prefWidth="60.0" text="Loss" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colCurrentStock" prefWidth="60.0" text="Stock" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colStatus" prefWidth="80.0" text="Status" style="-fx-font-size: 11px;" />
                     </columns>
                 </TableView>
             </VBox>
@@ -98,13 +98,13 @@
 
             <!-- Stock Status Distribution -->
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 10; -fx-background-radius: 8;">
-                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="📊 Phân bố trạng thái" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="📊 Status Distribution" />
                 <PieChart fx:id="pieStockStatus" prefHeight="180.0" />
             </VBox>
 
             <!-- Top Products Chart -->
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 10; -fx-background-radius: 8;">
-                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="📈 Top sản phẩm" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="📈 Top Products" />
                 <BarChart fx:id="barTopProducts" prefHeight="180.0">
                     <xAxis>
                         <CategoryAxis side="BOTTOM" style="-fx-font-size: 9px;" />

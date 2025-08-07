@@ -154,11 +154,12 @@ public class LossReportDetailDAO {
         return 0;
     }
 
+    // SỬA ĐỔI: Tính giá trị tổn thất dựa trên giá nhập (UnitCost) thay vì giá bán (Price)
     public static double getTotalLossValueByProduct(int productID) {
         String sql = """
-            SELECT ISNULL(SUM(lrd.Quantity * p.Price), 0) as TotalLossValue
+            SELECT ISNULL(SUM(lrd.Quantity * sed.UnitCost), 0) as TotalLossValue
             FROM LossReportDetail lrd
-            JOIN Product p ON lrd.ProductID = p.ProductID
+            JOIN StockEntryDetail sed ON lrd.ProductID = sed.ProductID
             WHERE lrd.ProductID = ?
         """;
 
@@ -209,15 +210,17 @@ public class LossReportDetailDAO {
         return details;
     }
 
+    // SỬA ĐỔI: Tính top sản phẩm tổn thất dựa trên giá nhập
     public static List<LossReportDetail> getTopLossProducts(int limit) {
         List<LossReportDetail> details = new ArrayList<>();
         String sql = """
             SELECT TOP (?) lrd.ProductID, p.ProductName, p.ProductCode,
                    SUM(lrd.Quantity) as TotalLossQuantity,
-                   SUM(lrd.Quantity * p.Price) as TotalLossValue
+                   SUM(lrd.Quantity * ISNULL(sed.UnitCost, 0)) as TotalLossValue
             FROM LossReportDetail lrd
             JOIN Product p ON lrd.ProductID = p.ProductID
-            GROUP BY lrd.ProductID, p.ProductName, p.ProductCode, p.Price
+            LEFT JOIN StockEntryDetail sed ON lrd.ProductID = sed.ProductID
+            GROUP BY lrd.ProductID, p.ProductName, p.ProductCode
             ORDER BY TotalLossQuantity DESC
         """;
 
@@ -276,23 +279,26 @@ public class LossReportDetailDAO {
         return false;
     }
 
-    // Get loss details with comprehensive information including stock entry details
+    // SỬA ĐỔI QUAN TRỌNG: Tính giá trị tổn thất dựa trên giá trung bình của tất cả lần nhập
     public static List<LossReportDetailExtended> getLossReportDetailsExtended() {
         List<LossReportDetailExtended> details = new ArrayList<>();
         String sql = """
             SELECT lrd.ReportID, lrd.ProductID, lrd.Quantity, lrd.Note, lrd.LossDate,
                    p.ProductName, p.ProductCode, p.Brand, p.Price,
-                   lr.ReportDate, u.Username, e.FullName as EmployeeName,
-                   ISNULL(SUM(sed.Quantity), 0) as TotalReceived
+                   lr.ReportDate,
+                   ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
+                   CASE 
+                       WHEN SUM(sed.Quantity) > 0 
+                       THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
+                       ELSE 0 
+                   END as AvgUnitCost
             FROM LossReportDetail lrd
             LEFT JOIN Product p ON lrd.ProductID = p.ProductID
             LEFT JOIN LossReport lr ON lrd.ReportID = lr.ReportID
-            LEFT JOIN [User] u ON lr.UserID = u.UserID
-            LEFT JOIN Employee e ON u.EmployeeID = e.EmployeeID
             LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
             GROUP BY lrd.ReportID, lrd.ProductID, lrd.Quantity, lrd.Note, lrd.LossDate,
                      p.ProductName, p.ProductCode, p.Brand, p.Price,
-                     lr.ReportDate, u.Username, e.FullName
+                     lr.ReportDate
             ORDER BY lrd.LossDate DESC
         """;
 
@@ -309,10 +315,12 @@ public class LossReportDetailDAO {
                 detail.productName = rs.getString("ProductName");
                 detail.productCode = rs.getString("ProductCode");
                 detail.brand = rs.getString("Brand");
-                detail.price = rs.getDouble("Price");
-                detail.employeeName = rs.getString("EmployeeName");
+                detail.price = rs.getDouble("Price"); // Giá bán (để hiển thị tham khảo)
+                detail.avgUnitCost = rs.getDouble("AvgUnitCost"); // Giá nhập trung bình
+                detail.employeeName = "Warehouse Staff";
                 detail.totalReceived = rs.getInt("TotalReceived");
-                detail.lossValue = detail.lostQuantity * detail.price;
+                // SỬA ĐỔI: Tính giá trị tổn thất dựa trên giá nhập trung bình
+                detail.lossValue = detail.lostQuantity * detail.avgUnitCost;
                 details.add(detail);
             }
         } catch (SQLException e) {
@@ -330,7 +338,8 @@ public class LossReportDetailDAO {
         public String productName;
         public String productCode;
         public String brand;
-        public double price;
+        public double price; // Giá bán (để tham khảo)
+        public double avgUnitCost; // Giá nhập trung bình
         public String employeeName;
         public int totalReceived;
         public double lossValue;
@@ -343,10 +352,23 @@ public class LossReportDetailDAO {
         public String getProductName() { return productName; }
         public String getProductCode() { return productCode; }
         public String getBrand() { return brand; }
+
+        // Trả về giá bán (để hiển thị tham khảo)
         public double getPrice() { return price; }
-        public String getEmployeeName() { return employeeName; }
+
+        // THÊM: Getter cho giá nhập trung bình
+        public double getAvgUnitCost() { return avgUnitCost; }
+
+        // Luôn trả về "Warehouse Staff" cho cột người tạo
+        public String getEmployeeName() {
+            return "Warehouse Staff";
+        }
+
         public int getTotalReceived() { return totalReceived; }
+
+        // SỬA ĐỔI: Giá trị tổn thất dựa trên giá nhập
         public double getLossValue() { return lossValue; }
+
         public int getRemainingQuantity() { return Math.max(0, totalReceived - lostQuantity); }
     }
 }

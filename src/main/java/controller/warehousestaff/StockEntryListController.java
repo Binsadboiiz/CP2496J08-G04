@@ -15,6 +15,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.StockEntry;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class StockEntryListController {
     @FXML private TableView<StockEntry> table;
     @FXML private TableColumn<StockEntry, Integer> colEntryID;
@@ -45,7 +48,18 @@ public class StockEntryListController {
     private void loadTable() {
         list.setAll(StockEntryDAO.getAll());
         colEntryID.setCellValueFactory(cell -> new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getEntryID()).asObject());
-        colDate.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getDate().toString()));
+
+        // SỬA: Chỉ hiển thị ngày, không có thời gian
+        colDate.setCellValueFactory(cell -> {
+            Date date = cell.getValue().getDate();
+            if (date != null) {
+                // Chỉ lấy phần ngày, bỏ phần thời gian
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                return new javafx.beans.property.SimpleStringProperty(dateFormat.format(date));
+            }
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
+
         colSupplier.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getSupplierName()));
         colUser.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getUserName()));
         table.setItems(list);
