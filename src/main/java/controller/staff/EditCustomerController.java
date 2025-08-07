@@ -1,5 +1,6 @@
 package controller.staff;
 
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import model.Customer;
@@ -25,10 +26,19 @@ public class EditCustomerController {
         grid.addRow(4, new Label("Điểm tích lũy:"), pointsField);
 
         dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        ButtonType okButton = ButtonType.OK;
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+
+        Node saveBtn = dialog.getDialogPane().lookupButton(okButton);
+        saveBtn.setDisable(true);
+
+        nameField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
+        phoneField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
+        emailField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
+        addressField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
 
         dialog.setResultConverter(btn -> {
-            if (btn == ButtonType.OK) {
+            if (btn == okButton) {
                 customer.setFullName(nameField.getText());
                 customer.setPhone(phoneField.getText());
                 customer.setEmail(emailField.getText());
@@ -43,5 +53,13 @@ public class EditCustomerController {
         });
 
         dialog.showAndWait();
+    }
+
+    private static void validate(TextField name, TextField phone, TextField email, TextField address, Node saveButton) {
+        boolean isValid = !name.getText().trim().isEmpty()
+                && phone.getText().matches("\\d{9,11}")
+                && email.getText().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+                && !address.getText().trim().isEmpty();
+        saveButton.setDisable(!isValid);
     }
 }

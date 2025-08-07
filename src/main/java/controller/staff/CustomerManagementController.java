@@ -2,13 +2,13 @@ package controller.staff;
 
 import dao.CustomerDAO;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import model.Customer;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import java.util.Optional;
+import javafx.util.Callback;
 
 public class CustomerManagementController {
 
@@ -16,7 +16,9 @@ public class CustomerManagementController {
     @FXML private TextField searchField;
     @FXML private TableColumn<Customer, String> nameColumn;
     @FXML private TableColumn<Customer, String> phoneColumn;
-    @FXML private TableColumn<Customer, String> typeColumn;
+    @FXML private TableColumn<Customer, String> emailColumn;
+    @FXML private TableColumn<Customer, String> addressColumn;
+    @FXML private TableColumn<Customer, Void> actionsColumn;
 
     private final CustomerDAO customerDAO = new CustomerDAO();
     private ObservableList<Customer> customers;
@@ -25,10 +27,48 @@ public class CustomerManagementController {
     public void initialize() {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("address")); // Tạm dùng address làm loại khách
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+        addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
 
         customers = FXCollections.observableArrayList(customerDAO.getAllCustomers());
         customerTable.setItems(customers);
+
+        actionsColumn.setCellFactory(getActionCellFactory());
+    }
+
+    private Callback<TableColumn<Customer, Void>, TableCell<Customer, Void>> getActionCellFactory() {
+        return param -> new TableCell<>() {
+            private final Button editBtn = new Button("Sửa");
+            private final Button deleteBtn = new Button("Xóa");
+            private final HBox pane = new HBox(10, editBtn, deleteBtn);
+
+            {
+                editBtn.setOnAction(e -> {
+                    Customer c = getTableView().getItems().get(getIndex());
+                    EditCustomerController.showDialog(c);
+                    customerDAO.updateCustomer(c);
+                    refresh();
+                });
+
+                deleteBtn.setOnAction(e -> {
+                    Customer c = getTableView().getItems().get(getIndex());
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc muốn xóa khách hàng này?", ButtonType.YES, ButtonType.NO);
+                    alert.setHeaderText(null);
+                    alert.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.YES) {
+                            customerDAO.deleteCustomer(c.getCustomerID());
+                            refresh();
+                        }
+                    });
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : pane);
+            }
+        };
     }
 
     @FXML
@@ -38,18 +78,6 @@ public class CustomerManagementController {
             customerDAO.insertCustomer(newCustomer);
             refresh();
         }
-    }
-
-    // Giao diện người dùng sẽ được cập nhật để sử dụng Dialog thay cho TextField trực tiếp
-    // Phương thức này có thể sẽ không được sử dụng nữa nếu bạn dùng Dialog
-    @FXML
-    public void editCustomer() {
-        Customer selected = customerTable.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-
-        EditCustomerController.showDialog(selected); // Sử dụng Dialog để sửa thông tin
-        customerDAO.updateCustomer(selected);
-        refresh();
     }
 
     @FXML
