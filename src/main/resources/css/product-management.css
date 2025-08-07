@@ -117,4 +117,18 @@
     -fx-effect: dropshadow(gaussian, #dde6ef77, 6, 0.09, 0, 2);
     -fx-padding: 10 10 10 10;
 }
+.product-card {
+    -fx-background-color: #fff;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 13;
+    -fx-effect: dropshadow(gaussian, rgba(50,50,50,0.08), 10,0,0,2);
+    -fx-border-color: #ececec;
+    -fx-border-width: 1;
+}
+.product-name { -fx-font-weight: bold; -fx-font-size: 15; }
+.product-price { -fx-text-fill: #e53935; -fx-font-size: 15; }
+.btn-edit { -fx-background-color: #00c853; -fx-text-fill: #fff; }
+.btn-delete { -fx-background-color: #e53935; -fx-text-fill: #fff; }
+
 

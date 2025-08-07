@@ -2,168 +2,120 @@ package controller.admin;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.event.ActionEvent;
-import javafx.collections.ObservableList;
-import javafx.collections.FXCollections;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.FlowPane;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
-import java.io.IOException;
 
-import model.Product;      // chỉnh lại package nếu khác
-import dao.ProductDAO;     // DAO hoặc service của bạn
+import model.Product;
+import dao.ProductDAO;
 import util.DialogUtil;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 
 public class ProductManagementController implements Initializable {
 
-    @FXML
-    private TextField txtSearch;
-    @FXML
-    private ComboBox<String> cbBrand;
-    @FXML
-    private ComboBox<String> cbType;
-
-    @FXML
-    private TableView<Product> tblProducts;
-    @FXML
-    private TableColumn<Product, Integer> colId;
-    @FXML
-    private TableColumn<Product, String> colName;
-    @FXML
-    private TableColumn<Product, String> colCode;
-    @FXML
-    private TableColumn<Product, String> colBrand;
-    @FXML
-    private TableColumn<Product, String> colType;
-    @FXML
-    private TableColumn<Product, Number> colPrice;
-    @FXML
-    private TableColumn<Product, String> colDescription;
-    @FXML
-    private TableColumn<Product, String> colImage;
-    @FXML
-    private TableColumn<Product, String> colCreatedAt;
-    @FXML
-    private TableColumn<Product, String> colUpdatedAt;
-    @FXML
-    private TableColumn<Product, Integer> colUpdatedBy;
-
+    @FXML private TextField txtSearch;
+    @FXML private ComboBox<String> cbBrand;
+    @FXML private ComboBox<String> cbType;
+    @FXML private FlowPane cardContainer;
 
     private ObservableList<Product> masterList = FXCollections.observableArrayList();
-    private ObservableList<Product> filteredList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Cấu hình cell value
-        colId.setCellValueFactory(new PropertyValueFactory<>("productID"));
-        colName.setCellValueFactory(new PropertyValueFactory<>("productName"));
-        colCode.setCellValueFactory(new PropertyValueFactory<>("productCode"));
-        colBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
-        colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
-        colCreatedAt.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-        colUpdatedAt.setCellValueFactory(new PropertyValueFactory<>("updatedAt"));
-
-        // 2. Load dữ liệu gốc
         loadData();
-
-        // 3. Điền filter combo
-        List<String> brands = masterList.stream()
-                .map(Product::getBrand)
-                .distinct().sorted()
-                .collect(Collectors.toList());
-        cbBrand.setItems(FXCollections.observableArrayList(brands));
-
-        List<String> types = masterList.stream()
-                .map(Product::getType)
-                .distinct().sorted()
-                .collect(Collectors.toList());
-        cbType.setItems(FXCollections.observableArrayList(types));
-
-        // 4. Show data lên table
-        tblProducts.setItems(masterList);
+        setupComboFilters();
+        showCards(masterList);
     }
 
     private void loadData() {
-        List<Product> list = ProductDAO.getAll();  // gọi DAO lấy từ DB
+        List<Product> list = ProductDAO.getAll();
         masterList.setAll(list);
     }
 
-    @FXML
-    private void onSearch(ActionEvent e) {
-        String kw = txtSearch.getText().trim().toLowerCase();
-        String brand = cbBrand.getValue();
-        String type = cbType.getValue();
+    private void setupComboFilters() {
+        // Đổ dữ liệu cho brand/type filter
+        List<String> brands = masterList.stream().map(Product::getBrand).distinct().sorted().collect(Collectors.toList());
+        cbBrand.setItems(FXCollections.observableArrayList(brands));
+        List<String> types = masterList.stream().map(Product::getType).distinct().sorted().collect(Collectors.toList());
+        cbType.setItems(FXCollections.observableArrayList(types));
+    }
 
-        filteredList.setAll(masterList.stream()
-                .filter(p -> kw.isEmpty()
-                        || p.getProductName().toLowerCase().contains(kw)
-                        || p.getProductCode().toLowerCase().contains(kw))
-                .filter(p -> brand == null || brand.isEmpty() || p.getBrand().equals(brand))
-                .filter(p -> type == null || type.isEmpty() || p.getType().equals(type))
-                .collect(Collectors.toList()));
-        tblProducts.setItems(filteredList);
+    // Hiện danh sách dưới dạng card
+    private void showCards(List<Product> products) {
+        cardContainer.getChildren().clear();
+        for (Product p : products) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/ProductCard.fxml"));
+                AnchorPane card = loader.load();
+                ProductCardController ctl = loader.getController();
+                ctl.setData(p, this);
+                cardContainer.getChildren().add(card);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML
-    private void onRefresh(ActionEvent e) {
+    private void onSearch() {
+        String kw = txtSearch.getText().trim().toLowerCase();
+        String brand = cbBrand.getValue();
+        String type = cbType.getValue();
+        List<Product> filtered = masterList.stream()
+                .filter(p -> kw.isEmpty() || p.getProductName().toLowerCase().contains(kw) || p.getProductCode().toLowerCase().contains(kw))
+                .filter(p -> brand == null || brand.isEmpty() || p.getBrand().equals(brand))
+                .filter(p -> type == null || type.isEmpty() || p.getType().equals(type))
+                .collect(Collectors.toList());
+        showCards(filtered);
+    }
+
+    @FXML
+    private void onRefresh() {
         txtSearch.clear();
         cbBrand.getSelectionModel().clearSelection();
         cbType.getSelectionModel().clearSelection();
         loadData();
-        tblProducts.setItems(masterList);
+        setupComboFilters();
+        showCards(masterList);
     }
 
     @FXML
-    private void onAdd(ActionEvent e) {
+    private void onAdd() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/admin/AddProduct.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/AddProduct.fxml"));
             AnchorPane pane = loader.load();
-
-            // Tạo dialog mới
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setTitle("Add Product");
             dialog.setScene(new Scene(pane));
-
-            // truyền stage vào controller
             AddProductController ctl = loader.getController();
             ctl.setDialogStage(dialog);
-
-            // show & chờ
             dialog.showAndWait();
-
-            // reload lại dữ liệu sau khi đóng dialog
             loadData();
-            tblProducts.setItems(masterList);
-
+            setupComboFilters();
+            showCards(masterList);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    @FXML
-    private void onEdit() {
-        Product selected = tblProducts.getSelectionModel().getSelectedItem();
+    // Callback từ ProductCardController
+    public void editProduct(Product selected) {
         if (selected == null) {
             showAlert("Please select the product you want to repair!");
             return;
@@ -181,17 +133,14 @@ public class ProductManagementController implements Initializable {
             controller.setDialogStage(dialog);
             dialog.showAndWait();
             loadData();
-            tblProducts.setItems(masterList);
+            setupComboFilters();
+            showCards(masterList);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
-
-    @FXML
-    private void onDelete(ActionEvent e) {
-        Product sel = tblProducts.getSelectionModel().getSelectedItem();
+    public void deleteProduct(Product sel) {
         if (sel == null) {
             showAlert("Please select a product to delete.");
             return;
@@ -200,6 +149,8 @@ public class ProductManagementController implements Initializable {
         if (ok && ProductDAO.delete(sel.getProductID())) {
             masterList.remove(sel);
             showAlert("Delete successful.");
+            setupComboFilters();
+            showCards(masterList);
         }
     }
 
