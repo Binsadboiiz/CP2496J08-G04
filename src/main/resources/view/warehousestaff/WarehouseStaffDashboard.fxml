@@ -5,28 +5,24 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.StackPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/24.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.warehousestaff.WarehouseStaffDashboardController"
-            prefHeight="700.0" prefWidth="1020.0"
-            stylesheets="@../../css/scenemain.css">
+<BorderPane prefHeight="700.0" prefWidth="1020.0" stylesheets="@../../css/scenemain.css"
+            xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.warehousestaff.WarehouseStaffDashboardController">
 
     <!-- Sidebar -->
     <left>
-        <VBox fx:id="sidebar" id="sidebar"
-              alignment="TOP_CENTER"
-              prefWidth="200" spacing="10"
-              BorderPane.alignment="CENTER">
+        <VBox id="sidebar" fx:id="sidebar" alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
             <padding>
-                <Insets top="20" right="10" bottom="10" left="10" />
+                <Insets bottom="10" left="10" right="10" top="20" />
             </padding>
 
-            <!-- info-->
             <StackPane fx:id="userCard" styleClass="user-card">
                 <VBox alignment="CENTER" spacing="10">
                     <!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
@@ -35,27 +31,48 @@
                 </VBox>
             </StackPane>
 
-            <!-- Sidebar Buttons -->
-            <Button fx:id="btnHome" text="Home" onAction="#handleHome"
-                    prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnStockEntryList" text="Stock Entry List" onAction="#handleStockEntryList"
-                    prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnLossManagement" text="Loss Management" onAction="#handleLossManagement"
-                    prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnInventoryManagement" text="Inventory Management" onAction="#handleInventoryManagement"
-                    prefWidth="180.0" styleClass="sidebar-button" />
-            <Button fx:id="btnWarehouseReport" text="Warehouse Report" onAction="#handleWarehouseReport"
-                    prefWidth="180.0" styleClass="sidebar-button" />
-            <!-- Spacer + Logout -->
+            <!-- Buttons -->
+            <Button fx:id="btnHome" maxWidth="180" text="Home" onAction="#handleHome" styleClass="sidebar-button">
+                <font><Font name="Times New Roman Bold" size="18" /></font>
+            </Button>
+
+            <Button fx:id="btnStockEntryList" maxWidth="180" text="Stock Entry List" onAction="#handleStockEntryList" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+
+            <Button fx:id="btnLossManagement" maxWidth="180" text="Loss Management" onAction="#handleLossManagement" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+
+            <Button fx:id="btnInventoryManagement" maxWidth="180" text="Inventory Management" onAction="#handleInventoryManagement" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+
+            <Button fx:id="btnWarehouseReport" maxWidth="180" text="Warehouse Report" onAction="#handleWarehouseReport" styleClass="sidebar-button">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
+
             <Pane VBox.vgrow="ALWAYS" />
-            <Button fx:id="btnLogout" text="Logout" onAction="#handleLogout"
-                    prefWidth="180.0" styleClass="sidebar-button" />
+
+            <Button fx:id="btnLogout" maxWidth="180" onAction="#handleLogout" styleClass="logout-button" text="Logout">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
         </VBox>
     </left>
 
-    <!-- Center content -->
+    <!-- Main Content -->
     <center>
-        <StackPane fx:id="contentArea" prefHeight="680" prefWidth="980.0" />
+        <AnchorPane fx:id="contentArea" prefHeight="680.0" prefWidth="980.0" />
     </center>
 
 </BorderPane>

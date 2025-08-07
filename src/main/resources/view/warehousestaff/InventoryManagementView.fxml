@@ -45,7 +45,7 @@
         <!-- Total Value Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #27ae60; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
             <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Total Stock Value" />
-            <Label fx:id="lblTotalValue" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;" text="0 USD" />
+            <Label fx:id="lblTotalValue" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;" text="0 VND" />
         </VBox>
     </HBox>
 

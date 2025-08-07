@@ -533,7 +533,7 @@ public class WarehouseReportController implements Initializable {
             totalReceivedLabel.setText(String.valueOf(summary.getTotalReceived()));
             totalLossLabel.setText(String.valueOf(summary.getTotalLoss()));
             currentStockLabel.setText(String.valueOf(summary.getCurrentStock()));
-            totalStockValueLabel.setText(String.format("%,.0f USD", summary.getTotalStockValue()));
+            totalStockValueLabel.setText(String.format("%,.0f VND", summary.getTotalStockValue()));
             outOfStockLabel.setText(String.valueOf(summary.getOutOfStockCount()));
             lowStockLabel.setText(String.valueOf(summary.getLowStockCount()));
         } catch (Exception e) {
@@ -553,7 +553,7 @@ public class WarehouseReportController implements Initializable {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%,.0f USD", item));
+                    setText(String.format("%,.0f VND", item));
                 }
             }
         });

@@ -6,31 +6,48 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import dao.UserDAO;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class WarehouseStaffDashboardController {
 
     @FXML
-    private StackPane contentArea;
-    @FXML private Label usernameLabel;
-    @FXML private Label roleLabel;
+    private AnchorPane contentArea;
+    @FXML
+    private Label usernameLabel;
+    @FXML
+    private Label roleLabel;
 
-    // ===== TỐI ƯU LOADVIEW VỚI LOADING =====
-    private void loadView(String fxmlFile) {
+    // ===== LOAD FXML VỚI LOADING =====
+    public void loadPage(String fxmlPath) {
         ProgressIndicator pi = new ProgressIndicator();
-        StackPane loadingPane = new StackPane(pi);
-        loadingPane.setPrefSize(contentArea.getWidth(), contentArea.getHeight());
-        contentArea.getChildren().setAll(loadingPane);
+        StackPane stack = new StackPane(pi);
+        stack.setPrefSize(contentArea.getWidth(), contentArea.getHeight());
+        AnchorPane.setTopAnchor(stack, 0.0);
+        AnchorPane.setBottomAnchor(stack, 0.0);
+        AnchorPane.setLeftAnchor(stack, 0.0);
+        AnchorPane.setRightAnchor(stack, 0.0);
+        contentArea.getChildren().setAll(stack);
 
         Task<Parent> task = new Task<>() {
             @Override
             protected Parent call() throws Exception {
-                return FXMLLoader.load(getClass().getResource(fxmlFile));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent fxml = loader.load();
+
+                // Truyền tham chiếu WarehouseStaffDashboardController nếu cần
+                if (fxmlPath.endsWith("HomeView.fxml")) {
+                    // Nếu có HomeViewController thì truyền reference
+                    // HomeViewController homeController = loader.getController();
+                    // homeController.setWarehouseStaffDashboardController(WarehouseStaffDashboardController.this);
+                }
+                return fxml;
             }
         };
         task.setOnSucceeded(e -> contentArea.getChildren().setAll(task.getValue()));
@@ -38,42 +55,67 @@ public class WarehouseStaffDashboardController {
         new Thread(task).start();
     }
 
+    // ======= Các hàm chuyển tab UI =======
     @FXML
     public void initialize() {
-        loadView("/view/warehousestaff/HomeView.fxml");
+        // Load Home khi khởi động warehouse staff UI
+        loadHome();
     }
 
+    public void loadHome() {
+        loadPage("/view/warehousestaff/HomeView.fxml");
+    }
+
+    public void loadStockEntryList() {
+        loadPage("/view/warehousestaff/StockEntryList.fxml");
+    }
+
+    public void loadLossManagement() {
+        loadPage("/view/warehousestaff/LossManagementView.fxml");
+    }
+
+    public void loadInventoryManagement() {
+        loadPage("/view/warehousestaff/InventoryManagementView.fxml");
+    }
+
+    public void loadWarehouseReport() {
+        loadPage("/view/warehousestaff/WarehouseReportView.fxml");
+    }
+
+    // ======= Event Handlers =======
     @FXML
     private void handleHome(ActionEvent event) {
-        loadView("/view/warehousestaff/HomeView.fxml");
+        loadHome();
     }
 
     @FXML
     private void handleStockEntryList(ActionEvent event) {
-        loadView("/view/warehousestaff/StockEntryList.fxml");
+        loadStockEntryList();
     }
 
     @FXML
     private void handleLossManagement(ActionEvent event) {
-        loadView("/view/warehousestaff/LossManagementView.fxml");
+        loadLossManagement();
     }
 
     @FXML
     private void handleInventoryManagement(ActionEvent event) {
-        loadView("/view/warehousestaff/InventoryManagementView.fxml");
+        loadInventoryManagement();
     }
 
     @FXML
     private void handleWarehouseReport(ActionEvent event) {
-        loadView("/view/warehousestaff/WarehouseReportView.fxml");
+        loadWarehouseReport();
     }
 
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
-            Node source = (Node) event.getSource();
-            Parent loginView = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
-            source.getScene().setRoot(loginView);
+            Parent loginRoot = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+            Scene loginScene = new Scene(loginRoot);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(loginScene);
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

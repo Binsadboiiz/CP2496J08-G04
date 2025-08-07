@@ -252,7 +252,7 @@ public class InventoryManagementController {
         lblTotalProducts.setText(String.valueOf(totalProducts));
         lblLowStockItems.setText(String.valueOf(lowStockItems));
         lblOutOfStockItems.setText(String.valueOf(outOfStockItems));
-        lblTotalValue.setText(String.format("%,.0f USD", totalValue));
+        lblTotalValue.setText(String.format("%,.0f VND", totalValue));
     }
 
     @FXML
