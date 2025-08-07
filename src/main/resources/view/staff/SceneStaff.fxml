@@ -12,6 +12,7 @@
 <?import javafx.scene.text.Font?>
 
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane prefHeight="600.0" prefWidth="940.0" stylesheets="@../../css/scenemain.css"
             xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.staff.StaffController">
@@ -23,16 +24,13 @@
                 <Insets bottom="10" left="10" right="10" top="20" />
             </padding>
 
-            <!-- Logo -->
-            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../../images/register_logo.png" />
-                </image>
-            </ImageView>
-
-            <!-- Info -->
-            <Label text="Nhân viên" textFill="WHITE" />
-            <Label text="Vai Trò" textFill="WHITE" />
+            <StackPane fx:id="userCard" styleClass="user-card">
+                <VBox alignment="CENTER" spacing="10">
+                    <!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
+                    <Label fx:id="usernameLabel" text="Admin" styleClass="username-label"/>
+                    <Label fx:id="roleLabel" text="Vai Trò" styleClass="role-label"/>
+                </VBox>
+            </StackPane>
 
 
             <Button fx:id="btnHome" maxWidth="180" text="Control Panel" onAction="#loadHome" textFill="WHITE">
