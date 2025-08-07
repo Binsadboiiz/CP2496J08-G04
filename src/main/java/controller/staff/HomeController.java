@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import java.io.InputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -40,13 +39,6 @@ public class HomeController {
         card.setPrefSize(160, 250);
         card.setStyle("-fx-border-color: #ccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 12; -fx-background-color: #fff;");
 
-<<<<<<< HEAD
-        ImageView img = new ImageView();
-        Image image = loadImageFromWeb(product.getImage());
-
-
-        img.setImage(image);
-=======
         ImageView imgView = new ImageView();
         String imgName = (product.getImage() != null && !product.getImage().isEmpty()) ? product.getImage() : "placeholder.png";
         Image image = null;
@@ -82,8 +74,7 @@ public class HomeController {
         }
 
 // Nếu không có ảnh, dùng placeholder
-        if (image == null) {
-            InputStream placeholder = getClass().getResourceAsStream("/images/register_logo.png");
+        if (image == null) {InputStream placeholder = getClass().getResourceAsStream("/images/register_logo.png");
             if (placeholder != null) {
                 image = new Image(placeholder, 120, 120, true, true);
             } else {
@@ -92,7 +83,6 @@ public class HomeController {
         }
 
         imgView.setImage(image);
->>>>>>> de09816ffe74953244ecbe65af90695b9ef0be08
 
         Label name = new Label(product.getProductName());
         name.setStyle("-fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true; -fx-text-alignment: center;");
@@ -115,8 +105,6 @@ public class HomeController {
         card.getChildren().addAll(imgView, name, price, detailBtn, addBtn);
         return card;
     }
-
-
 
     private void showProductDetail(Product product) {
         Stage stage = new Stage();
@@ -157,8 +145,7 @@ public class HomeController {
         if (staffController != null) {
             try {
                 staffController.loadCreateInvoice();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception e) {e.printStackTrace();
             }
         } else {
             // Trường hợp lỗi (không có tham chiếu StaffController)
@@ -178,31 +165,4 @@ public class HomeController {
         searchField.clear();
         loadProducts(ProductDAO.getAll());
     }
-
-    private Image getPlaceholderImage() {
-        InputStream placeholder = getClass().getResourceAsStream("/images/placeholder.png");
-        if (placeholder != null) {
-            return new Image(placeholder, 120, 120, true, true);
-        } else {
-            System.err.println("Không tìm thấy ảnh placeholder.png");
-            return new Image("https://via.placeholder.com/120"); // ảnh từ mạng
-        }
-    }
-
-    // Tải ảnh từ web với User-Agent giả lập trình duyệt
-    private Image loadImageFromWeb(String imageUrl) {
-        if (imageUrl == null || imageUrl.isEmpty() || !imageUrl.startsWith("http")) {
-            return getPlaceholderImage();
-        }
-
-        try {
-            return new Image(imageUrl, 120, 120, true, true); // tải ảnh trực tiếp từ URL
-        } catch (Exception e) {
-            System.err.println("Lỗi tải ảnh từ URL: " + e.getMessage());
-            return getPlaceholderImage();
-        }
-    }
-
-
-
 }
