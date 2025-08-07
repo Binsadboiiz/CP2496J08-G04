@@ -39,7 +39,7 @@ public class AddEmployeeController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Khởi tạo combo box chức vụ
-        roleBox.getItems().addAll("Admin", "Staff", "Cashier", "Warehouse");
+        roleBox.getItems().addAll("Manager", "Staff", "Cashier", "Warehouse");
     }
 
     /** Gán sự kiện cho nút Add */

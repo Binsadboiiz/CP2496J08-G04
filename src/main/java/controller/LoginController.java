@@ -100,7 +100,7 @@ public class LoginController implements Initializable {
                 User user = UserDAO.loginAndGetUser(username, password);
 
                 // Chuyển scene theo role
-                if ("Admin".equalsIgnoreCase(role)) {
+                if ("Manager".equalsIgnoreCase(role)) {
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/SceneAdmin.fxml"));
                         Parent root = loader.load();

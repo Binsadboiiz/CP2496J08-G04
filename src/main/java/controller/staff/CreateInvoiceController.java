@@ -20,12 +20,16 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 33e63c657e315eb9d24b386c019fa676a6fe7152
 import dao.PromotionDAO;
 import model.Promotion;
 import javafx.collections.FXCollections;
 import javafx.util.StringConverter;
 
+<<<<<<< HEAD
 
 import java.sql.Connection;
 
@@ -34,6 +38,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.util.StringConverter;
 
+=======
+import java.sql.Connection;
+
+>>>>>>> 33e63c657e315eb9d24b386c019fa676a6fe7152
 
 public class CreateInvoiceController {
 
@@ -124,8 +132,12 @@ public class CreateInvoiceController {
         invoiceTable.setItems(invoiceItems);
         calculateAndDisplayTotal();
 
+<<<<<<< HEAD
         ObservableList<Promotion> allPromotions = FXCollections.observableArrayList(PromotionDAO.getAll());
         promotionListView.setItems(allPromotions);
+=======
+        comboDiscount.setItems(FXCollections.observableArrayList(PromotionDAO.getAll()));
+>>>>>>> 33e63c657e315eb9d24b386c019fa676a6fe7152
 
 // Hiển thị checkbox cho mỗi khuyến mãi
         promotionListView.setCellFactory(CheckBoxListCell.forListView(promo -> {
