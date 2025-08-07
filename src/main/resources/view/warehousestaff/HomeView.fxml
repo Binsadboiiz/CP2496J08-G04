@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.warehousestaff.HomeViewController">
+<VBox xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.warehousestaff.HomeViewController" prefHeight="650.0" prefWidth="820.0">
     <children>
         <!-- Main Title -->
         <Label text="WAREHOUSE STAFF HOME">

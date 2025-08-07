@@ -55,7 +55,7 @@
 
     <!-- Center content -->
     <center>
-        <StackPane fx:id="contentArea" />
+        <StackPane fx:id="contentArea" prefHeight="680" prefWidth="980.0" />
     </center>
 
 </BorderPane>
