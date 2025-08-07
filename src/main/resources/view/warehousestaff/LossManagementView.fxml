@@ -4,18 +4,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="15.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.warehousestaff.LossManagementController">
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.warehousestaff.LossManagementController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
     <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-background-radius: 10;">
-        <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Quản lý tổn thất" />
+        <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Loss Management" />
         <Region HBox.hgrow="ALWAYS" />
-        <Button onAction="#handleSearchProduct" style="-fx-background-color: #17a2b8; -fx-text-fill: white;" text="🔍 Tìm kiếm sản phẩm" />
-        <Button fx:id="btnRefresh" onAction="#handleRefresh" style="-fx-background-color: #28a745; -fx-text-fill: white;" text="🔄 Làm mới" />
-        <Button onAction="#handleDeleteLossReport" style="-fx-background-color: #dc3545; -fx-text-fill: white;" text="🗑️ Xóa báo cáo" />
+        <Button onAction="#handleSearchProduct" style="-fx-background-color: #17a2b8; -fx-text-fill: white;" text="🔍 Search Product" />
+        <Button fx:id="btnRefresh" onAction="#handleRefresh" style="-fx-background-color: #28a745; -fx-text-fill: white;" text="🔄 Refresh" />
+        <Button onAction="#handleDeleteLossReport" style="-fx-background-color: #dc3545; -fx-text-fill: white;" text="🗑️ Delete Report" />
     </HBox>
 
     <!-- Main Content -->
@@ -25,15 +25,15 @@
         <VBox spacing="15.0" prefWidth="600.0">
             <!-- Products Table -->
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 15; -fx-background-radius: 10;">
-                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;" text="📦 Danh sách sản phẩm" />
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;" text="📦 Product List" />
                 <TableView fx:id="tblProducts" prefHeight="300.0">
                     <columns>
-                        <TableColumn fx:id="colProductCode" prefWidth="100.0" text="Mã SP" />
-                        <TableColumn fx:id="colProductName" prefWidth="200.0" text="Tên sản phẩm" />
-                        <TableColumn fx:id="colBrand" prefWidth="100.0" text="Thương hiệu" />
-                        <TableColumn fx:id="colTotalStock" prefWidth="80.0" text="Tồn kho" />
-                        <TableColumn fx:id="colTotalLoss" prefWidth="80.0" text="Đã mất" />
-                        <TableColumn fx:id="colAvailable" prefWidth="80.0" text="Khả dụng" />
+                        <TableColumn fx:id="colProductCode" prefWidth="100.0" text="Product ID" />
+                        <TableColumn fx:id="colProductName" prefWidth="200.0" text="Product Name" />
+                        <TableColumn fx:id="colBrand" prefWidth="100.0" text="Brand" />
+                        <TableColumn fx:id="colTotalStock" prefWidth="80.0" text="Stock" />
+                        <TableColumn fx:id="colTotalLoss" prefWidth="80.0" text="Lost" />
+                        <TableColumn fx:id="colAvailable" prefWidth="80.0" text="Available" />
                     </columns>
                 </TableView>
             </VBox>
@@ -41,19 +41,19 @@
             <!-- Loss Reports History -->
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 15; -fx-background-radius: 10;">
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="📋 Lịch sử báo cáo tổn thất" />
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="📋 Loss Report History" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <Label fx:id="lblTotalLossReports" style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Tổng số báo cáo: 0" />
+                    <Label fx:id="lblTotalLossReports" style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Total Reports: 0" />
                 </HBox>
                 <Separator />
                 <TableView fx:id="tblLossReports" prefHeight="250.0">
                     <columns>
                         <TableColumn fx:id="colReportID" prefWidth="60.0" text="ID" />
-                        <TableColumn fx:id="colLossProduct" prefWidth="150.0" text="Sản phẩm" />
-                        <TableColumn fx:id="colLossQuantity" prefWidth="80.0" text="SL mất" />
-                        <TableColumn fx:id="colLossReason" prefWidth="120.0" text="Lý do" />
-                        <TableColumn fx:id="colEmployee" prefWidth="100.0" text="Người tạo" />
-                        <TableColumn fx:id="colLossValue" prefWidth="100.0" text="Giá trị mất" />
+                        <TableColumn fx:id="colLossProduct" prefWidth="150.0" text="Product" />
+                        <TableColumn fx:id="colLossQuantity" prefWidth="80.0" text="Loss Qty" />
+                        <TableColumn fx:id="colLossReason" prefWidth="120.0" text="Reason" />
+                        <TableColumn fx:id="colEmployee" prefWidth="100.0" text="Created By" />
+                        <TableColumn fx:id="colLossValue" prefWidth="100.0" text="Loss Value" />
                     </columns>
                 </TableView>
             </VBox>
@@ -64,15 +64,15 @@
 
             <!-- Selection Info -->
             <VBox style="-fx-background-color: #e3f2fd; -fx-border-color: #2196f3; -fx-padding: 15; -fx-background-radius: 10;">
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" text="📋 Thông tin đã chọn" />
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" text="📋 Selected Information" />
                 <Separator />
-                <Label fx:id="lblSelectedProduct" text="Chưa chọn sản phẩm" wrapText="true" />
-                <Label fx:id="lblAvailableQuantity" style="-fx-font-weight: bold; -fx-text-fill: #2e7d32;" text="Số lượng khả dụng: 0" />
+                <Label fx:id="lblSelectedProduct" text="No product selected" wrapText="true" />
+                <Label fx:id="lblAvailableQuantity" style="-fx-font-weight: bold; -fx-text-fill: #2e7d32;" text="Available Quantity: 0" />
             </VBox>
 
             <!-- Loss Report Form -->
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 15; -fx-background-radius: 10;">
-                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 15 0; -fx-text-fill: #dc3545;" text="📝 Tạo báo cáo tổn thất" />
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 15 0; -fx-text-fill: #dc3545;" text="📝 Create Loss Report" />
 
                 <GridPane hgap="10.0" vgap="15.0">
                     <columnConstraints>
@@ -85,14 +85,14 @@
                         <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="NEVER" />
                     </rowConstraints>
 
-                    <Label text="Số lượng tổn thất:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <TextField fx:id="txtLossQuantity" promptText="Nhập số lượng..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Label text="Loss Quantity:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="txtLossQuantity" promptText="Enter quantity..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                    <Label text="Ngày tổn thất:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label text="Loss Date:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                     <DatePicker fx:id="dpLossDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                    <Label text="Lý do tổn thất:" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-                    <TextArea fx:id="txtLossReason" prefRowCount="4" promptText="Mô tả chi tiết lý do tổn thất..." wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <Label text="Loss Reason:" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                    <TextArea fx:id="txtLossReason" prefRowCount="4" promptText="Describe the reason for loss in detail..." wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 </GridPane>
 
                 <Separator />
@@ -100,22 +100,22 @@
                 <HBox alignment="CENTER" spacing="15.0">
                     <Button fx:id="btnCreateLossReport" onAction="#handleCreateLossReport" disable="true"
                             style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 20;"
-                            text="📝 TẠO BÁO CÁO TỔN THẤT" />
+                            text="📝 CREATE LOSS REPORT" />
                 </HBox>
             </VBox>
 
             <!-- Statistics -->
             <VBox style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-padding: 15; -fx-background-radius: 10;">
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #495057;" text="📊 Thống kê nhanh" />
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #495057;" text="📊 Quick Statistics" />
                 <Separator />
                 <HBox spacing="20.0">
                     <VBox alignment="CENTER" spacing="5.0">
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Tổng sản phẩm" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Total Products" />
                         <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #007bff;" text="0" fx:id="lblTotalProducts" />
                     </VBox>
                     <Separator orientation="VERTICAL" />
                     <VBox alignment="CENTER" spacing="5.0">
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Sản phẩm có tổn thất" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Products with Loss" />
                         <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #dc3545;" text="0" fx:id="lblProductsWithLoss" />
                     </VBox>
                 </HBox>

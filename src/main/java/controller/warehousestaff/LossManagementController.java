@@ -13,7 +13,7 @@ import java.util.List;
 
 public class LossManagementController {
 
-    // UI Components cho danh sách sản phẩm có thể tạo báo cáo tổn thất
+    // UI Components for product list that can create loss reports
     @FXML private TableView<ProductWithStock> tblProducts;
     @FXML private TableColumn<ProductWithStock, String> colProductCode;
     @FXML private TableColumn<ProductWithStock, String> colProductName;
@@ -22,7 +22,7 @@ public class LossManagementController {
     @FXML private TableColumn<ProductWithStock, Integer> colTotalLoss;
     @FXML private TableColumn<ProductWithStock, Integer> colAvailable;
 
-    // UI Components cho danh sách báo cáo tổn thất đã tạo
+    // UI Components for created loss reports list
     @FXML private TableView<LossReportDetailDAO.LossReportDetailExtended> tblLossReports;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, Integer> colReportID;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, String> colLossProduct;
@@ -30,20 +30,24 @@ public class LossManagementController {
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, String> colLossReason;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, String> colEmployee;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, Double> colLossValue;
+    // THÊM: Cột hiển thị giá nhập trung bình
+    @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, Double> colAvgUnitCost;
 
-    // UI Components cho form tạo báo cáo tổn thất
+    // UI Components for creating loss report form
     @FXML private TextField txtLossQuantity;
     @FXML private TextArea txtLossReason;
     @FXML private DatePicker dpLossDate;
     @FXML private Button btnCreateLossReport;
     @FXML private Button btnRefresh;
 
-    // UI Components cho hiển thị thông tin
+    // UI Components for displaying information
     @FXML private Label lblSelectedProduct;
     @FXML private Label lblAvailableQuantity;
     @FXML private Label lblTotalLossReports;
     @FXML private Label lblTotalProducts;
     @FXML private Label lblProductsWithLoss;
+    // THÊM: Hiển thị giá nhập trung bình của sản phẩm được chọn
+    @FXML private Label lblAvgUnitCost;
 
     // Data
     private ObservableList<ProductWithStock> productList = FXCollections.observableArrayList();
@@ -79,6 +83,23 @@ public class LossManagementController {
         colEmployee.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
         colLossValue.setCellValueFactory(new PropertyValueFactory<>("lossValue"));
 
+        // THÊM: Setup cột giá nhập trung bình
+        if (colAvgUnitCost != null) {
+            colAvgUnitCost.setCellValueFactory(new PropertyValueFactory<>("avgUnitCost"));
+            // Format avg unit cost column to show currency
+            colAvgUnitCost.setCellFactory(col -> new TableCell<LossReportDetailDAO.LossReportDetailExtended, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(String.format("%,.0f VND", item));
+                    }
+                }
+            });
+        }
+
         // Format loss value column to show currency
         colLossValue.setCellFactory(col -> new TableCell<LossReportDetailDAO.LossReportDetailExtended, Double>() {
             @Override
@@ -87,7 +108,7 @@ public class LossManagementController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%,.0f ₫", item));
+                    setText(String.format("%,.0f VND", item));
                 }
             }
         });
@@ -115,22 +136,26 @@ public class LossManagementController {
                 pws.setBrand(product.getBrand());
                 pws.setPrice(product.getPrice());
 
-                // Tính tổng số lượng nhập từ tất cả phiếu nhập
+                // Calculate total stock from all stock entries
                 int totalStock = getTotalStockForProduct(product.getProductID());
                 pws.setTotalStock(totalStock);
 
-                // Tính tổng số lượng tổn thất
+                // Calculate total loss quantity
                 int totalLoss = LossReportDetailDAO.getTotalLossQuantityByProduct(product.getProductID());
                 pws.setTotalLoss(totalLoss);
 
-                // Tính số lượng khả dụng
+                // Calculate available quantity
                 int available = Math.max(0, totalStock - totalLoss);
                 pws.setAvailableQuantity(available);
+
+                // THÊM: Tính giá nhập trung bình
+                double avgUnitCost = getAverageUnitCostForProduct(product.getProductID());
+                pws.setAvgUnitCost(avgUnitCost);
 
                 productList.add(pws);
             }
         } catch (Exception e) {
-            showAlert("Lỗi khi tải danh sách sản phẩm: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Error loading product list: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -155,18 +180,44 @@ public class LossManagementController {
         return 0;
     }
 
+    // THÊM: Phương thức tính giá nhập trung bình
+    private double getAverageUnitCostForProduct(int productID) {
+        String sql = """
+            SELECT CASE 
+                       WHEN SUM(sed.Quantity) > 0 
+                       THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
+                       ELSE 0 
+                   END as AvgUnitCost
+            FROM StockEntryDetail sed
+            WHERE sed.ProductID = ?
+        """;
+
+        try (java.sql.Connection conn = dao.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productID);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("AvgUnitCost");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
     private void loadLossReports() {
         try {
             List<LossReportDetailDAO.LossReportDetailExtended> reports =
                     LossReportDetailDAO.getLossReportDetailsExtended();
             lossReportList.setAll(reports);
         } catch (Exception e) {
-            showAlert("Lỗi khi tải danh sách báo cáo tổn thất: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Error loading loss reports: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private void updateStatistics() {
-        lblTotalLossReports.setText("Tổng số báo cáo: " + lossReportList.size());
+        lblTotalLossReports.setText("Total Reports: " + lossReportList.size());
         lblTotalProducts.setText(String.valueOf(productList.size()));
 
         long productsWithLoss = productList.stream()
@@ -178,10 +229,15 @@ public class LossManagementController {
     private void onProductSelected(ProductWithStock product) {
         selectedProduct = product;
         if (product != null) {
-            lblSelectedProduct.setText("Sản phẩm: " + product.getProductName());
-            lblAvailableQuantity.setText("Số lượng khả dụng: " + product.getAvailableQuantity());
+            lblSelectedProduct.setText("Product: " + product.getProductName());
+            lblAvailableQuantity.setText("Available Quantity: " + product.getAvailableQuantity());
 
-            // Enable/disable tạo báo cáo dựa trên số lượng khả dụng
+            // THÊM: Hiển thị giá nhập trung bình
+            if (lblAvgUnitCost != null) {
+                lblAvgUnitCost.setText("Avg Unit Cost: " + String.format("%,.0f VND", product.getAvgUnitCost()));
+            }
+
+            // Enable/disable create report based on available quantity
             btnCreateLossReport.setDisable(product.getAvailableQuantity() <= 0);
         } else {
             resetProductSelection();
@@ -190,8 +246,11 @@ public class LossManagementController {
 
     private void resetProductSelection() {
         selectedProduct = null;
-        lblSelectedProduct.setText("Chưa chọn sản phẩm");
-        lblAvailableQuantity.setText("Số lượng khả dụng: 0");
+        lblSelectedProduct.setText("No product selected");
+        lblAvailableQuantity.setText("Available Quantity: 0");
+        if (lblAvgUnitCost != null) {
+            lblAvgUnitCost.setText("Avg Unit Cost: 0 VND");
+        }
         btnCreateLossReport.setDisable(true);
         txtLossQuantity.clear();
         txtLossReason.clear();
@@ -208,14 +267,14 @@ public class LossManagementController {
             String reason = txtLossReason.getText().trim();
             LocalDate lossDate = dpLossDate.getValue();
 
-            // Tạo báo cáo tổn thất
+            // Create loss report
             LossReport report = new LossReport();
             report.setEmployeeID(getCurrentEmployeeID());
             report.setReportDate(java.sql.Timestamp.valueOf(lossDate.atStartOfDay()));
 
             int reportID = LossReportDAO.insertLossReport(report);
             if (reportID > 0) {
-                // Tạo chi tiết báo cáo tổn thất
+                // Create loss report detail
                 LossReportDetail detail = new LossReportDetail();
                 detail.setReportID(reportID);
                 detail.setProductID(selectedProduct.getProductID());
@@ -224,64 +283,77 @@ public class LossManagementController {
 
                 boolean success = LossReportDetailDAO.insertLossReportDetail(detail);
                 if (success) {
-                    showAlert("Tạo báo cáo tổn thất thành công!", Alert.AlertType.INFORMATION);
+                    // THÊM: Hiển thị thông tin giá trị tổn thất dựa trên giá nhập
+                    double lossValue = lossQuantity * selectedProduct.getAvgUnitCost();
+                    String message = String.format(
+                            "Loss report created successfully!\n" +
+                                    "Product: %s\n" +
+                                    "Quantity Lost: %d\n" +
+                                    "Avg Unit Cost: %,.0f VND\n" +
+                                    "Total Loss Value: %,.0f VND",
+                            selectedProduct.getProductName(),
+                            lossQuantity,
+                            selectedProduct.getAvgUnitCost(),
+                            lossValue
+                    );
+                    showAlert(message, Alert.AlertType.INFORMATION);
 
-                    // Làm mới dữ liệu
+                    // Refresh data
                     loadData();
 
-                    // Xóa form
+                    // Clear form
                     txtLossQuantity.clear();
                     txtLossReason.clear();
                     dpLossDate.setValue(LocalDate.now());
                     resetProductSelection();
                 } else {
-                    showAlert("Lỗi khi tạo chi tiết báo cáo tổn thất!", Alert.AlertType.ERROR);
+                    showAlert("Error creating loss report detail!", Alert.AlertType.ERROR);
                 }
             } else {
-                showAlert("Lỗi khi tạo báo cáo tổn thất!", Alert.AlertType.ERROR);
+                showAlert("Error creating loss report!", Alert.AlertType.ERROR);
             }
 
         } catch (Exception e) {
-            showAlert("Lỗi: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Error: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private boolean validateLossReportInput() {
         if (selectedProduct == null) {
-            showAlert("Vui lòng chọn sản phẩm!", Alert.AlertType.WARNING);
+            showAlert("Please select a product!", Alert.AlertType.WARNING);
             return false;
         }
 
         String quantityText = txtLossQuantity.getText().trim();
         if (quantityText.isEmpty()) {
-            showAlert("Vui lòng nhập số lượng tổn thất!", Alert.AlertType.WARNING);
+            showAlert("Please enter loss quantity!", Alert.AlertType.WARNING);
             return false;
         }
 
         try {
             int quantity = Integer.parseInt(quantityText);
             if (quantity <= 0) {
-                showAlert("Số lượng tổn thất phải lớn hơn 0!", Alert.AlertType.WARNING);
+                showAlert("Loss quantity must be greater than 0!", Alert.AlertType.WARNING);
                 return false;
             }
 
             if (quantity > selectedProduct.getAvailableQuantity()) {
-                showAlert("Số lượng tổn thất không được vượt quá số lượng khả dụng (" +
+                showAlert("Loss quantity cannot exceed available quantity (" +
                         selectedProduct.getAvailableQuantity() + ")!", Alert.AlertType.WARNING);
                 return false;
             }
         } catch (NumberFormatException e) {
-            showAlert("Số lượng tổn thất phải là số nguyên!", Alert.AlertType.WARNING);
+            showAlert("Loss quantity must be an integer!", Alert.AlertType.WARNING);
             return false;
         }
 
         if (txtLossReason.getText().trim().isEmpty()) {
-            showAlert("Vui lòng nhập lý do tổn thất!", Alert.AlertType.WARNING);
+            showAlert("Please enter loss reason!", Alert.AlertType.WARNING);
             return false;
         }
 
         if (dpLossDate.getValue() == null) {
-            showAlert("Vui lòng chọn ngày tổn thất!", Alert.AlertType.WARNING);
+            showAlert("Please select loss date!", Alert.AlertType.WARNING);
             return false;
         }
 
@@ -289,30 +361,36 @@ public class LossManagementController {
     }
 
     private int getCurrentEmployeeID() {
-        // Lấy từ session/login hiện tại
-        return 1; // Placeholder - thay thế bằng session management thực tế
+        // Get from current session/login
+        return 1; // Placeholder - replace with actual session management
     }
 
     @FXML
     private void handleRefresh() {
         loadData();
         resetProductSelection();
-        showAlert("Đã làm mới dữ liệu!", Alert.AlertType.INFORMATION);
+        showAlert("Data refreshed!", Alert.AlertType.INFORMATION);
     }
 
     @FXML
     private void handleDeleteLossReport() {
         LossReportDetailDAO.LossReportDetailExtended selected = tblLossReports.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Vui lòng chọn báo cáo tổn thất cần xóa!", Alert.AlertType.WARNING);
+            showAlert("Please select a loss report to delete!", Alert.AlertType.WARNING);
             return;
         }
 
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Xác nhận xóa");
-        confirmAlert.setHeaderText("Bạn có chắc chắn muốn xóa báo cáo tổn thất này?");
-        confirmAlert.setContentText("Sản phẩm: " + selected.getProductName() +
-                "\nSố lượng: " + selected.getLostQuantity());
+        confirmAlert.setTitle("Confirm Delete");
+        confirmAlert.setHeaderText("Are you sure you want to delete this loss report?");
+        // THÊM: Hiển thị thông tin giá trị tổn thất dựa trên giá nhập
+        confirmAlert.setContentText(String.format(
+                "Product: %s\nQuantity: %d\nAvg Unit Cost: %,.0f VND\nLoss Value: %,.0f VND",
+                selected.getProductName(),
+                selected.getLostQuantity(),
+                selected.getAvgUnitCost(),
+                selected.getLossValue()
+        ));
 
         if (confirmAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try {
@@ -320,13 +398,13 @@ public class LossManagementController {
                         selected.getReportID(), selected.getProductID());
 
                 if (success) {
-                    showAlert("Xóa báo cáo tổn thất thành công!", Alert.AlertType.INFORMATION);
+                    showAlert("Loss report deleted successfully!", Alert.AlertType.INFORMATION);
                     loadData();
                 } else {
-                    showAlert("Lỗi khi xóa báo cáo tổn thất!", Alert.AlertType.ERROR);
+                    showAlert("Error deleting loss report!", Alert.AlertType.ERROR);
                 }
             } catch (Exception e) {
-                showAlert("Lỗi: " + e.getMessage(), Alert.AlertType.ERROR);
+                showAlert("Error: " + e.getMessage(), Alert.AlertType.ERROR);
             }
         }
     }
@@ -334,9 +412,9 @@ public class LossManagementController {
     @FXML
     private void handleSearchProduct() {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Tìm kiếm sản phẩm");
-        dialog.setHeaderText("Nhập từ khóa tìm kiếm:");
-        dialog.setContentText("Tên sản phẩm hoặc mã sản phẩm:");
+        dialog.setTitle("Search Product");
+        dialog.setHeaderText("Enter search keyword:");
+        dialog.setContentText("Product name or product code:");
 
         dialog.showAndWait().ifPresent(keyword -> {
             if (!keyword.trim().isEmpty()) {
@@ -369,22 +447,26 @@ public class LossManagementController {
                 int available = Math.max(0, totalStock - totalLoss);
                 pws.setAvailableQuantity(available);
 
+                // THÊM: Tính giá nhập trung bình cho tìm kiếm
+                double avgUnitCost = getAverageUnitCostForProduct(product.getProductID());
+                pws.setAvgUnitCost(avgUnitCost);
+
                 productList.add(pws);
             }
         } catch (Exception e) {
-            showAlert("Lỗi khi tìm kiếm: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Search error: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private void showAlert(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle("Thông báo");
+        alert.setTitle("Notification");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
 
-    // Inner class cho sản phẩm với thông tin kho
+    // Inner class for product with stock information
     public static class ProductWithStock {
         private int productID;
         private String productCode;
@@ -394,8 +476,9 @@ public class LossManagementController {
         private int totalStock;
         private int totalLoss;
         private int availableQuantity;
+        private double avgUnitCost; // THÊM: Giá nhập trung bình
 
-        // Getters và Setters
+        // Getters and Setters
         public int getProductID() { return productID; }
         public void setProductID(int productID) { this.productID = productID; }
 
@@ -419,5 +502,9 @@ public class LossManagementController {
 
         public int getAvailableQuantity() { return availableQuantity; }
         public void setAvailableQuantity(int availableQuantity) { this.availableQuantity = availableQuantity; }
+
+        // THÊM: Getter và Setter cho giá nhập trung bình
+        public double getAvgUnitCost() { return avgUnitCost; }
+        public void setAvgUnitCost(double avgUnitCost) { this.avgUnitCost = avgUnitCost; }
     }
 }

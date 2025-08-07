@@ -38,11 +38,6 @@ public class WarehouseStaffDashboardController {
     }
 
     @FXML
-    private void handleRole(ActionEvent event) {
-        loadView("/view/warehousestaff/RoleView.fxml");
-    }
-
-    @FXML
     private void handleStockEntryList(ActionEvent event) {loadView("/view/warehousestaff/StockEntryList.fxml");}
 
     @FXML
@@ -51,16 +46,13 @@ public class WarehouseStaffDashboardController {
     }
 
     @FXML
-    private void handleInventoryManagement(ActionEvent event) {
-        loadView("/view/warehousestaff/InventoryManagementView.fxml");
-    }
+    private void handleInventoryManagement(ActionEvent event) {loadView("/view/warehousestaff/InventoryManagementView.fxml");}
+
 
     @FXML
-    private void handleProductUpdate(ActionEvent event) {
-        loadView("/view/warehousestaff/ProductUpdateView.fxml");
+    private void handleWarehouseReport(ActionEvent event) {
+        loadView("/view/warehousestaff/WarehouseReportView.fxml");
     }
-
-
 
     @FXML
     private void handleLogout(ActionEvent event) {

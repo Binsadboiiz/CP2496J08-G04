@@ -9,13 +9,15 @@ import javafx.scene.Parent;
 import java.sql.Connection;
 import dao.DatabaseConnection;
 
-
 public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/warehousestaff/WarehouseStaffDashboard.fxml"));
+
+
+
         primaryStage.getIcons().add(
                 new Image(getClass().getResourceAsStream("/images/logo-app.png"))
         );
