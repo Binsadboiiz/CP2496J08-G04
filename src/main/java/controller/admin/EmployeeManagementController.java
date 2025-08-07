@@ -86,7 +86,7 @@ public class EmployeeManagementController {
         } catch (IOException ex) {
             ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR,
-                    "Lỗi load form Add Employee:\n" + ex.getMessage())
+                    "Error loading Add Employee form:\n" + ex.getMessage())
                     .showAndWait();
         }
     }
@@ -96,7 +96,7 @@ public class EmployeeManagementController {
         Employee sel = tableView.getSelectionModel().getSelectedItem();
         if (sel == null) {
             new Alert(Alert.AlertType.WARNING,
-                    "Hãy chọn nhân viên để sửa!").showAndWait();
+                    "Please select staff to repair!").showAndWait();
             return;
         }
         try {
@@ -119,7 +119,7 @@ public class EmployeeManagementController {
         } catch (IOException ex) {
             ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR,
-                    "Lỗi load form Edit Employee:\n" + ex.getMessage())
+                    "Error loading Edit Employee form:\n" + ex.getMessage())
                     .showAndWait();
         }
     }
@@ -128,11 +128,11 @@ public class EmployeeManagementController {
     private void onDeleteEmployee() {
         Employee sel = tableView.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            new Alert(AlertType.WARNING, "Chọn 1 nhân viên để xóa!").showAndWait();
+            new Alert(AlertType.WARNING, "Select 1 employee to delete!").showAndWait();
             return;
         }
         Alert confirm = new Alert(AlertType.CONFIRMATION,
-                "Xác nhận xóa nhân viên ["+sel.getFullName()+"]?", ButtonType.YES, ButtonType.NO);
+                "Confirm delete employee ["+sel.getFullName()+"]?", ButtonType.YES, ButtonType.NO);
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.YES) {
                 // xóa User trước

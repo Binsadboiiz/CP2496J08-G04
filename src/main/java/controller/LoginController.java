@@ -1,6 +1,7 @@
 package controller;
 
 import controller.admin.AdminController;
+import controller.cashier.CashierController;
 import controller.staff.StaffController;
 import controller.warehousestaff.WarehouseStaffDashboardController;
 import dao.UserDAO;
@@ -116,8 +117,8 @@ public class LoginController implements Initializable {
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/staff/SceneStaff.fxml"));
                         Parent root = loader.load();
-                        StaffController adminController = loader.getController();
-                        adminController.setUserInfo(user.getUsername(), user.getRole());
+                        StaffController staffController = loader.getController();
+                        staffController.setUserInfo(user.getUsername(), user.getRole());
 
                         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                         stage.setScene(new Scene(root));
@@ -130,8 +131,8 @@ public class LoginController implements Initializable {
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cashier/SceneCashier.fxml"));
                         Parent root = loader.load();
-                        AdminController adminController = loader.getController();
-                        adminController.setUserInfo(user.getUsername(), user.getRole());
+                        CashierController cashierController = loader.getController();
+                        cashierController.setUserInfo(user.getUsername(), user.getRole());
 
                         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                         stage.setScene(new Scene(root));
@@ -143,8 +144,8 @@ public class LoginController implements Initializable {
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/warehousestaff/WarehouseStaffDashboard.fxml"));
                         Parent root = loader.load();
-                        WarehouseStaffDashboardController adminController = loader.getController();
-                        adminController.setUserInfo(user.getUsername(), user.getRole());
+                        WarehouseStaffDashboardController warehouseController = loader.getController();
+                        warehouseController.setUserInfo(user.getUsername(), user.getRole());
 
                         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                         stage.setScene(new Scene(root));

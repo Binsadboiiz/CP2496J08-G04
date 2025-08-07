@@ -1,0 +1,120 @@
+.anchor-pane, .vbox {
+    -fx-background-color: linear-gradient(to bottom, #f4f7fb 90%, #eaf0fa 100%);
+    -fx-padding: 0 0 0 0;
+}
+
+/* Thanh công cụ */
+.hbox {
+    -fx-padding: 0 0 0 0;
+}
+
+/* Search field */
+.text-field {
+    -fx-background-radius: 12;
+    -fx-font-size: 15px;
+    -fx-padding: 8 16 8 16;
+    -fx-background-color: #fff;
+    -fx-border-color: #dde6ef;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, #dbe7f5bb, 2, 0.04, 0, 1);
+}
+
+/* Button chung */
+.button {
+    -fx-background-radius: 10;
+    -fx-font-size: 15px;
+    -fx-font-family: "Montserrat", Arial, sans-serif;
+    -fx-font-weight: 600;
+    -fx-text-fill: white;
+    -fx-padding: 6 18 6 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #c3dafe77, 3, 0.1, 0, 2);
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+.button:hover { opacity: 0.88; }
+
+/* Các nút riêng */
+.button[text="Add"], .btn-add {
+    -fx-background-color: #2584f8;
+}
+.button[text="Edit"], .btn-edit {
+    -fx-background-color: #11c832;
+}
+.button[text="Delete"], .btn-delete {
+    -fx-background-color: #f44336;
+}
+
+.button[text="Refresh"] {
+    -fx-background-color: #3498db;
+}
+
+/* ComboBox filter */
+.combo-box {
+    -fx-background-radius: 12;
+    -fx-padding: 5 15 5 10;
+    -fx-font-size: 15px;
+    -fx-border-color: #dde6ef;
+    -fx-background-color: #fff;
+}
+.combo-box:hover, .combo-box:focused {
+    -fx-border-color: #2584f8;
+}
+
+/* TableView (bảng) */
+.table-view {
+    -fx-background-radius: 12px;
+    -fx-background-color: #fff;
+    -fx-border-radius: 12px;
+    -fx-border-color: #42a5f5;
+    -fx-padding: 10 10 10 10;
+    -fx-effect: dropshadow(gaussian, #b3e5fc88, 4, 0.04, 0, 2);
+}
+.table-view .column-header-background {
+    -fx-background-color: #e9f3fc;
+    -fx-background-radius: 12px 12px 0 0;
+}
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+}
+.table-view .table-cell {
+    -fx-font-size: 16px;
+    -fx-text-fill: #222;
+    -fx-padding: 7 0 7 10;
+}
+.table-view .column-header .label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2584f8;
+}
+.table-row-cell:selected {
+    -fx-background-color: #c6e6fc !important;
+}
+.table-row-cell:empty {
+    -fx-background-color: #f5f8fa;
+}
+
+/* Ẩn viền xanh khi không cần */
+.vbox {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+/* Supplier */
+.btn-add {
+    -fx-background-color: #2584f8;
+    -fx-text-fill: #fff;
+    -fx-background-radius: 10;
+}
+.btn-refresh {
+    -fx-background-color: #3498db;
+    -fx-text-fill: #fff;
+    -fx-background-radius: 10;
+}
+.stat-card {
+    -fx-background-color: #f5f7fa;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, #dde6ef77, 6, 0.09, 0, 2);
+    -fx-padding: 10 10 10 10;
+}
+

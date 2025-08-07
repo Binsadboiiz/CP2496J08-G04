@@ -5,7 +5,7 @@ GO
 CREATE TABLE [User]
 (
     UserID   INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-    Username VARCHAR(50)                   UNIQUE,
+    Username VARCHAR(50)                    NOT NULL,
     Password VARCHAR(50)                    NOT NULL,
     Role VARCHAR(50) NOT NULL
 );
@@ -72,7 +72,7 @@ CREATE TABLE Supplier
     Email NVARCHAR(200) NULL,
     Note NVARCHAR(255) NULL,
     CreatedDate DATETIME2 DEFAULT GETDATE() NOT NULL,
-    IsActive BIT DEFAULT 1 NOT NULL
+    IsActive BIT DEFAULT 1 NOT NULL;
 );
 
 CREATE TABLE Invoice
@@ -184,23 +184,3 @@ FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID);
 INSERT INTO [User] (Username, Password, Role) VALUES ('admin', '123456', 'Admin')
 insert into [User] (Username, Password, Role) values ('staff', '123456', 'Staff')
 insert into [User] (Username, Password, Role) values ('cashier', '123456', 'Cashier')
-insert into [User] (Username, Password, Role) values ('warehouse', '123456', 'Warehouse')
-
-
-CREATE TABLE LossReport (
-ReportID INT PRIMARY KEY IDENTITY(1,1),
-UserID INT,
-ReportDate DATETIME DEFAULT GETDATE(),
-FOREIGN KEY (UserID) REFERENCES [User](UserID)
-);
-
-CREATE TABLE LossReportDetail (
-ReportID INT NOT NULL,
-ProductID INT NOT NULL,
-Quantity INT NOT NULL CHECK (Quantity >= 0),
-Note NVARCHAR(255),
-LossDate DATETIME DEFAULT GETDATE(),
-PRIMARY KEY (ReportID, ProductID),
-FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-);
-

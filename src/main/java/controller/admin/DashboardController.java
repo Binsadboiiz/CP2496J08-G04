@@ -53,7 +53,7 @@ public class DashboardController implements Initializable {
         // 3. Doanh thu hôm nay
         double todaysSales = InvoiceDAO.getTodaysSales();
         // format có dấu ngăn cách hàng nghìn
-        DecimalFormat df = new DecimalFormat("#,###");
+        DecimalFormat df = new DecimalFormat("#.### VNĐ");
         lblTodaysSales.setText(df.format(todaysSales));
 
         // 4. Stock alerts (threshold = 5)

@@ -5,6 +5,8 @@ module demo {
     requires java.prefs;
     requires jdk.jfr;
     requires java.desktop;
+    requires javafx.graphics;
+    requires javafx.base;
 
     opens app to javafx.fxml;
     opens dao to javafx.fxml;

@@ -87,6 +87,7 @@ public class StockEntryListController {
     @FXML
     private void onRefresh() {
         // TODO:
+
     }
     @FXML
     private void onClose() {

@@ -53,7 +53,7 @@ public class AddEmployeeController implements Initializable {
                 || passwordField.getText().trim().isEmpty()
                 || roleBox.getValue() == null) {
             new Alert(Alert.AlertType.WARNING,
-                    "Xin điền đầy đủ các trường đánh dấu *").showAndWait();
+                    "Please fill in all fields marked *").showAndWait();
             return;
         }
 
@@ -70,7 +70,7 @@ public class AddEmployeeController implements Initializable {
         int newEmpId = EmployeeDAO.insertEmployee(emp);
         if (newEmpId <= 0) {
             new Alert(Alert.AlertType.ERROR,
-                    "Lỗi khi thêm nhân viên!").showAndWait();
+                    "Error adding employee!").showAndWait();
             return;
         }
 
@@ -86,14 +86,14 @@ public class AddEmployeeController implements Initializable {
         boolean userOk = UserDAO.insertUser(u);
         if (!userOk) {
             new Alert(Alert.AlertType.ERROR,
-                    "Tạo tài khoản user thất bại!").showAndWait();
+                    "User account creation failed!").showAndWait();
             // nếu cần rollback Employee: EmployeeDAO.deleteEmployee(newEmpId);
             return;
         }
 
         // 4. Thông báo thành công & đóng dialog
         new Alert(Alert.AlertType.INFORMATION,
-                "Thêm nhân viên và tài khoản thành công!").showAndWait();
+                "Add staff and account successfully!").showAndWait();
         dialogStage.close();
     }
 

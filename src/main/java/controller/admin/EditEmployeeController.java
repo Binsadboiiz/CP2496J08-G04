@@ -76,10 +76,10 @@ public class EditEmployeeController implements Initializable {
         boolean ok2 = UserDAO.updateUser(u);
 
         if (ok1 && ok2) {
-            new Alert(Alert.AlertType.INFORMATION, "Cập nhật thành công!").showAndWait();
+            new Alert(Alert.AlertType.INFORMATION, "Update successful!").showAndWait();
             dialogStage.close();
         } else {
-            new Alert(Alert.AlertType.ERROR, "Lỗi khi cập nhật!").showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Error updating!").showAndWait();
         }
     }
 

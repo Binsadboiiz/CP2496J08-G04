@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.cashier.TransactionsController">
+    <TableView fx:id="transactionTable" layoutX="20" layoutY="20" prefWidth="700" prefHeight="400">
+        <columns>
+            <TableColumn fx:id="idColumn" text="Transaction ID" prefWidth="100"/>
+            <TableColumn fx:id="customerColumn" text="Customer Name" prefWidth="200"/>
+            <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
+            <TableColumn fx:id="totalAmountColumn" text="Total Amount" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+    <TextField fx:id="productField" layoutX="20" layoutY="450" promptText="Product Name"/>
+    <TextField fx:id="priceField" layoutX="200" layoutY="450" promptText="Price"/>
+    <TextField fx:id="quantityField" layoutX="350" layoutY="450" promptText="Quantity"/>
+    <Button text="Add" layoutX="500" layoutY="450" onAction="#handleAddTransaction"/>
+</AnchorPane>

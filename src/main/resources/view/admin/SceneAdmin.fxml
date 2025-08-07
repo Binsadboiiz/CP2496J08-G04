@@ -64,6 +64,11 @@
                <Font name="Times New Roman Bold" size="18" />
             </font>
          </Button>
+            <Button fx:id="btnPromotion" maxWidth="180" onAction="#loadPromotionManagement" styleClass="sidebar-button" text="Promotion Management">
+                <font>
+                    <Font name="Times New Roman Bold" size="18" />
+                </font>
+            </Button>
 
             <Pane VBox.vgrow="ALWAYS" />
 
