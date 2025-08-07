@@ -27,7 +27,7 @@
             <VBox alignment="CENTER" layoutX="316.0" layoutY="96.0" prefHeight="507.0" prefWidth="392.0" styleClass="login-left">
                <children>
                   <Label fx:id="messageLabel" styleClass="title1" text="Welcome to" />
-                  <Label styleClass="title2" text="CellPhoneStore" />
+                  <Label styleClass="title2" text="CellPhoneS Store" />
                   <Label styleClass="label" text="Email" />
                   <TextField fx:id="usernameField" promptText="Username" styleClass="input" />
                   <Label styleClass="label" text="Password" />

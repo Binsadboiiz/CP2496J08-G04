@@ -36,7 +36,7 @@ CREATE TABLE Product
     Type        VARCHAR(50),
     Price       DECIMAL                        NOT NULL,
     Description TEXT,
-    Image       VARCHAR(200),
+    Image       TEXT,
     CreatedAt   DATETIME DEFAULT GETDATE(),
     UpdatedAt   DATETIME,
     CONSTRAINT CHK_Price CHECK (Price >= 0)

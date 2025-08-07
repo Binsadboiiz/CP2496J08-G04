@@ -1,5 +1,6 @@
 package controller.staff;
 
+import javafx.concurrent.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -9,15 +10,14 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.Customer;
 
 import java.io.IOException;
-import java.sql.*;
-import java.time.LocalDate;
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.Date;
 
 public class StaffController {
 
@@ -50,41 +50,72 @@ public class StaffController {
     private Connection conn;
     private ObservableList<Customer> customerList = FXCollections.observableArrayList();
 
+    // ===== LOAD FXML VỚI LOADING =====
+    public void loadPage(String fxmlPath) {
+        ProgressIndicator pi = new ProgressIndicator();
+        StackPane stack = new StackPane(pi);
+        stack.setPrefSize(contentArea.getWidth(), contentArea.getHeight());
+        AnchorPane.setTopAnchor(stack, 0.0);
+        AnchorPane.setBottomAnchor(stack, 0.0);
+        AnchorPane.setLeftAnchor(stack, 0.0);
+        AnchorPane.setRightAnchor(stack, 0.0);
+        contentArea.getChildren().setAll(stack);
 
-    public void loadHome() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/staff/Home.fxml"));
-        Parent fxml = loader.load();
-        HomeController homeController = loader.getController();
-        homeController.setStaffController(this); // Truyền tham chiếu StaffController
-        contentArea.getChildren().setAll(fxml);
-    }
-    public void loadCustomerManagement() throws IOException {
-        Parent fxml = FXMLLoader.load(getClass().getResource("/view/staff/CustomerManagement.fxml"));
-        contentArea.getChildren().removeAll();
-        contentArea.getChildren().setAll(fxml);
-    }
-    public void loadCreateInvoice() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/staff/CreateInvoice.fxml"));
-        Parent fxml = loader.load();
-        CreateInvoiceController createInvoiceController = loader.getController();
-        createInvoiceController.setStaffController(this); // Truyền tham chiếu StaffController
-        contentArea.getChildren().setAll(fxml);
+        Task<Parent> task = new Task<>() {
+            @Override
+            protected Parent call() throws Exception {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent fxml = loader.load();
+
+                // Truyền tham chiếu StaffController nếu là Home hoặc CreateInvoice
+                if (fxmlPath.endsWith("Home.fxml")) {
+                    HomeController homeController = loader.getController();
+                    homeController.setStaffController(StaffController.this);
+                } else if (fxmlPath.endsWith("CreateInvoice.fxml")) {
+                    CreateInvoiceController createInvoiceController = loader.getController();
+                    createInvoiceController.setStaffController(StaffController.this);
+                }
+                return fxml;
+            }
+        };
+        task.setOnSucceeded(e -> contentArea.getChildren().setAll(task.getValue()));
+        task.setOnFailed(e -> task.getException().printStackTrace());
+        new Thread(task).start();
     }
 
-    public void loadInvoiceHistory() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/staff/InvoiceHistory.fxml"));
-        Parent fxml = loader.load();
-        contentArea.getChildren().setAll(fxml);
-        // Do initialize() của InvoiceHistoryController tự động load dữ liệu, nên không cần làm gì thêm ở đây.
+    // ======= Các hàm chuyển tab UI =======
+    @FXML
+    public void initialize() {
+        // Load Home khi khởi động staff UI
+        loadHome();
     }
 
-    public void handleLogout(ActionEvent event) throws IOException {
-        Parent loginRoot = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
-        Scene loginScene = new Scene(loginRoot);
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(loginScene);
-        stage.show();
+    public void loadHome() {
+        loadPage("/view/staff/Home.fxml");
     }
+    public void loadCustomerManagement() {
+        loadPage("/view/staff/CustomerManagement.fxml");
+    }
+    public void loadCreateInvoice() {
+        loadPage("/view/staff/CreateInvoice.fxml");
+    }
+    public void loadInvoiceHistory() {
+        loadPage("/view/staff/InvoiceHistory.fxml");
+    }
+
+    @FXML
+    public void handleLogout(ActionEvent event) {
+        try {
+            Parent loginRoot = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+            Scene loginScene = new Scene(loginRoot);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(loginScene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     public void setUserInfo(String name, String role) {
         usernameLabel.setText(name);

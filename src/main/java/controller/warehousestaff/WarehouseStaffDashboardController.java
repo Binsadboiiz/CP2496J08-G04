@@ -1,11 +1,13 @@
 package controller.warehousestaff;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.StackPane;
 import dao.UserDAO;
 
@@ -18,13 +20,22 @@ public class WarehouseStaffDashboardController {
     @FXML private Label usernameLabel;
     @FXML private Label roleLabel;
 
+    // ===== TỐI ƯU LOADVIEW VỚI LOADING =====
     private void loadView(String fxmlFile) {
-        try {
-            Parent view = FXMLLoader.load(getClass().getResource(fxmlFile));
-            contentArea.getChildren().setAll(view);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ProgressIndicator pi = new ProgressIndicator();
+        StackPane loadingPane = new StackPane(pi);
+        loadingPane.setPrefSize(contentArea.getWidth(), contentArea.getHeight());
+        contentArea.getChildren().setAll(loadingPane);
+
+        Task<Parent> task = new Task<>() {
+            @Override
+            protected Parent call() throws Exception {
+                return FXMLLoader.load(getClass().getResource(fxmlFile));
+            }
+        };
+        task.setOnSucceeded(e -> contentArea.getChildren().setAll(task.getValue()));
+        task.setOnFailed(e -> task.getException().printStackTrace());
+        new Thread(task).start();
     }
 
     @FXML
@@ -38,7 +49,9 @@ public class WarehouseStaffDashboardController {
     }
 
     @FXML
-    private void handleStockEntryList(ActionEvent event) {loadView("/view/warehousestaff/StockEntryList.fxml");}
+    private void handleStockEntryList(ActionEvent event) {
+        loadView("/view/warehousestaff/StockEntryList.fxml");
+    }
 
     @FXML
     private void handleLossManagement(ActionEvent event) {
@@ -46,8 +59,9 @@ public class WarehouseStaffDashboardController {
     }
 
     @FXML
-    private void handleInventoryManagement(ActionEvent event) {loadView("/view/warehousestaff/InventoryManagementView.fxml");}
-
+    private void handleInventoryManagement(ActionEvent event) {
+        loadView("/view/warehousestaff/InventoryManagementView.fxml");
+    }
 
     @FXML
     private void handleWarehouseReport(ActionEvent event) {
@@ -64,6 +78,7 @@ public class WarehouseStaffDashboardController {
             e.printStackTrace();
         }
     }
+
     @FXML
     public void setUserInfo(String name, String role) {
         usernameLabel.setText(name);

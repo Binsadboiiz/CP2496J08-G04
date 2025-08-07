@@ -39,40 +39,51 @@ public class HomeController {
         card.setPrefSize(160, 250);
         card.setStyle("-fx-border-color: #ccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 12; -fx-background-color: #fff;");
 
-        ImageView img = new ImageView();
-        String imgName = product.getImage() != null && !product.getImage().isEmpty() ? product.getImage() : "placeholder.png";
-
+        ImageView imgView = new ImageView();
+        String imgName = (product.getImage() != null && !product.getImage().isEmpty()) ? product.getImage() : "placeholder.png";
         Image image = null;
 
-// Nếu đường dẫn là URL (bắt đầu bằng http hoặc https)
-        if (imgName.startsWith("http://") || imgName.startsWith("https://")) {
-            try {
+        try {
+            if (imgName.startsWith("http://") || imgName.startsWith("https://")) {
+                // Link ảnh online
                 image = new Image(imgName, 120, 120, true, true);
-            } catch (Exception e) {
-                System.err.println("Không thể tải ảnh từ link: " + imgName);
-            }
-        } else {
-            // Ảnh local từ resources (/images/)
-            InputStream imageStream = getClass().getResourceAsStream("/images/" + imgName);
-            if (imageStream != null) {
-                image = new Image(imageStream, 120, 120, true, true);
+                if (image.isError()) {
+                    System.err.println("Lỗi tải ảnh online: " + image.getException());
+                    image = null;
+                }
+            } else if (imgName.startsWith("/") || imgName.matches("^[A-Za-z]:.*")) {
+                imgName = imgName.replace("\"", "");
+                String localFileUrl = "file:///" + imgName.replace("\\", "/");
+                image = new Image(localFileUrl, 120, 120, true, true);
             } else {
-                System.err.println("Không tìm thấy ảnh local: /images/" + imgName);
+                // Ảnh local trong resources/images/
+                InputStream imageStream = getClass().getResourceAsStream("/images/" + imgName);
+                if (imageStream != null) {
+                    image = new Image(imageStream, 120, 120, true, true);
+                    if (image.isError()) {
+                        System.err.println("Lỗi load ảnh local: " + image.getException());
+                        image = null;
+                    }
+                } else {
+                    System.err.println("Không tìm thấy ảnh local: /images/" + imgName);
+                }
             }
+        } catch (Exception e) {
+            System.err.println("Exception khi tải ảnh: " + e.getMessage());
+            image = null;
         }
 
-// Nếu không có ảnh nào được tải, dùng placeholder
+// Nếu không có ảnh, dùng placeholder
         if (image == null) {
-            InputStream placeholder = getClass().getResourceAsStream("/images/placeholder.png");
+            InputStream placeholder = getClass().getResourceAsStream("/images/register_logo.png");
             if (placeholder != null) {
                 image = new Image(placeholder, 120, 120, true, true);
             } else {
-                System.err.println("Không tìm thấy placeholder.png");
+                System.err.println("Không tìm thấy placeholder.png, vui lòng kiểm tra lại thư mục /images/");
             }
         }
 
-        img.setImage(image);
-
+        imgView.setImage(image);
 
         Label name = new Label(product.getProductName());
         name.setStyle("-fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true; -fx-text-alignment: center;");
@@ -92,7 +103,7 @@ public class HomeController {
         Button addBtn = new Button("Thêm vào hóa đơn");
         addBtn.setOnAction(e -> addToInvoice(product));
 
-        card.getChildren().addAll(img, name, price, detailBtn, addBtn);
+        card.getChildren().addAll(imgView, name, price, detailBtn, addBtn);
         return card;
     }
 
