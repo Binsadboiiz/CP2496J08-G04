@@ -20,15 +20,13 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
-<<<<<<< HEAD
 import dao.PromotionDAO;
 import model.Promotion;
 import javafx.collections.FXCollections;
 import javafx.util.StringConverter;
 
-=======
 import java.sql.Connection;
->>>>>>> 6c7bc4d090894ca6e4362000dad1257d31be0e70
+
 
 public class CreateInvoiceController {
 
@@ -114,7 +112,7 @@ public class CreateInvoiceController {
         invoiceTable.setItems(invoiceItems);
         calculateAndDisplayTotal();
 
-        comboDiscount.setItems(FXCollections.observableArrayList(PromotionDAO.getAllPromotions()));
+        comboDiscount.setItems(FXCollections.observableArrayList(PromotionDAO.getAll()));
 
         comboDiscount.setConverter(new StringConverter<Promotion>() {
             @Override
