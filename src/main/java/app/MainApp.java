@@ -16,7 +16,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/warehousestaff/WarehouseStaffDashboard.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
         primaryStage.getIcons().add(
                 new Image(getClass().getResourceAsStream("/images/logo-app.png"))
         );
@@ -28,7 +28,6 @@ public class MainApp extends Application {
     public static void main(String[] args) {
         try (Connection conn = DatabaseConnection.getConnection()) {
             System.out.println("SQLServer Connected Successfully!");
-            ProductDAO productDAO = new ProductDAO(conn);
         } catch (Exception e) {
             e.printStackTrace();
         }
