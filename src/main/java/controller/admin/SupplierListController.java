@@ -34,6 +34,8 @@ public class SupplierListController {
 
     @FXML
     private Pagination pagination;
+    @FXML
+    private boolean paginationBound = false;
 
     private ObservableList<Supplier> supplierList = FXCollections.observableArrayList();
 
@@ -101,9 +103,9 @@ public class SupplierListController {
             }
         });
         // Bind page đầu tiên
-        tableSupplier.setItems(FXCollections.observableArrayList(
-                supplierList.subList(0, Math.min(ROWS_PER_PAGE, supplierList.size()))
-        ));
+//        tableSupplier.setItems(FXCollections.observableArrayList(
+//                supplierList.subList(0, Math.min(ROWS_PER_PAGE, supplierList.size()))
+//        ));
     }
 
     private void updateCards() {
@@ -120,9 +122,18 @@ public class SupplierListController {
     private void setupPagination() {
         int pageCount = (int) Math.ceil((double) supplierList.size() / ROWS_PER_PAGE);
         pagination.setPageCount(pageCount == 0 ? 1 : pageCount);
+
+        if (!paginationBound) {
+            pagination.currentPageIndexProperty().addListener((obs, oldIdx, newIdx) ->
+                    updateTableForPage(newIdx == null ? 0 : newIdx.intValue())
+            );
+            paginationBound = true;
+        }
+
         pagination.setCurrentPageIndex(0);
-        pagination.currentPageIndexProperty().addListener((obs, oldIdx, newIdx) -> updateTableForPage(newIdx.intValue()));
+        updateTableForPage(0); // <-- quan trọng: nạp dữ liệu cho trang 0 ngay
     }
+
 
     private void updateTableForPage(int pageIndex) {
         int from = pageIndex * ROWS_PER_PAGE;
@@ -133,6 +144,22 @@ public class SupplierListController {
         ));
         lblResult.setText("Showing " + (from + 1) + " to " + to + " of " + supplierList.size() + " results");
     }
+
+    private void refreshKeepPage() {
+        int current = pagination == null ? 0 : pagination.getCurrentPageIndex();
+        loadData();
+
+        int pageCount = (int) Math.ceil((double) supplierList.size() / ROWS_PER_PAGE);
+        pagination.setPageCount(pageCount == 0 ? 1 : pageCount);
+
+        int maxIdx = Math.max((pageCount - 1), 0);
+        int target = Math.min(current, maxIdx);
+
+        pagination.setCurrentPageIndex(target);
+        updateTableForPage(target);
+        updateCards();
+    }
+
 
     @FXML
     private void onAdd() {
@@ -185,9 +212,7 @@ public class SupplierListController {
     }
     @FXML
     private void onRefresh() {
-        loadData();
-        setupPagination();
-        updateCards();
+        refreshKeepPage();
     }
 
     private void onDelete(Supplier s) {
