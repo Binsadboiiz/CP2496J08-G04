@@ -55,15 +55,6 @@
                   <Label fx:id="lblTotalEmployees" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
                </children>
             </VBox>
-<!--            Today's Sales-->
-            <VBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="170.0" style="-fx-background-color:white; -fx-background-radius:8;">
-               <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
-               <effect><DropShadow color="#00000033" offsetY="2.0" radius="5.0" /></effect>
-               <children>
-                  <Label style="-fx-text-fill:#666666;" text="💰 Today's Sales" />
-                  <Label fx:id="lblTodaysSales" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
-               </children>
-            </VBox>
 <!--            Stock Alerts-->
             <VBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="140.0" style="-fx-background-color:white; -fx-background-radius:8;">
                <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
@@ -71,6 +62,15 @@
                <children>
                   <Label style="-fx-text-fill:#666666;" text="⚠ Stock Alerts" />
                   <Label fx:id="lblStockAlerts" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
+               </children>
+            </VBox>
+<!--            Today's Sales-->
+            <VBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="238.0" style="-fx-background-color:white; -fx-background-radius:8;">
+               <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+               <effect><DropShadow color="#00000033" offsetY="2.0" radius="5.0" /></effect>
+               <children>
+                  <Label style="-fx-text-fill:#666666;" text="💰 Today's Sales" />
+                  <Label fx:id="lblTodaysSales" style="-fx-font-size:20px; -fx-font-weight:bold;" text="0" />
                </children>
             </VBox>
          </children>
