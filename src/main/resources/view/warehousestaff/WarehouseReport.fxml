@@ -64,7 +64,6 @@
                                     <TableColumn fx:id="colEntryID" prefWidth="100.0" text="Entry ID" />
                                     <TableColumn fx:id="colEntryDate" prefWidth="120.0" text="Entry Date" />
                                     <TableColumn fx:id="colSupplier" prefWidth="200.0" text="Supplier" />
-                                    <TableColumn fx:id="colUser" prefWidth="150.0" text="Created By" />
                                     <TableColumn fx:id="colTotalQuantity" prefWidth="100.0" text="Total Quantity" />
                                     <TableColumn fx:id="colTotalValue" prefWidth="120.0" text="Total Value" />
                                 </columns>
@@ -105,11 +104,9 @@
                                     <TableColumn fx:id="colLossProduct" prefWidth="120.0" text="Product" />
                                     <TableColumn fx:id="colLossQuantity" prefWidth="60.0" text="Loss Qty" />
                                     <TableColumn fx:id="colLossReason" prefWidth="100.0" text="Reason" />
-                                    <TableColumn fx:id="colLossEmployee" prefWidth="80.0" text="Created By" />
                                     <TableColumn fx:id="colLossValue" prefWidth="80.0" text="Loss Value" />
                                     <TableColumn fx:id="colAvgUnitCost" prefWidth="80.0" text="Avg Unit Cost" />
                                     <TableColumn fx:id="colLossReportDate" prefWidth="80.0" text="Report Date" />
-                                    <TableColumn fx:id="colActions" prefWidth="60.0" text="Actions" />
                                 </columns>
                             </TableView>
                         </VBox>

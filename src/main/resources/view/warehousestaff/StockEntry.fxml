@@ -39,7 +39,6 @@
                     <TableColumn fx:id="colEntryID" prefWidth="80" text="Entry ID" />
                     <TableColumn fx:id="colDate" prefWidth="120" text="Entry Date" />
                     <TableColumn fx:id="colSupplier" prefWidth="200" text="Supplier" />
-                    <TableColumn fx:id="colUser" prefWidth="150" text="Created By" />
                     <TableColumn fx:id="colTotalQuantity" prefWidth="100" text="Total Qty" />
                     <TableColumn fx:id="colTotalValue" prefWidth="120" text="Total Value" />
                     <TableColumn fx:id="colDetail" prefWidth="80" text="Actions" />

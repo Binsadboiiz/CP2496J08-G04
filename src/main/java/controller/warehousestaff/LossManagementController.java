@@ -28,7 +28,6 @@ public class LossManagementController {
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, String> colLossProduct;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, Integer> colLossQuantity;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, String> colLossReason;
-    @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, String> colEmployee;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, Double> colLossValue;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, Double> colAvgUnitCost;
     @FXML private TableColumn<LossReportDetailDAO.LossReportDetailExtended, String> colReportDate;
@@ -78,7 +77,6 @@ public class LossManagementController {
         colLossProduct.setCellValueFactory(new PropertyValueFactory<>("productName"));
         colLossQuantity.setCellValueFactory(new PropertyValueFactory<>("lostQuantity"));
         colLossReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
-        colEmployee.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
         colLossValue.setCellValueFactory(new PropertyValueFactory<>("lossValue"));
 
         if (colReportDate != null) {

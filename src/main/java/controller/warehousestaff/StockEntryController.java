@@ -36,7 +36,6 @@ public class StockEntryController {
     @FXML private TableColumn<StockEntry, Integer> colEntryID;
     @FXML private TableColumn<StockEntry, String> colDate;
     @FXML private TableColumn<StockEntry, String> colSupplier;
-    @FXML private TableColumn<StockEntry, String> colUser;
     @FXML private TableColumn<StockEntry, Integer> colTotalQuantity;
     @FXML private TableColumn<StockEntry, Double> colTotalValue;
     @FXML private TableColumn<StockEntry, Void> colDetail;
@@ -173,7 +172,6 @@ public class StockEntryController {
 
             return String.valueOf(entry.getEntryID()).contains(lowerCaseFilter) ||
                     (entry.getSupplierName() != null && entry.getSupplierName().toLowerCase().contains(lowerCaseFilter)) ||
-                    (entry.getUserName() != null && entry.getUserName().toLowerCase().contains(lowerCaseFilter)) ||
                     formatDate(entry.getDate()).contains(lowerCaseFilter);
         });
 
@@ -247,7 +245,6 @@ public class StockEntryController {
         colEntryID.setSortable(true);
         colDate.setSortable(true);
         colSupplier.setSortable(true);
-        colUser.setSortable(true);
         colTotalQuantity.setSortable(true);
         colTotalValue.setSortable(true);
         colDetail.setSortable(false);
@@ -270,9 +267,6 @@ public class StockEntryController {
 
         colSupplier.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleStringProperty(cell.getValue().getSupplierName()));
-
-        colUser.setCellValueFactory(cell ->
-                new javafx.beans.property.SimpleStringProperty("Warehouse Staff"));
 
         colTotalQuantity.setCellValueFactory(cell -> {
             int totalQuantity = calculateTotalQuantityForEntry(cell.getValue().getEntryID());
