@@ -142,11 +142,11 @@ public class InvoiceDAO {
         }
         if (from != null) {
             sql.append(" AND i.Date >= ?");
-            params.add(java.sql.Date.valueOf(from));
+            params.add(Date.valueOf(from));
         }
         if (to != null) {
             sql.append(" AND i.Date <= ?");
-            params.add(java.sql.Date.valueOf(to));
+            params.add(Date.valueOf(to));
         }
 
         sql.append(" ORDER BY i.Date DESC");

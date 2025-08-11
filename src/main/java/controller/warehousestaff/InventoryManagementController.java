@@ -127,9 +127,9 @@ public class InventoryManagementController {
 
     private String translateStatusToEnglish(String vietnameseStatus) {
         return switch (vietnameseStatus) {
-            case "Out of Stock" -> "Out of Stock";
-            case "Critical" -> "Critical";
-            case "In Stock" -> "In Stock";
+            case "Hết hàng" -> "Out of Stock";
+            case "Sắp hết" -> "Critical";
+            case "Đủ hàng" -> "In Stock";
             default -> vietnameseStatus;
         };
     }

@@ -85,7 +85,7 @@ public class EmployeeManagementController {
             loadData();
         } catch (IOException ex) {
             ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR,
+            new Alert(AlertType.ERROR,
                     "Error loading Add Employee form:\n" + ex.getMessage())
                     .showAndWait();
         }
@@ -95,7 +95,7 @@ public class EmployeeManagementController {
     private void onEditEmployee() {
         Employee sel = tableView.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            new Alert(Alert.AlertType.WARNING,
+            new Alert(AlertType.WARNING,
                     "Please select staff to repair!").showAndWait();
             return;
         }
@@ -118,7 +118,7 @@ public class EmployeeManagementController {
             loadData();
         } catch (IOException ex) {
             ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR,
+            new Alert(AlertType.ERROR,
                     "Error loading Edit Employee form:\n" + ex.getMessage())
                     .showAndWait();
         }

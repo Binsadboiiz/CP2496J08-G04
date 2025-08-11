@@ -1,5 +1,6 @@
 package controller.warehousestaff;
 
+import dao.InventoryDAO;
 import dao.ProductDAO;
 import dao.StockEntryDAO;
 import dao.StockEntryDetailDAO;
@@ -76,7 +77,7 @@ public class StockEntryController {
     // ===== SHARED VARIABLES =====
     private ObservableList<StockEntry> list = FXCollections.observableArrayList();
     private FilteredList<StockEntry> filteredList;
-    private SortedList<StockEntry> sortedList; // THÊM SORTED LIST
+    private SortedList<StockEntry> sortedList;
     private ObservableList<StockEntryDetail> detailList = FXCollections.observableArrayList();
     private int entryID;
 
@@ -101,7 +102,6 @@ public class StockEntryController {
     // Debounce cho search
     private javafx.animation.Timeline searchTimeline;
 
-    // THÊM BIẾN ĐỂ KIỂM SOÁT VIỆC REFRESH
     private boolean isRefreshing = false;
 
     @FXML
@@ -139,19 +139,12 @@ public class StockEntryController {
 
     // ===== SEARCH FUNCTIONALITY - OPTIMIZED =====
     private void setupSearchFilter() {
-        // Tạo FilteredList và SortedList để hỗ trợ sorting
         filteredList = new FilteredList<>(list, p -> true);
         sortedList = new SortedList<>(filteredList);
-
-        // Bind comparator của sortedList với table để enable sorting
         sortedList.comparatorProperty().bind(table.comparatorProperty());
-
-        // Set items cho table
         table.setItems(sortedList);
 
-        // Debounce search để tránh lag
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-            // CHỈ SEARCH KHI KHÔNG ĐANG REFRESH
             if (isRefreshing) return;
 
             if (searchTimeline != null) {
@@ -160,7 +153,7 @@ public class StockEntryController {
 
             searchTimeline = new javafx.animation.Timeline(
                     new javafx.animation.KeyFrame(
-                            javafx.util.Duration.millis(300), // Đợi 300ms sau khi user ngừng gõ
+                            javafx.util.Duration.millis(300),
                             e -> performSearch(newValue)
                     )
             );
@@ -169,7 +162,6 @@ public class StockEntryController {
     }
 
     private void performSearch(String searchText) {
-        // TRÁNH SEARCH KHI ĐANG REFRESH
         if (isRefreshing) return;
 
         filteredList.setPredicate(entry -> {
@@ -179,7 +171,6 @@ public class StockEntryController {
 
             String lowerCaseFilter = searchText.toLowerCase();
 
-            // Tìm kiếm nhanh hơn
             return String.valueOf(entry.getEntryID()).contains(lowerCaseFilter) ||
                     (entry.getSupplierName() != null && entry.getSupplierName().toLowerCase().contains(lowerCaseFilter)) ||
                     (entry.getUserName() != null && entry.getUserName().toLowerCase().contains(lowerCaseFilter)) ||
@@ -230,10 +221,8 @@ public class StockEntryController {
 
     // ===== LIST VIEW METHODS - OPTIMIZED =====
     private void initializeListView() {
-        // ENABLE SORTING CHO TỪNG CỘT
         enableColumnSorting();
-
-        loadTableAsync(); // Load async để tránh freeze UI
+        loadTableAsync();
         btnRefresh.setOnAction(e -> loadTableAsync());
 
         // Double click to show detail
@@ -250,27 +239,21 @@ public class StockEntryController {
         setupListTableColumns();
     }
 
-    // THÊM PHƯƠNG THỨC ENABLE SORTING
     private void enableColumnSorting() {
-        // Enable sorting cho table
         table.setSortPolicy(table -> {
-            return true; // Cho phép sorting
+            return true;
         });
 
-        // Đặt sortable = true cho từng cột
         colEntryID.setSortable(true);
         colDate.setSortable(true);
         colSupplier.setSortable(true);
         colUser.setSortable(true);
         colTotalQuantity.setSortable(true);
         colTotalValue.setSortable(true);
-        // colDetail không cần sort vì là action column
         colDetail.setSortable(false);
 
-        // DISABLE AUTO RESIZE để tránh jump
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Mặc định sắp xếp theo Entry ID giảm dần
         Platform.runLater(() -> {
             table.getSortOrder().clear();
             table.getSortOrder().add(colEntryID);
@@ -291,7 +274,6 @@ public class StockEntryController {
         colUser.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleStringProperty("Warehouse Staff"));
 
-        // Optimize total calculations
         colTotalQuantity.setCellValueFactory(cell -> {
             int totalQuantity = calculateTotalQuantityForEntry(cell.getValue().getEntryID());
             return new javafx.beans.property.SimpleIntegerProperty(totalQuantity).asObject();
@@ -346,15 +328,12 @@ public class StockEntryController {
         return stockEntryDetailsCache.computeIfAbsent(entryID, id -> StockEntryDetailDAO.getByEntryID(id));
     }
 
-    // ASYNC loading được tối ưu để tránh scroll tự động
     private void loadTableAsync() {
-        isRefreshing = true; // BẮT ĐẦU REFRESH
+        isRefreshing = true;
 
-        // LƯU LẠI SELECTION
         int selectedIndex = table.getSelectionModel().getSelectedIndex();
         StockEntry selectedItem = table.getSelectionModel().getSelectedItem();
 
-        // Hiển thị loading indicator
         table.setPlaceholder(new ProgressIndicator());
 
         Task<List<StockEntry>> task = new Task<List<StockEntry>>() {
@@ -367,19 +346,15 @@ public class StockEntryController {
 
         task.setOnSucceeded(e -> {
             Platform.runLater(() -> {
-                // UPDATE DATA KHÔNG CLEAR SELECTION
                 List<StockEntry> newData = task.getValue();
 
-                // Cập nhật data mà không làm mất focus
                 list.clear();
                 list.addAll(newData);
 
                 table.setPlaceholder(new Label("No data available"));
 
-                // KHÔI PHỤC SELECTION SAU KHI DATA LOAD XONG
                 Platform.runLater(() -> {
                     try {
-                        // Tìm và select lại item cũ nếu còn tồn tại
                         if (selectedItem != null) {
                             for (int i = 0; i < sortedList.size(); i++) {
                                 if (sortedList.get(i).getEntryID() == selectedItem.getEntryID()) {
@@ -397,7 +372,7 @@ public class StockEntryController {
                     }
 
                     updateRecordCount();
-                    isRefreshing = false; // KẾT THÚC REFRESH
+                    isRefreshing = false;
                 });
             });
         });
@@ -406,7 +381,7 @@ public class StockEntryController {
             Platform.runLater(() -> {
                 table.setPlaceholder(new Label("Error loading data"));
                 task.getException().printStackTrace();
-                isRefreshing = false; // KẾT THÚC REFRESH
+                isRefreshing = false;
             });
         });
 
@@ -438,18 +413,55 @@ public class StockEntryController {
         tableDetails.setItems(detailList);
         lblTotalForm.setText("0 VND");
 
-        // Set default date
         dpDate.setValue(LocalDate.now());
     }
 
     private void loadComboBoxData() {
-        // Load suppliers
+        // Load suppliers với custom StringConverter
         List<Supplier> suppliers = getSuppliers();
         cbSupplier.setItems(FXCollections.observableArrayList(suppliers));
 
-        // Load products
+        // Set StringConverter để hiển thị tên nhà cung cấp
+        cbSupplier.setConverter(new javafx.util.StringConverter<Supplier>() {
+            @Override
+            public String toString(Supplier supplier) {
+                return supplier == null ? null : supplier.getName();
+            }
+
+            @Override
+            public Supplier fromString(String string) {
+                if (string == null || string.trim().isEmpty()) {
+                    return null;
+                }
+                return suppliers.stream()
+                        .filter(s -> s.getName().equals(string))
+                        .findFirst()
+                        .orElse(null);
+            }
+        });
+
+        // Load products với custom StringConverter
         List<Product> products = getProducts();
         cbProduct.setItems(FXCollections.observableArrayList(products));
+
+        // Set StringConverter để hiển thị tên sản phẩm
+        cbProduct.setConverter(new javafx.util.StringConverter<Product>() {
+            @Override
+            public String toString(Product product) {
+                return product == null ? null : product.getProductName();
+            }
+
+            @Override
+            public Product fromString(String string) {
+                if (string == null || string.trim().isEmpty()) {
+                    return null;
+                }
+                return products.stream()
+                        .filter(p -> p.getProductName().equals(string))
+                        .findFirst()
+                        .orElse(null);
+            }
+        });
     }
 
     private void setupFormTableColumns() {
@@ -497,7 +509,6 @@ public class StockEntryController {
         });
     }
 
-    // SIMPLIFIED SEARCH - Tránh recursive updates
     private void setupOptimizedSearch() {
         // Supplier search
         cbSupplier.setEditable(true);
@@ -532,9 +543,9 @@ public class StockEntryController {
 
     @FXML
     private void onAddProduct() {
-        // Validation
-        Supplier supplier = cbSupplier.getValue();
-        Product product = cbProduct.getValue();
+        // Validation - Sửa lỗi casting ở đây
+        Supplier supplier = cbSupplier.getValue(); // Không cast nữa
+        Product product = cbProduct.getValue(); // Không cast nữa
         LocalDate selectedDate = dpDate.getValue();
         String qtyStr = txtQty.getText().trim();
         String priceStr = txtUnitCost.getText().trim();
@@ -601,7 +612,6 @@ public class StockEntryController {
             return;
         }
 
-        // Save async để tránh freeze UI
         Task<Void> saveTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -612,7 +622,7 @@ public class StockEntryController {
 
         saveTask.setOnSucceeded(e -> Platform.runLater(() -> {
             showAlert("Stock entries saved successfully!");
-            clearForm(); // Clear form trước khi load lại
+            clearForm();
             loadTableAsync();
             showListView();
         }));
@@ -626,7 +636,7 @@ public class StockEntryController {
     }
 
     private void saveStockEntries() {
-        Map<String, java.util.List<StockEntryDetail>> groupedDetails = new HashMap<>();
+        Map<String, List<StockEntryDetail>> groupedDetails = new HashMap<>();
 
         for (StockEntryDetail detail : detailList) {
             String supplierName = supplierNames.get(detail);
@@ -635,7 +645,7 @@ public class StockEntryController {
             groupedDetails.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(detail);
         }
 
-        for (Map.Entry<String, java.util.List<StockEntryDetail>> entry : groupedDetails.entrySet()) {
+        for (Map.Entry<String, List<StockEntryDetail>> entry : groupedDetails.entrySet()) {
             String[] keyParts = entry.getKey().split("\\|");
             String supplierName = keyParts[0];
             String dateStr = keyParts[1];
@@ -649,14 +659,22 @@ public class StockEntryController {
             StockEntry stockEntry = new StockEntry();
             stockEntry.setSupplierID(supplier.getSupplierID());
             stockEntry.setDate(java.sql.Date.valueOf(LocalDate.parse(dateStr)));
-            stockEntry.setUserID(1);
+            stockEntry.setUserID(1); // Hoặc lấy từ session
 
             int entryID = StockEntryDAO.insert(stockEntry);
             if (entryID <= 0) continue;
 
+            // Lưu chi tiết và cập nhật tồn kho
             for (StockEntryDetail detail : entry.getValue()) {
                 detail.setEntryID(entryID);
-                StockEntryDetailDAO.insert(detail);
+
+                // Lưu chi tiết phiếu nhập
+                boolean saved = StockEntryDetailDAO.insert(detail);
+
+                // CẬP NHẬT TỒN KHO - ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT
+                if (saved) {
+                    InventoryDAO.updateInventoryStock(detail.getProductID(), detail.getQuantity());
+                }
             }
         }
     }
