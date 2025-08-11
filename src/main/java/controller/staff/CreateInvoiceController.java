@@ -10,6 +10,7 @@ import model.Product;
 import dao.InvoiceDAO;
 import dao.InvoiceDetailDAO;
 import dao.ProductDAO;
+import dao.InventoryDAO; // Import InventoryDAO để dùng getCurrentStock
 import model.Invoice;
 import model.InvoiceDetail;
 
@@ -164,8 +165,9 @@ public class CreateInvoiceController {
 
     private void loadProducts() {
         List<Product> productList = ProductDAO.getAll();
+        // THAY ĐỔI: Sử dụng InventoryDAO.getCurrentStock thay vì ProductDAO.getRealTimeStock
         List<Product> productsInStock = productList.stream()
-                .filter(product -> ProductDAO.getRealTimeStock(product.getProductID()) > 0)
+                .filter(product -> InventoryDAO.getCurrentStock(product.getProductID()) > 0)
                 .collect(Collectors.toList());
         allProducts.setAll(productsInStock);
     }
@@ -207,6 +209,8 @@ public class CreateInvoiceController {
     }
 
     private void setupProductFeatures() {
+        // THAY ĐỔI: Thêm tính năng editable và tìm kiếm cho Product ComboBox
+        productComboBox.setEditable(true);
         productComboBox.setItems(allProducts);
 
         productComboBox.setConverter(new StringConverter<Product>() {
@@ -214,7 +218,8 @@ public class CreateInvoiceController {
             public String toString(Product product) {
                 if (product != null) {
                     NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-                    int stock = ProductDAO.getRealTimeStock(product.getProductID());
+                    // THAY ĐỔI: Sử dụng InventoryDAO.getCurrentStock thay vì ProductDAO.getRealTimeStock
+                    int stock = InventoryDAO.getCurrentStock(product.getProductID());
                     return product.getProductName() + " - " + numberFormat.format(product.getPrice()) + " VND (Stock: " + stock + ")";
                 }
                 return "";
@@ -222,7 +227,27 @@ public class CreateInvoiceController {
 
             @Override
             public Product fromString(String string) {
-                return null;
+                return allProducts.stream()
+                        .filter(product -> toString(product).equals(string))
+                        .findFirst()
+                        .orElse(null);
+            }
+        });
+
+        // THÊM MỚI: Listener để tìm kiếm và lọc sản phẩm theo tên
+        productComboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                productComboBox.setItems(allProducts);
+            } else {
+                ObservableList<Product> filteredProducts = allProducts.stream()
+                        .filter(product -> product.getProductName().toLowerCase()
+                                .contains(newText.toLowerCase()))
+                        .collect(Collectors.toCollection(FXCollections::observableArrayList));
+                productComboBox.setItems(filteredProducts);
+            }
+
+            if (!productComboBox.isShowing() && !newText.isEmpty()) {
+                productComboBox.show();
             }
         });
 
@@ -234,7 +259,8 @@ public class CreateInvoiceController {
                     setText(null);
                 } else {
                     NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-                    int stock = ProductDAO.getRealTimeStock(product.getProductID());
+                    // THAY ĐỔI: Sử dụng InventoryDAO.getCurrentStock thay vì ProductDAO.getRealTimeStock
+                    int stock = InventoryDAO.getCurrentStock(product.getProductID());
                     setText(product.getProductName() + " - " + numberFormat.format(product.getPrice()) + " VND (Stock: " + stock + ")");
 
                     if (stock <= 0) {
@@ -250,7 +276,8 @@ public class CreateInvoiceController {
 
         productComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldProduct, newProduct) -> {
             if (newProduct != null) {
-                int currentStock = ProductDAO.getRealTimeStock(newProduct.getProductID());
+                // THAY ĐỔI: Sử dụng InventoryDAO.getCurrentStock thay vì ProductDAO.getRealTimeStock
+                int currentStock = InventoryDAO.getCurrentStock(newProduct.getProductID());
                 NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
 
                 if (currentStock > 0) {
@@ -276,7 +303,8 @@ public class CreateInvoiceController {
             return;
         }
 
-        int currentStock = ProductDAO.getRealTimeStock(selectedProduct.getProductID());
+        // THAY ĐỔI: Sử dụng InventoryDAO.getCurrentStock thay vì ProductDAO.getRealTimeStock
+        int currentStock = InventoryDAO.getCurrentStock(selectedProduct.getProductID());
 
         if (currentStock <= 0) {
             showAlert("Error", "This product is out of stock!");
@@ -334,6 +362,7 @@ public class CreateInvoiceController {
         }
 
         productComboBox.getSelectionModel().clearSelection();
+        productComboBox.getEditor().clear(); // THÊM: Clear editor text
         quantityField.clear();
 
         stockLabel.setText("Select product to view stock");
@@ -398,8 +427,9 @@ public class CreateInvoiceController {
             return;
         }
 
+        // THAY ĐỔI: Sử dụng InventoryDAO.getCurrentStock để kiểm tra stock
         for (InvoiceItem item : invoiceItems) {
-            int currentStock = ProductDAO.getRealTimeStock(item.getProductID());
+            int currentStock = InventoryDAO.getCurrentStock(item.getProductID());
             if (item.getQuantity() > currentStock) {
                 showAlert("Error", "Product '" + item.getProductName() + "' has insufficient stock. Only " + currentStock + " items available.");
                 return;
@@ -643,6 +673,7 @@ public class CreateInvoiceController {
         customerComboBox.getSelectionModel().clearSelection();
         customerComboBox.getEditor().clear();
         productComboBox.getSelectionModel().clearSelection();
+        productComboBox.getEditor().clear(); // THÊM: Clear product editor
         quantityField.clear();
         selectedPromotions.clear();
 

@@ -139,8 +139,6 @@ public class CustomerDAO {
         return 0;
     }
 
-    // ===== THÊM METHOD MỚI - KHÔNG SỬA CODE CŨ =====
-
     // Kiểm tra xem khách hàng đã có hóa đơn hay chưa
     public static boolean hasInvoices(int customerID) {
         String sql = "SELECT COUNT(*) FROM Invoice WHERE CustomerID = ?";
@@ -149,6 +147,94 @@ public class CustomerDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, customerID);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // ===== THÊM METHODS MỚI ĐỂ KIỂM TRA TRÙNG LẶP =====
+
+    // Kiểm tra số điện thoại đã tồn tại chưa (cho thêm mới)
+    public static boolean isPhoneExists(String phone) {
+        String sql = "SELECT COUNT(*) FROM Customer WHERE Phone = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, phone);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // Kiểm tra email đã tồn tại chưa (cho thêm mới)
+    public static boolean isEmailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM Customer WHERE Email = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // Kiểm tra số điện thoại trùng với customer khác (cho cập nhật)
+    public static boolean isPhoneExistsForOtherCustomer(String phone, int currentCustomerID) {
+        String sql = "SELECT COUNT(*) FROM Customer WHERE Phone = ? AND CustomerID != ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, phone);
+            stmt.setInt(2, currentCustomerID);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // Kiểm tra email trùng với customer khác (cho cập nhật)
+    public static boolean isEmailExistsForOtherCustomer(String email, int currentCustomerID) {
+        String sql = "SELECT COUNT(*) FROM Customer WHERE Email = ? AND CustomerID != ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            stmt.setInt(2, currentCustomerID);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
