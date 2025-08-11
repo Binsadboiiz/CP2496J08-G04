@@ -128,21 +128,40 @@ public class EmployeeManagementController {
     private void onDeleteEmployee() {
         Employee sel = tableView.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            new Alert(AlertType.WARNING, "Select 1 employee to delete!").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Select 1 employee to delete!").showAndWait();
             return;
         }
-        Alert confirm = new Alert(AlertType.CONFIRMATION,
-                "Confirm delete employee ["+sel.getFullName()+"]?", ButtonType.YES, ButtonType.NO);
+
+        // 1) Không cho xóa nếu nhân viên đã có hóa đơn
+        boolean hasInvoices = EmployeeDAO.hasInvoices(sel.getEmployeeID()); // DAO trả boolean, không throws
+        if (hasInvoices) {
+            new Alert(Alert.AlertType.WARNING,
+                    "This employee cannot be deleted because they have sales invoices.")
+                    .showAndWait();
+            return;
+        }
+
+        // 2) Xác nhận xóa
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                "Confirm delete employee [" + sel.getFullName() + "]?",
+                ButtonType.YES, ButtonType.NO);
+
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.YES) {
-                // xóa User trước
-                UserDAO.deleteUserByEmployeeID(sel.getEmployeeID());
-                // xóa Employee
-                EmployeeDAO.deleteEmployee(sel.getEmployeeID());
-                loadData();
+                try {
+                    UserDAO.deleteUserByEmployeeID(sel.getEmployeeID());
+                    EmployeeDAO.deleteEmployee(sel.getEmployeeID());
+
+                    loadData();
+                    new Alert(Alert.AlertType.INFORMATION, "Deleted successfully.").showAndWait();
+                } catch (Exception ex) { // dùng Exception để tránh warning "SQLException is never thrown..."
+                    new Alert(Alert.AlertType.ERROR,
+                            "Delete failed:\n" + ex.getMessage()).showAndWait();
+                }
             }
         });
     }
+
 
     private void showEmployeeDialog(String fxmlPath,
                                     String title,
