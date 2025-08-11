@@ -130,5 +130,6 @@
 .product-price { -fx-text-fill: #e53935; -fx-font-size: 15; }
 .btn-edit { -fx-background-color: #00c853; -fx-text-fill: #fff; }
 .btn-delete { -fx-background-color: #e53935; -fx-text-fill: #fff; }
-
+.button-edit { -fx-background-color: #00CC00; }
+.button-delete { -fx-background-color: red; }
 

@@ -58,10 +58,13 @@ public class SupplierListController {
             {
                 btnEdit.setOnAction(e -> {
                     Supplier s = getTableView().getItems().get(getIndex());
+                    btnEdit.getStyleClass().add("button-edit");
+
                     onEdit(s);
                 });
                 btnDelete.setOnAction(e -> {
                     Supplier s = getTableView().getItems().get(getIndex());
+                    btnDelete.getStyleClass().add("button-delete");
                     onDelete(s);
                 });
             }
