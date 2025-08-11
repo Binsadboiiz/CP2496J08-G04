@@ -86,7 +86,7 @@ public class HomeController {
         priceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e74c3c;");
 
         int stockQuantity = InventoryDAO.getCurrentStock(product.getProductID());
-        Label stockLabel = new Label("Stock: " + stockQuantity);
+        Label stockLabel = new Label("Inventory: " + stockQuantity);
 
         if (stockQuantity <= 5) {
             stockLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;"); // Red for low stock

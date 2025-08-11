@@ -92,7 +92,7 @@ public class UserDAO {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            conn = DatabaseConnection.getConnection(); // Sử dụng class DatabaseConnection của bạn
+            conn = DatabaseConnection.getConnection();
             String sql = "SELECT * FROM [User] WHERE Username=? AND Password=?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, username);
