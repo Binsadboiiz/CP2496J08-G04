@@ -9,7 +9,7 @@ public class EditCustomerController {
 
     public static void showDialog(Customer customer) {
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Sửa thông tin khách hàng");
+        dialog.setTitle("Edit Customer Information");
 
         TextField nameField = new TextField(customer.getFullName());
         TextField phoneField = new TextField(customer.getPhone());
@@ -18,12 +18,13 @@ public class EditCustomerController {
         TextField pointsField = new TextField(String.valueOf(customer.getLoyaltyPoints()));
 
         GridPane grid = new GridPane();
-        grid.setVgap(10); grid.setHgap(10);
-        grid.addRow(0, new Label("Họ tên:"), nameField);
-        grid.addRow(1, new Label("SĐT:"), phoneField);
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.addRow(0, new Label("Full Name:"), nameField);
+        grid.addRow(1, new Label("Phone:"), phoneField);
         grid.addRow(2, new Label("Email:"), emailField);
-        grid.addRow(3, new Label("Địa chỉ:"), addressField);
-        grid.addRow(4, new Label("Điểm tích lũy:"), pointsField);
+        grid.addRow(3, new Label("Address:"), addressField);
+        grid.addRow(4, new Label("Loyalty Points:"), pointsField);
 
         dialog.getDialogPane().setContent(grid);
         ButtonType okButton = ButtonType.OK;
@@ -32,13 +33,14 @@ public class EditCustomerController {
         Node saveBtn = dialog.getDialogPane().lookupButton(okButton);
         saveBtn.setDisable(true);
 
-        nameField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
-        phoneField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
-        emailField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
-        addressField.textProperty().addListener((obs, oldVal, newVal) -> validate(nameField, phoneField, emailField, addressField, saveBtn));
+        Runnable validateAll = () -> validate(nameField, phoneField, emailField, addressField, saveBtn);
+        nameField.textProperty().addListener((obs, oldVal, newVal) -> validateAll.run());
+        phoneField.textProperty().addListener((obs, oldVal, newVal) -> validateAll.run());
+        emailField.textProperty().addListener((obs, oldVal, newVal) -> validateAll.run());
+        addressField.textProperty().addListener((obs, oldVal, newVal) -> validateAll.run());
 
-        dialog.setResultConverter(btn -> {
-            if (btn == okButton) {
+        dialog.setResultConverter(button -> {
+            if (button == okButton) {
                 customer.setFullName(nameField.getText());
                 customer.setPhone(phoneField.getText());
                 customer.setEmail(emailField.getText());

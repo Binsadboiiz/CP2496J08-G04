@@ -10,18 +10,18 @@ public class AddCustomerController {
 
     public static Customer showDialog() {
         Dialog<Customer> dialog = new Dialog<>();
-        dialog.setTitle("Thêm khách hàng");
+        dialog.setTitle("Add Customer");
 
-        Label nameLabel = new Label("Họ tên:");
+        Label nameLabel = new Label("Full Name:");
         TextField nameField = new TextField();
 
-        Label phoneLabel = new Label("Số điện thoại:");
+        Label phoneLabel = new Label("Phone Number:");
         TextField phoneField = new TextField();
 
         Label emailLabel = new Label("Email:");
         TextField emailField = new TextField();
 
-        Label addressLabel = new Label("Địa chỉ:");
+        Label addressLabel = new Label("Address:");
         TextField addressField = new TextField();
 
         GridPane grid = new GridPane();
@@ -32,7 +32,7 @@ public class AddCustomerController {
         grid.addRow(3, addressLabel, addressField);
 
         dialog.getDialogPane().setContent(grid);
-        ButtonType saveBtn = new ButtonType("Lưu", ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveBtn, ButtonType.CANCEL);
 
         Node saveButton = dialog.getDialogPane().lookupButton(saveBtn);

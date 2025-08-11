@@ -139,4 +139,26 @@ public class CustomerDAO {
         return 0;
     }
 
+    // ===== THÊM METHOD MỚI - KHÔNG SỬA CODE CŨ =====
+
+    // Kiểm tra xem khách hàng đã có hóa đơn hay chưa
+    public static boolean hasInvoices(int customerID) {
+        String sql = "SELECT COUNT(*) FROM Invoice WHERE CustomerID = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, customerID);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

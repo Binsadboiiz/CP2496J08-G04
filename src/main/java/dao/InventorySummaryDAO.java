@@ -19,6 +19,7 @@ public class InventorySummaryDAO {
         public int currentStock;
         public String status;
         public double value;
+        public double avgUnitCost; // Thêm giá nhập trung bình
 
         // Getters cho JavaFX binding
         public int getProductID() { return productID; }
@@ -31,21 +32,57 @@ public class InventorySummaryDAO {
         public int getCurrentStock() { return currentStock; }
         public String getStatus() { return status; }
         public double getValue() { return value; }
+        public double getAvgUnitCost() { return avgUnitCost; }
     }
 
-    // Lấy tất cả thông tin tồn kho
+    // Lấy tất cả thông tin tồn kho với logic cải tiến
     public static List<InventorySummary> getAllInventorySummary() {
         List<InventorySummary> list = new ArrayList<>();
         String sql = """
-            SELECT p.ProductID, p.ProductCode, p.ProductName, p.Brand, p.Price,
-                   ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
-                   ISNULL(SUM(lrd.Quantity), 0) as TotalLoss,
-                   ISNULL(SUM(sed.Quantity), 0) - ISNULL(SUM(lrd.Quantity), 0) as CurrentStock
-            FROM Product p
-            LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
-            LEFT JOIN LossReportDetail lrd ON p.ProductID = lrd.ProductID
-            GROUP BY p.ProductID, p.ProductCode, p.ProductName, p.Brand, p.Price
-            ORDER BY p.ProductName
+            WITH StockSummary AS (
+                SELECT 
+                    p.ProductID,
+                    p.ProductCode,
+                    p.ProductName,
+                    ISNULL(p.Brand, 'N/A') as Brand,
+                    p.Price,
+                    -- Tính tổng số lượng nhập
+                    ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
+                    -- Tính giá nhập trung bình có trọng số
+                    CASE 
+                        WHEN SUM(sed.Quantity) > 0 
+                        THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
+                        ELSE 0 
+                    END as AvgUnitCost
+                FROM Product p
+                LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
+                GROUP BY p.ProductID, p.ProductCode, p.ProductName, p.Brand, p.Price
+            ),
+            LossSummary AS (
+                SELECT 
+                    ProductID,
+                    ISNULL(SUM(Quantity), 0) as TotalLoss
+                FROM LossReportDetail
+                GROUP BY ProductID
+            )
+            SELECT 
+                ss.ProductID,
+                ss.ProductCode,
+                ss.ProductName,
+                ss.Brand,
+                ss.Price,
+                ss.TotalReceived,
+                ss.AvgUnitCost,
+                ISNULL(ls.TotalLoss, 0) as TotalLoss,
+                -- Tính tồn kho thực tế
+                CASE 
+                    WHEN ss.TotalReceived - ISNULL(ls.TotalLoss, 0) < 0 
+                    THEN 0 
+                    ELSE ss.TotalReceived - ISNULL(ls.TotalLoss, 0)
+                END as CurrentStock
+            FROM StockSummary ss
+            LEFT JOIN LossSummary ls ON ss.ProductID = ls.ProductID
+            ORDER BY ss.ProductName
         """;
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -57,13 +94,15 @@ public class InventorySummaryDAO {
                 summary.productID = rs.getInt("ProductID");
                 summary.productCode = rs.getString("ProductCode");
                 summary.productName = rs.getString("ProductName");
-                summary.brand = rs.getString("Brand") != null ? rs.getString("Brand") : "N/A";
+                summary.brand = rs.getString("Brand");
                 summary.price = rs.getDouble("Price");
                 summary.totalReceived = rs.getInt("TotalReceived");
                 summary.totalLoss = rs.getInt("TotalLoss");
                 summary.currentStock = Math.max(0, rs.getInt("CurrentStock"));
+                summary.avgUnitCost = rs.getDouble("AvgUnitCost");
                 summary.status = determineStockStatus(summary.currentStock);
-                summary.value = summary.currentStock * summary.price;
+                // Tính giá trị tồn kho dựa trên giá nhập trung bình
+                summary.value = summary.currentStock * summary.avgUnitCost;
 
                 list.add(summary);
             }
@@ -73,7 +112,7 @@ public class InventorySummaryDAO {
         return list;
     }
 
-    // Xác định trạng thái tồn kho
+    // Xác định trạng thái tồn kho với các ngưỡng có thể cấu hình
     private static String determineStockStatus(int currentStock) {
         if (currentStock == 0) {
             return "Hết hàng";
@@ -86,26 +125,116 @@ public class InventorySummaryDAO {
         }
     }
 
-    // Lấy thống kê tổng quan
+    // Lấy thông tin tồn kho cho một sản phẩm cụ thể
+    public static InventorySummary getInventorySummaryByProductId(int productId) {
+        String sql = """
+            WITH StockSummary AS (
+                SELECT 
+                    p.ProductID,
+                    p.ProductCode,
+                    p.ProductName,
+                    ISNULL(p.Brand, 'N/A') as Brand,
+                    p.Price,
+                    ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
+                    CASE 
+                        WHEN SUM(sed.Quantity) > 0 
+                        THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
+                        ELSE 0 
+                    END as AvgUnitCost
+                FROM Product p
+                LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
+                WHERE p.ProductID = ?
+                GROUP BY p.ProductID, p.ProductCode, p.ProductName, p.Brand, p.Price
+            ),
+            LossSummary AS (
+                SELECT 
+                    ProductID,
+                    ISNULL(SUM(Quantity), 0) as TotalLoss
+                FROM LossReportDetail
+                WHERE ProductID = ?
+                GROUP BY ProductID
+            )
+            SELECT 
+                ss.ProductID,
+                ss.ProductCode,
+                ss.ProductName,
+                ss.Brand,
+                ss.Price,
+                ss.TotalReceived,
+                ss.AvgUnitCost,
+                ISNULL(ls.TotalLoss, 0) as TotalLoss,
+                CASE 
+                    WHEN ss.TotalReceived - ISNULL(ls.TotalLoss, 0) < 0 
+                    THEN 0 
+                    ELSE ss.TotalReceived - ISNULL(ls.TotalLoss, 0)
+                END as CurrentStock
+            FROM StockSummary ss
+            LEFT JOIN LossSummary ls ON ss.ProductID = ls.ProductID
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, productId);
+            stmt.setInt(2, productId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                InventorySummary summary = new InventorySummary();
+                summary.productID = rs.getInt("ProductID");
+                summary.productCode = rs.getString("ProductCode");
+                summary.productName = rs.getString("ProductName");
+                summary.brand = rs.getString("Brand");
+                summary.price = rs.getDouble("Price");
+                summary.totalReceived = rs.getInt("TotalReceived");
+                summary.totalLoss = rs.getInt("TotalLoss");
+                summary.currentStock = Math.max(0, rs.getInt("CurrentStock"));
+                summary.avgUnitCost = rs.getDouble("AvgUnitCost");
+                summary.status = determineStockStatus(summary.currentStock);
+                summary.value = summary.currentStock * summary.avgUnitCost;
+                return summary;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Lấy thống kê tổng quan với logic cải tiến
     public static InventoryStatistics getInventoryStatistics() {
         InventoryStatistics stats = new InventoryStatistics();
         String sql = """
+            WITH StockCalculation AS (
+                SELECT 
+                    p.ProductID,
+                    p.Price,
+                    ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
+                    ISNULL(SUM_Loss.TotalLoss, 0) as TotalLoss,
+                    CASE 
+                        WHEN ISNULL(SUM(sed.Quantity), 0) - ISNULL(SUM_Loss.TotalLoss, 0) < 0 
+                        THEN 0 
+                        ELSE ISNULL(SUM(sed.Quantity), 0) - ISNULL(SUM_Loss.TotalLoss, 0)
+                    END as CurrentStock,
+                    CASE 
+                        WHEN SUM(sed.Quantity) > 0 
+                        THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
+                        ELSE 0 
+                    END as AvgUnitCost
+                FROM Product p
+                LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
+                LEFT JOIN (
+                    SELECT ProductID, SUM(Quantity) as TotalLoss 
+                    FROM LossReportDetail 
+                    GROUP BY ProductID
+                ) SUM_Loss ON p.ProductID = SUM_Loss.ProductID
+                GROUP BY p.ProductID, p.Price, SUM_Loss.TotalLoss
+            )
             SELECT 
                 COUNT(*) as TotalProducts,
-                SUM(CASE WHEN (ISNULL(SUM_Received.Total, 0) - ISNULL(SUM_Loss.Total, 0)) = 0 THEN 1 ELSE 0 END) as OutOfStockItems,
-                SUM(CASE WHEN (ISNULL(SUM_Received.Total, 0) - ISNULL(SUM_Loss.Total, 0)) BETWEEN 1 AND 10 THEN 1 ELSE 0 END) as LowStockItems,
-                SUM((ISNULL(SUM_Received.Total, 0) - ISNULL(SUM_Loss.Total, 0)) * p.Price) as TotalValue
-            FROM Product p
-            LEFT JOIN (
-                SELECT ProductID, SUM(Quantity) as Total 
-                FROM StockEntryDetail 
-                GROUP BY ProductID
-            ) SUM_Received ON p.ProductID = SUM_Received.ProductID
-            LEFT JOIN (
-                SELECT ProductID, SUM(Quantity) as Total 
-                FROM LossReportDetail 
-                GROUP BY ProductID
-            ) SUM_Loss ON p.ProductID = SUM_Loss.ProductID
+                SUM(CASE WHEN CurrentStock = 0 THEN 1 ELSE 0 END) as OutOfStockItems,
+                SUM(CASE WHEN CurrentStock BETWEEN 1 AND 10 THEN 1 ELSE 0 END) as LowStockItems,
+                SUM(CurrentStock * AvgUnitCost) as TotalValue
+            FROM StockCalculation
         """;
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -140,8 +269,6 @@ public class InventorySummaryDAO {
     // Lấy danh sách thương hiệu distinct
     public static List<String> getAllBrands() {
         List<String> brands = new ArrayList<>();
-        brands.add("Tất cả");
-
         String sql = "SELECT DISTINCT Brand FROM Product WHERE Brand IS NOT NULL ORDER BY Brand";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -158,5 +285,79 @@ public class InventorySummaryDAO {
             e.printStackTrace();
         }
         return brands;
+    }
+
+    // Phương thức mới: Lấy sản phẩm cần chú ý (hết hàng hoặc sắp hết)
+    public static List<InventorySummary> getCriticalStockItems() {
+        List<InventorySummary> list = new ArrayList<>();
+        String sql = """
+            WITH StockSummary AS (
+                SELECT 
+                    p.ProductID,
+                    p.ProductCode,
+                    p.ProductName,
+                    ISNULL(p.Brand, 'N/A') as Brand,
+                    p.Price,
+                    ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
+                    CASE 
+                        WHEN SUM(sed.Quantity) > 0 
+                        THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
+                        ELSE 0 
+                    END as AvgUnitCost
+                FROM Product p
+                LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
+                GROUP BY p.ProductID, p.ProductCode, p.ProductName, p.Brand, p.Price
+            ),
+            LossSummary AS (
+                SELECT 
+                    ProductID,
+                    ISNULL(SUM(Quantity), 0) as TotalLoss
+                FROM LossReportDetail
+                GROUP BY ProductID
+            )
+            SELECT 
+                ss.ProductID,
+                ss.ProductCode,
+                ss.ProductName,
+                ss.Brand,
+                ss.Price,
+                ss.TotalReceived,
+                ss.AvgUnitCost,
+                ISNULL(ls.TotalLoss, 0) as TotalLoss,
+                CASE 
+                    WHEN ss.TotalReceived - ISNULL(ls.TotalLoss, 0) < 0 
+                    THEN 0 
+                    ELSE ss.TotalReceived - ISNULL(ls.TotalLoss, 0)
+                END as CurrentStock
+            FROM StockSummary ss
+            LEFT JOIN LossSummary ls ON ss.ProductID = ls.ProductID
+            WHERE (ss.TotalReceived - ISNULL(ls.TotalLoss, 0)) <= 5  -- Chỉ lấy sản phẩm có stock <= 5
+            ORDER BY CurrentStock ASC, ss.ProductName
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                InventorySummary summary = new InventorySummary();
+                summary.productID = rs.getInt("ProductID");
+                summary.productCode = rs.getString("ProductCode");
+                summary.productName = rs.getString("ProductName");
+                summary.brand = rs.getString("Brand");
+                summary.price = rs.getDouble("Price");
+                summary.totalReceived = rs.getInt("TotalReceived");
+                summary.totalLoss = rs.getInt("TotalLoss");
+                summary.currentStock = Math.max(0, rs.getInt("CurrentStock"));
+                summary.avgUnitCost = rs.getDouble("AvgUnitCost");
+                summary.status = determineStockStatus(summary.currentStock);
+                summary.value = summary.currentStock * summary.avgUnitCost;
+
+                list.add(summary);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

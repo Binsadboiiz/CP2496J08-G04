@@ -13,6 +13,7 @@ public class Product {
     private String updatedAt;
     private String name;   // For BestSellingProduct
     private int sales;     // For BestSellingProduct
+    private int stockQuantity;
 
     // === CONSTRUCTORS ===
 
@@ -68,6 +69,22 @@ public class Product {
         this.updatedAt = updatedAt;
     }
 
+    public Product(int productID, String productName, String productCode, String brand, String type,
+                   double price, String description, String image, String createdAt, String updatedAt,
+                   int stockQuantity) {
+        this.productID = productID;
+        this.productName = productName;
+        this.productCode = productCode;
+        this.brand = brand;
+        this.type = type;
+        this.price = price;
+        this.description = description;
+        this.image = image;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.stockQuantity = stockQuantity;
+    }
+
     // === GETTERS & SETTERS ===
     // (Keep as bạn đang có)
 
@@ -110,5 +127,13 @@ public class Product {
     @Override
     public String toString() {
         return productName;
+    }
+
+    public int getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 }
