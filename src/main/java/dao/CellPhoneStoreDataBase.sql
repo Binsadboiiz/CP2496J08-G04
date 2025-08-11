@@ -280,3 +280,40 @@ INSERT INTO [User] (Username, Password, Role) VALUES ('manager', '123456', 'Mana
 insert into [User] (Username, Password, Role) values ('staff', '123456', 'Staff')
 insert into [User] (Username, Password, Role) values ('cashier', '123456', 'Cashier')
 insert into [User] (Username, Password, Role) values ('warehouse', '123456', 'Warehouse')
+
+ALTER TABLE [User] ADD
+    IsActive  BIT NOT NULL CONSTRAINT DF_User_IsActive  DEFAULT(1),
+    IsDeleted BIT NOT NULL CONSTRAINT DF_User_IsDeleted DEFAULT(0);
+GO
+
+-- Trigger: chặn làm mất Manager hoạt động cuối cùng
+CREATE OR ALTER TRIGGER trg_BlockLastManagerLoss
+ON [User]
+AFTER UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM deleted d
+        WHERE d.Role = 'Manager'
+    )
+        RETURN; -- không đụng đến manager thì thoát
+
+
+    DECLARE @after INT = (
+        SELECT COUNT(*)
+        FROM [User]
+        WHERE Role='Manager' AND IsActive=1 AND IsDeleted=0
+    );
+
+    IF (@after = 0)
+    BEGIN
+        RAISERROR('Cannot remove, deactivate, soft-delete, or demote the last active Manager.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END
+END
+GO
+

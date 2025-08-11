@@ -13,7 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.util.Callback;
 import model.StockEntry;
 import model.StockEntryDetail;
 
@@ -42,7 +41,6 @@ public class WarehouseReportController {
     @FXML private TableColumn<StockEntry, Integer> colEntryID;
     @FXML private TableColumn<StockEntry, String> colEntryDate;
     @FXML private TableColumn<StockEntry, String> colSupplier;
-    @FXML private TableColumn<StockEntry, String> colUser;
     @FXML private TableColumn<StockEntry, Integer> colTotalQuantity;
     @FXML private TableColumn<StockEntry, Double> colTotalValue;
 
@@ -51,11 +49,9 @@ public class WarehouseReportController {
     @FXML private TableColumn<LossReportDetailExtended, String> colLossProduct;
     @FXML private TableColumn<LossReportDetailExtended, Integer> colLossQuantity;
     @FXML private TableColumn<LossReportDetailExtended, String> colLossReason;
-    @FXML private TableColumn<LossReportDetailExtended, String> colLossEmployee;
     @FXML private TableColumn<LossReportDetailExtended, Double> colLossValue;
     @FXML private TableColumn<LossReportDetailExtended, Double> colAvgUnitCost;
     @FXML private TableColumn<LossReportDetailExtended, String> colLossReportDate;
-    @FXML private TableColumn<LossReportDetailExtended, Void> colActions;
 
     @FXML private DatePicker dpFromDate;
     @FXML private DatePicker dpToDate;
@@ -73,13 +69,12 @@ public class WarehouseReportController {
     public void initialize() {
         setupTables();
         setupControls();
-        setupSearchFilters(); // Setup search functionality
+        setupSearchFilters();
         loadAllData();
     }
 
     private void setupTables() {
         setupStockEntriesTable();
-
         setupLossReportsTable();
 
         filteredEntriesList = new FilteredList<>(recentEntriesList, p -> true);
@@ -102,7 +97,6 @@ public class WarehouseReportController {
         });
 
         colSupplier.setCellValueFactory(new PropertyValueFactory<>("supplierName"));
-        colUser.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty("Warehouse Staff"));
 
         tblRecentEntries.setRowFactory(tv -> {
             TableRow<StockEntry> row = new TableRow<>();
@@ -144,7 +138,6 @@ public class WarehouseReportController {
         colLossProduct.setCellValueFactory(new PropertyValueFactory<>("productName"));
         colLossQuantity.setCellValueFactory(new PropertyValueFactory<>("lostQuantity"));
         colLossReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
-        colLossEmployee.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
         colLossValue.setCellValueFactory(new PropertyValueFactory<>("lossValue"));
 
         if (colLossReportDate != null) {
@@ -182,35 +175,16 @@ public class WarehouseReportController {
             }
         });
 
-        if (colActions != null) {
-            colActions.setCellFactory(new Callback<TableColumn<LossReportDetailExtended, Void>, TableCell<LossReportDetailExtended, Void>>() {
-                @Override
-                public TableCell<LossReportDetailExtended, Void> call(TableColumn<LossReportDetailExtended, Void> param) {
-                    return new TableCell<LossReportDetailExtended, Void>() {
-                        private final Button viewBtn = new Button("👁️");
-
-                        {
-                            viewBtn.setStyle("-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-size: 10px; -fx-padding: 2 6;");
-                            viewBtn.setTooltip(new Tooltip("View details"));
-                            viewBtn.setOnAction(event -> {
-                                LossReportDetailExtended item = getTableView().getItems().get(getIndex());
-                                handleViewLossReportDetail(item);
-                            });
-                        }
-
-                        @Override
-                        protected void updateItem(Void item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                            } else {
-                                setGraphic(viewBtn);
-                            }
-                        }
-                    };
+        // Add double-click handler for loss report details
+        tblRecentLoss.setRowFactory(tv -> {
+            TableRow<LossReportDetailExtended> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    handleViewLossReportDetail(row.getItem());
                 }
             });
-        }
+            return row;
+        });
     }
 
     private void setupSearchFilters() {
@@ -267,11 +241,6 @@ public class WarehouseReportController {
 
                     if (lossReport.getReason() != null &&
                             lossReport.getReason().toLowerCase().contains(lowerCaseFilter)) {
-                        return true;
-                    }
-
-                    if (lossReport.getEmployeeName() != null &&
-                            lossReport.getEmployeeName().toLowerCase().contains(lowerCaseFilter)) {
                         return true;
                     }
 
@@ -470,8 +439,7 @@ public class WarehouseReportController {
                         "Average Unit Cost: %,.0f VND\n" +
                         "Loss Value: %,.0f VND\n" +
                         "Reason: %s\n" +
-                        "Report Date: %s\n" +
-                        "Created By: %s",
+                        "Report Date: %s",
                 selected.getProductName(),
                 selected.getProductCode() != null ? selected.getProductCode() : "N/A",
                 selected.getBrand() != null ? selected.getBrand() : "N/A",
@@ -479,8 +447,7 @@ public class WarehouseReportController {
                 selected.getAvgUnitCost(),
                 selected.getLossValue(),
                 selected.getReason(),
-                selected.getReportDateFormatted(),
-                selected.getEmployeeName()
+                selected.getReportDateFormatted()
         ));
 
         detailAlert.showAndWait();
@@ -531,9 +498,9 @@ public class WarehouseReportController {
                     writer.write("Total Records: " + entriesToExport.size() + "\n");
                     writer.write("=====================================\n\n");
 
-                    writer.write(String.format("%-10s %-15s %-30s %-20s %-15s %-15s\n",
-                            "Entry ID", "Date", "Supplier", "Created By", "Total Qty", "Total Value"));
-                    writer.write("----------------------------------------------------------------------\n");
+                    writer.write(String.format("%-10s %-15s %-30s %-15s %-15s\n",
+                            "Entry ID", "Date", "Supplier", "Total Qty", "Total Value"));
+                    writer.write("-----------------------------------------------------\n");
 
                     double grandTotal = 0;
                     int totalQuantity = 0;
@@ -548,18 +515,17 @@ public class WarehouseReportController {
                         totalQuantity += entryTotalQty;
                         grandTotal += entryTotalValue;
 
-                        writer.write(String.format("%-10d %-15s %-30s %-20s %-15d %15.0f\n",
+                        writer.write(String.format("%-10d %-15s %-30s %-15d %15.0f\n",
                                 entry.getEntryID(),
                                 dateStr,
                                 entry.getSupplierName() != null ? entry.getSupplierName() : "N/A",
-                                "Warehouse Staff",
                                 entryTotalQty,
                                 entryTotalValue));
                     }
 
-                    writer.write("----------------------------------------------------------------------\n");
-                    writer.write(String.format("%-71s %-15d %15.0f\n", "TOTAL:", totalQuantity, grandTotal));
-                    writer.write("======================================================================\n");
+                    writer.write("-----------------------------------------------------\n");
+                    writer.write(String.format("%-56s %-15d %15.0f\n", "TOTAL:", totalQuantity, grandTotal));
+                    writer.write("============================================================\n");
 
                     showAlert("Stock entries exported successfully to: " + file.getAbsolutePath(), Alert.AlertType.INFORMATION);
                 }
@@ -596,9 +562,9 @@ public class WarehouseReportController {
                     writer.write("Total Records: " + lossReportsToExport.size() + "\n");
                     writer.write("=====================================\n\n");
 
-                    writer.write(String.format("%-8s %-25s %-10s %-20s %-15s %-12s %-15s %-12s\n",
-                            "ID", "Product", "Loss Qty", "Reason", "Created By", "Loss Value", "Avg Unit Cost", "Report Date"));
-                    writer.write("----------------------------------------------------------------------------------------------------\n");
+                    writer.write(String.format("%-8s %-25s %-10s %-20s %-12s %-15s %-12s\n",
+                            "ID", "Product", "Loss Qty", "Reason", "Loss Value", "Avg Unit Cost", "Report Date"));
+                    writer.write("------------------------------------------------------------------------------------\n");
 
                     double totalLossValue = 0;
                     int totalLossQuantity = 0;
@@ -617,25 +583,19 @@ public class WarehouseReportController {
                             reason = reason.substring(0, 15) + "...";
                         }
 
-                        String employeeName = report.getEmployeeName();
-                        if (employeeName.length() > 13) {
-                            employeeName = employeeName.substring(0, 10) + "...";
-                        }
-
-                        writer.write(String.format("%-8d %-25s %-10d %-20s %-15s %12.0f %15.0f %-12s\n",
+                        writer.write(String.format("%-8d %-25s %-10d %-20s %12.0f %15.0f %-12s\n",
                                 report.getReportID(),
                                 productName,
                                 report.getLostQuantity(),
                                 reason,
-                                employeeName,
                                 report.getLossValue(),
                                 report.getAvgUnitCost(),
                                 report.getReportDateFormatted()));
                     }
 
-                    writer.write("----------------------------------------------------------------------------------------------------\n");
-                    writer.write(String.format("%-54s %-10d %12.0f\n", "TOTAL LOSSES:", totalLossQuantity, totalLossValue));
-                    writer.write("====================================================================================================\n");
+                    writer.write("------------------------------------------------------------------------------------\n");
+                    writer.write(String.format("%-44s %-10d %12.0f\n", "TOTAL LOSSES:", totalLossQuantity, totalLossValue));
+                    writer.write("====================================================================================\n");
 
                     showAlert("Loss reports exported successfully to: " + file.getAbsolutePath(), Alert.AlertType.INFORMATION);
                 }

@@ -364,4 +364,55 @@ public class InvoiceDAO {
 
         return list;
     }
+    // ======= Recent Orders cho Dashboard =======
+    public static java.util.List<model.Invoice> getRecentOrders(int limit) {
+        String sql = """
+        SELECT i.InvoiceID, i.CustomerID, i.UserID, i.Date,
+               i.TotalAmount, i.Discount, i.Status,
+               i.CreatedAt, i.UpdatedAt, i.UpdatedBy,
+               c.FullName AS CustomerName
+        FROM Invoice i
+        LEFT JOIN Customer c ON c.CustomerID = i.CustomerID
+        ORDER BY i.Date DESC, i.InvoiceID DESC
+        OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY
+    """;
+
+        java.util.List<model.Invoice> list = new java.util.ArrayList<>();
+        try (java.sql.Connection conn = DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, Math.max(1, limit));
+
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    model.Invoice inv = new model.Invoice();
+                    inv.setInvoiceID(rs.getInt("InvoiceID"));
+                    inv.setCustomerID(rs.getInt("CustomerID"));
+                    inv.setUserID(rs.getInt("UserID"));
+
+                    java.sql.Timestamp t = rs.getTimestamp("Date");
+                    if (t != null) inv.setDate(t.toLocalDateTime());
+
+                    inv.setTotalAmount(rs.getBigDecimal("TotalAmount"));
+                    inv.setDiscount(rs.getBigDecimal("Discount"));
+                    inv.setStatus(rs.getString("Status"));
+
+                    java.sql.Timestamp createdAt = rs.getTimestamp("CreatedAt");
+                    if (createdAt != null) inv.setCreatedAt(createdAt.toLocalDateTime());
+
+                    java.sql.Timestamp updatedAt = rs.getTimestamp("UpdatedAt");
+                    if (updatedAt != null) inv.setUpdatedAt(updatedAt.toLocalDateTime());
+
+                    inv.setUpdatedBy(rs.getObject("UpdatedBy", Integer.class));
+                    inv.setCustomerName(rs.getString("CustomerName"));
+
+                    list.add(inv);
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

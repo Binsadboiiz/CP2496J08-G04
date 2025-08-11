@@ -54,7 +54,6 @@
                         <TableColumn fx:id="colLossProduct" prefWidth="120.0" text="Product" />
                         <TableColumn fx:id="colLossQuantity" prefWidth="60.0" text="Loss Qty" />
                         <TableColumn fx:id="colLossReason" prefWidth="100.0" text="Reason" />
-                        <TableColumn fx:id="colEmployee" prefWidth="80.0" text="Created By" />
                         <TableColumn fx:id="colLossValue" prefWidth="80.0" text="Loss Value" />
                         <TableColumn fx:id="colReportDate" prefWidth="80.0" text="Report Date" />
                         <TableColumn fx:id="colActions" prefWidth="60.0" text="Actions" />
