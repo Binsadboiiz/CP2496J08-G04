@@ -76,3 +76,18 @@ text-field {
     -fx-text-fill: #c3cde4;
     -fx-font-style: italic;
 }
+
+/* Style cho button đang active */
+.sidebar-button.active-button {
+    -fx-background-color: #1ABC9C;
+    -fx-text-fill: white;
+    -fx-border-color: #16A085;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.sidebar-button.active-button:hover {
+    -fx-background-color: #16A085;
+    -fx-text-fill: white;
+}

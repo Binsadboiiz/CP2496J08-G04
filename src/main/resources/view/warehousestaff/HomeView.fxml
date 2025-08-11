@@ -11,7 +11,7 @@
       minHeight="680.0" maxHeight="680.0"
       fillWidth="true">
     <children>
-        <!-- Main Title -->
+
         <Label text="WAREHOUSE STAFF HOME">
             <font>
                 <Font name="System Bold" size="24.0" />
@@ -21,7 +21,6 @@
             </VBox.margin>
         </Label>
 
-        <!-- Overview Information -->
         <VBox spacing="15.0">
             <children>
                 <Label text="OVERVIEW INFORMATION">
@@ -32,7 +31,6 @@
 
                 <HBox spacing="15.0">
                     <children>
-                        <!-- Total Products Card -->
                         <VBox alignment="CENTER" spacing="8.0"
                               style="-fx-background-color: linear-gradient(to bottom, #4CAF50, #45a049); -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);"
                               HBox.hgrow="ALWAYS">
@@ -55,7 +53,6 @@
                             </children>
                         </VBox>
 
-                        <!-- Low Stock Products Card -->
                         <VBox alignment="CENTER" spacing="8.0"
                               style="-fx-background-color: linear-gradient(to bottom, #FF9800, #F57C00); -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);"
                               HBox.hgrow="ALWAYS">
@@ -78,7 +75,6 @@
                             </children>
                         </VBox>
 
-                        <!-- Stock Entries Card -->
                         <VBox alignment="CENTER" spacing="8.0"
                               style="-fx-background-color: linear-gradient(to bottom, #2196F3, #1976D2); -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);"
                               HBox.hgrow="ALWAYS">
@@ -108,14 +104,12 @@
             </VBox.margin>
         </VBox>
 
-        <!-- Separator -->
         <Separator>
             <VBox.margin>
                 <Insets bottom="20.0" />
             </VBox.margin>
         </Separator>
 
-        <!-- Main Functions -->
         <VBox spacing="15.0" VBox.vgrow="ALWAYS">
             <children>
                 <Label text="MAIN FUNCTIONS">
@@ -124,7 +118,6 @@
                     </font>
                 </Label>
 
-                <!-- Inventory Management Function -->
                 <HBox alignment="CENTER_LEFT" spacing="15.0" onMouseClicked="#handleInventoryManagement"
                       style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-background-radius: 12; -fx-padding: 15; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 6, 0, 0, 2);">
                     <children>
@@ -154,7 +147,6 @@
                     </children>
                 </HBox>
 
-                <!-- Stock Entry Function -->
                 <HBox alignment="CENTER_LEFT" spacing="15.0" onMouseClicked="#handleStockEntry"
                       style="-fx-background-color: linear-gradient(to right, #4facfe, #00f2fe); -fx-background-radius: 12; -fx-padding: 15; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 6, 0, 0, 2);">
                     <children>
@@ -184,7 +176,6 @@
                     </children>
                 </HBox>
 
-                <!-- Loss Report Function -->
                 <HBox alignment="CENTER_LEFT" spacing="15.0" onMouseClicked="#handleLossManagement"
                       style="-fx-background-color: linear-gradient(to right, #fa709a, #fee140); -fx-background-radius: 12; -fx-padding: 15; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 6, 0, 0, 2);">
                     <children>
@@ -216,7 +207,7 @@
             </children>
         </VBox>
 
-        <!-- Spacer to ensure proper layout -->
+
         <Region VBox.vgrow="ALWAYS" minHeight="10.0" />
     </children>
     <padding>

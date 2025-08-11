@@ -17,8 +17,11 @@ public class InvoiceHistoryController {
     @FXML private TableView<Invoice> invoiceTable;
     @FXML private DatePicker dateFilterPicker;
     @FXML private TextField customerFilterField, productFilterField;
+    @FXML private Button filterButton, resetButton;
+
     @FXML private TableColumn<Invoice, Integer> invoiceIdColumn;
-    @FXML private TableColumn<Invoice, Integer> customerIdColumn;
+    @FXML private TableColumn<Invoice, String> customerIdColumn;
+    @FXML private TableColumn<Invoice, String> productNameColumn;
     @FXML private TableColumn<Invoice, Integer> userIdColumn;
     @FXML private TableColumn<Invoice, String> dateColumn;
     @FXML private TableColumn<Invoice, String> totalAmountColumn;
@@ -30,30 +33,65 @@ public class InvoiceHistoryController {
     @FXML
     public void initialize() {
         invoiceIdColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceID"));
-        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerID"));
-        userIdColumn.setCellValueFactory(new PropertyValueFactory<>("userID"));
-        dateColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDate().toLocalDate().toString())
-        );
 
-        // Khởi tạo NumberFormat với Locale của Đức để sử dụng dấu chấm cho phần nghìn
+        customerIdColumn.setText("Customer Name");
+        customerIdColumn.setCellValueFactory(cellData -> {
+            String customerName = cellData.getValue().getCustomerName();
+            return new SimpleStringProperty(customerName != null ? customerName : "Walk-in Customer");
+        });
+
+        productNameColumn.setCellValueFactory(cellData -> {
+            String productName = cellData.getValue().getFirstProductName();
+            return new SimpleStringProperty(productName != null ? productName : "N/A");
+        });
+
+        userIdColumn.setCellValueFactory(new PropertyValueFactory<>("userID"));
+        dateColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getDate() != null) {
+                return new SimpleStringProperty(cellData.getValue().getDate().toLocalDate().toString());
+            }
+            return new SimpleStringProperty("");
+        });
+
         NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("de", "DE"));
         numberFormat.setMinimumFractionDigits(0);
         numberFormat.setMaximumFractionDigits(0);
 
-        totalAmountColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(numberFormat.format(cellData.getValue().getTotalAmount()) + " VND")
-        );
-        discountColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(numberFormat.format(cellData.getValue().getDiscount()) + " VND")
-        );
+        totalAmountColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getTotalAmount() != null) {
+                return new SimpleStringProperty(numberFormat.format(cellData.getValue().getTotalAmount()) + " VND");
+            }
+            return new SimpleStringProperty("0 VND");
+        });
+
+        discountColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getDiscount() != null) {
+                return new SimpleStringProperty(numberFormat.format(cellData.getValue().getDiscount()) + " %");
+            }
+            return new SimpleStringProperty("0 %");
+        });
+
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
+        setupButtonStyles();
         loadInvoices();
     }
 
+    private void setupButtonStyles() {
+        // Filter button - #2584f8 (blue like Add)
+        if (filterButton != null) {
+            filterButton.setStyle("-fx-background-color: #2584f8; -fx-text-fill: white; -fx-font-weight: bold;");
+        }
+
+        // Reset button - #3498db (light blue like Refresh)
+        if (resetButton != null) {
+            resetButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;");
+        }
+    }
+
     private void loadInvoices() {
-        invoiceTable.setItems(FXCollections.observableArrayList(invoiceDAO.getAllInvoices()));
+        List<Invoice> invoices = invoiceDAO.getAllInvoicesWithDetails();
+        invoiceTable.setItems(FXCollections.observableArrayList(invoices));
     }
 
     @FXML
@@ -62,7 +100,7 @@ public class InvoiceHistoryController {
         String product = productFilterField.getText();
         LocalDate date = dateFilterPicker.getValue();
 
-        List<Invoice> invoices = invoiceDAO.filterInvoices(customer, product, date, date);
+        List<Invoice> invoices = invoiceDAO.filterInvoicesWithDetails(customer, product, date, date);
         invoiceTable.setItems(FXCollections.observableArrayList(invoices));
     }
 

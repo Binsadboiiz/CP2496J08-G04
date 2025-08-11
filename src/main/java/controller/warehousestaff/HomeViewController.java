@@ -22,25 +22,18 @@ public class HomeViewController implements Initializable {
 
     private static final int LOW_STOCK_THRESHOLD = 10;
 
-    // FXML Elements - Overview Information
     @FXML private Label totalProductsLabel;
     @FXML private Label lowStockLabel;
     @FXML private Label totalStockEntriesLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Load statistical data
         loadHomeDataAsync();
-
-        // Add fade in effect for labels
         addFadeInEffect(totalProductsLabel);
         addFadeInEffect(lowStockLabel);
         addFadeInEffect(totalStockEntriesLabel);
     }
 
-    /**
-     * Load home page data asynchronously
-     */
     private void loadHomeDataAsync() {
         Task<int[]> task = new Task<int[]>() {
             @Override
@@ -79,9 +72,6 @@ public class HomeViewController implements Initializable {
         thread.start();
     }
 
-    /**
-     * Update labels with new data
-     */
     private void updateLabels(int totalProducts, int lowStock, int totalEntries) {
         if (totalProductsLabel != null) {
             totalProductsLabel.setText(String.valueOf(totalProducts));
@@ -94,9 +84,6 @@ public class HomeViewController implements Initializable {
         }
     }
 
-    /**
-     * Add fade in effect for node
-     */
     private void addFadeInEffect(Node node) {
         if (node != null) {
             FadeTransition fade = new FadeTransition(Duration.millis(800), node);
@@ -106,51 +93,32 @@ public class HomeViewController implements Initializable {
         }
     }
 
-    // ==================== 3 MAIN FUNCTIONS ====================
-
-    /**
-     * Handle Inventory Management function
-     */
     @FXML
     private void handleInventoryManagement(MouseEvent event) {
         addClickEffect((Node) event.getSource());
-
-        showInfoAlert("📦 Inventory Management",
+        showInfoAlert("Inventory Management",
                 "View product list in warehouse\n" +
                         "Check inventory quantities\n" +
                         "Monitor low stock products");
     }
 
-    /**
-     * Handle Stock Entry function
-     */
     @FXML
     private void handleStockEntry(MouseEvent event) {
         addClickEffect((Node) event.getSource());
-
-        showInfoAlert("📋 Stock Entry",
+        showInfoAlert("Stock Entry",
                 "Create new stock entries\n" +
                         "View stock entry history");
     }
 
-    /**
-     * Handle Loss Management function
-     */
     @FXML
     private void handleLossManagement(MouseEvent event) {
         addClickEffect((Node) event.getSource());
-
-        showInfoAlert("⚠️ Loss Report",
+        showInfoAlert("Loss Report",
                 "Record damaged or lost goods\n" +
                         "Track loss reasons\n" +
                         "Generate statistical reports");
     }
 
-    // ==================== UTILITY METHODS ====================
-
-    /**
-     * Add click effect for node
-     */
     private void addClickEffect(Node node) {
         if (node != null) {
             ScaleTransition scale = new ScaleTransition(Duration.millis(120), node);
@@ -164,9 +132,6 @@ public class HomeViewController implements Initializable {
         }
     }
 
-    /**
-     * Show error alert
-     */
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -175,9 +140,6 @@ public class HomeViewController implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * Show information alert
-     */
     private void showInfoAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Function Information");
@@ -188,9 +150,6 @@ public class HomeViewController implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * Refresh home page data
-     */
     public void refreshData() {
         loadHomeDataAsync();
     }

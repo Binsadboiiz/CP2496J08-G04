@@ -16,12 +16,14 @@
             <padding>
                 <Insets bottom="10" left="10" right="10" top="10" />
             </padding>
-            <Label alignment="CENTER" prefHeight="35.0" prefWidth="927.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="QUẢN LÝ KHÁCH HÀNG" />
+            <Label alignment="CENTER" prefHeight="35.0" prefWidth="927.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="CUSTOMER MANAGEMENT" />
             <HBox alignment="TOP_RIGHT" spacing="10">
-                <TextField fx:id="searchField" promptText="Tìm theo tên, SĐT hoặc Email" />
-                <Button onAction="#searchCustomer" text="Tìm kiếm" />
-                <Button onAction="#refresh" text="Làm mới" />
-                <Button onAction="#addCustomer" text="Thêm khách hàng" />
+                <TextField fx:id="searchField" promptText="Search by name, phone or email" />
+                <Button onAction="#searchCustomer" text="Search" />
+                <Button fx:id="refreshButton" onAction="#refresh" text="Refresh"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" />
+                <Button fx:id="addButton" onAction="#addCustomer" text="Add Customer"
+                        style="-fx-background-color: #2584f8; -fx-text-fill: white; -fx-font-weight: bold;" />
             </HBox>
         </VBox>
     </top>
@@ -29,11 +31,11 @@
     <center>
         <TableView fx:id="customerTable" prefHeight="400">
             <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="125.0" text="Họ tên" />
-                <TableColumn fx:id="phoneColumn" prefWidth="133.0" text="SĐT" />
+                <TableColumn fx:id="nameColumn" prefWidth="125.0" text="Full Name" />
+                <TableColumn fx:id="phoneColumn" prefWidth="133.0" text="Phone" />
                 <TableColumn fx:id="emailColumn" prefWidth="225.0" text="Email" />
-                <TableColumn fx:id="addressColumn" prefWidth="224.0" text="Địa chỉ" />
-                <TableColumn fx:id="actionsColumn" prefWidth="112.0" text="Hành động" />
+                <TableColumn fx:id="addressColumn" prefWidth="224.0" text="Address" />
+                <TableColumn fx:id="actionsColumn" prefWidth="112.0" text="Actions" />
             </columns>
         </TableView>
     </center>

@@ -15,9 +15,11 @@ public class Invoice {
     private LocalDateTime updatedAt;
     private Integer updatedBy;
 
-
     // Optional: For displaying customer name in UI
     private String customerName;
+
+    // Thêm thuộc tính mới cho tên sản phẩm đầu tiên
+    private String firstProductName;
 
     // Constructors
     public Invoice() {}
@@ -85,5 +87,14 @@ public class Invoice {
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
+    }
+
+    // Thêm getter/setter cho tên sản phẩm đầu tiên
+    public String getFirstProductName() {
+        return firstProductName;
+    }
+
+    public void setFirstProductName(String firstProductName) {
+        this.firstProductName = firstProductName;
     }
 }

@@ -158,7 +158,7 @@ public class LossReportDAO {
         return 0;
     }
 
-    public static List<LossReport> getLossReportsByDateRange(java.sql.Date fromDate, java.sql.Date toDate) {
+    public static List<LossReport> getLossReportsByDateRange(Date fromDate, Date toDate) {
         List<LossReport> reports = new ArrayList<>();
         String sql = """
             SELECT lr.ReportID, lr.UserID, lr.ReportDate

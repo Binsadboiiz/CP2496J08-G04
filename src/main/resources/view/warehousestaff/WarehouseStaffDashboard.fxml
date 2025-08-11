@@ -16,7 +16,6 @@
             xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.warehousestaff.WarehouseStaffDashboardController">
 
-    <!-- Sidebar -->
     <left>
         <VBox id="sidebar" fx:id="sidebar" alignment="TOP_CENTER" prefWidth="200" spacing="10" BorderPane.alignment="CENTER">
             <padding>
@@ -25,18 +24,16 @@
 
             <StackPane fx:id="userCard" styleClass="user-card">
                 <VBox alignment="CENTER" spacing="10">
-                    <!--                    <ImageView fx:id="avatarImage" fitWidth="60" fitHeight="60" styleClass="avatar"/>-->
-                    <Label fx:id="usernameLabel" text="📦" styleClass="username-label"/>
+                    <Label fx:id="usernameLabel" text="" styleClass="username-label"/>
                     <Label fx:id="roleLabel" text="WAREHOUSE STAFF" styleClass="role-label"/>
                 </VBox>
             </StackPane>
 
-            <!-- Buttons -->
             <Button fx:id="btnHome" maxWidth="180" text="Home" onAction="#handleHome" styleClass="sidebar-button">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
             </Button>
 
-            <Button fx:id="btnStockEntryList" maxWidth="180" text="Stock Entry List" onAction="#handleStockEntryList" styleClass="sidebar-button">
+            <Button fx:id="btnStockEntryList" maxWidth="180" text="Stock Entry" onAction="#handleStockEntryList" styleClass="sidebar-button">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
@@ -70,7 +67,6 @@
         </VBox>
     </left>
 
-    <!-- Main Content -->
     <center>
         <AnchorPane fx:id="contentArea" prefHeight="680.0" prefWidth="980.0" />
     </center>

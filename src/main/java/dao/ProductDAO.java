@@ -288,4 +288,95 @@ public class ProductDAO {
         return null;
     }
 
+    // 11. Lấy tất cả sản phẩm có thông tin tồn kho (STATIC)
+    public static List<Product> getAllWithStock() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT *, ISNULL(StockQuantity, 0) as Stock FROM Product";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Product p = new Product(
+                        rs.getInt("ProductID"),
+                        rs.getString("ProductName"),
+                        rs.getString("ProductCode"),
+                        rs.getString("Brand"),
+                        rs.getString("Type"),
+                        rs.getDouble("Price"),
+                        rs.getString("Description"),
+                        rs.getString("Image"),
+                        rs.getString("CreatedAt"),
+                        rs.getString("UpdatedAt"),
+                        rs.getInt("Stock")
+                );
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // 12. Lấy số lượng tồn kho của sản phẩm (STATIC)
+    public static int getProductStock(int productID) {
+        String sql = "SELECT ISNULL(StockQuantity, 0) as Stock FROM Product WHERE ProductID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("Stock");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // 13. Cập nhật tồn kho sau khi bán (STATIC)
+    public static boolean updateStock(int productID, int soldQuantity) {
+        String sql = "UPDATE Product SET StockQuantity = StockQuantity - ? WHERE ProductID = ? AND StockQuantity >= ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, soldQuantity);
+            ps.setInt(2, productID);
+            ps.setInt(3, soldQuantity); // Đảm bảo tồn kho đủ
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 14. Tính tồn kho thực tế (nhập - xuất - hao hụt)
+    public static int getRealTimeStock(int productID) {
+        String sql = """
+        SELECT 
+            ISNULL(SUM(sed.Quantity), 0) - 
+            ISNULL(SUM(id.Quantity), 0) - 
+            ISNULL(SUM(lrd.Quantity), 0) as RealStock
+        FROM Product p
+        LEFT JOIN StockEntryDetail sed ON p.ProductID = sed.ProductID
+        LEFT JOIN InvoiceDetail id ON p.ProductID = id.ProductID
+        LEFT JOIN LossReportDetail lrd ON p.ProductID = lrd.ProductID
+        WHERE p.ProductID = ?
+        GROUP BY p.ProductID
+    """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Math.max(0, rs.getInt("RealStock")); // Đảm bảo không âm
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }

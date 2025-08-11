@@ -32,7 +32,7 @@
             </StackPane>
 
             <!-- Buttons -->
-            <Button fx:id="btnHome" maxWidth="180" text="Control Panel" onAction="#loadHome" styleClass="sidebar-button">
+            <Button fx:id="btnHome" maxWidth="180" text="Home" onAction="#loadHome" styleClass="sidebar-button">
                 <font><Font name="Times New Roman Bold" size="18" /></font>
 
 

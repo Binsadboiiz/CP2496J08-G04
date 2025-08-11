@@ -12,60 +12,99 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="650.0" prefWidth="820.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/24.0.1" fx:controller="controller.staff.CreateInvoiceController">
+<BorderPane prefHeight="650.0" prefWidth="820.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.staff.CreateInvoiceController">
+
     <top>
-        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="TẠO HÓA ĐƠN BÁN HÀNG" BorderPane.alignment="CENTER" />
+        <Label text="CREATE SALES INVOICE"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER" />
     </top>
 
     <center>
         <VBox spacing="10">
             <padding>
-                <Insets bottom="10" left="10" right="10" top="10" />
+                <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-            <HBox spacing="10">
-                <Label text="Khách hàng:" />
-                <ComboBox fx:id="customerComboBox" prefWidth="200" promptText="Chọn khách hàng..." />
-                <Label text="Tên sản phẩm:" />
-                <TextField fx:id="productNameField" />
-                <Label text="Số lượng:" />
-                <TextField fx:id="quantityField" />
-                <Button onAction="#handleAddProduct" text="Thêm sản phẩm" />
+
+            <!-- Customer Input with Autocomplete -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Customer:" prefWidth="80"/>
+                <ComboBox fx:id="customerComboBox" prefWidth="300" promptText="Type customer name..."/>
             </HBox>
 
-            <TableView fx:id="invoiceTable" prefHeight="200">
-                <columns>
-                    <TableColumn fx:id="productNameColumn" prefWidth="187.0" text="Sản phẩm" />
-                    <TableColumn fx:id="quantityColumn" prefWidth="169.0" text="Số lượng" />
-                    <TableColumn fx:id="priceColumn" prefWidth="176.0" text="Đơn giá" />
-                    <TableColumn fx:id="totalColumn" prefWidth="267.0" text="Thành tiền" />
-                </columns>
-            </TableView>
+            <!-- Product Input with Stock Label -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Product:" prefWidth="80"/>
+                    <ComboBox fx:id="productComboBox" prefWidth="300" promptText="Select product..."/>
+                    <Label text="Quantity:" prefWidth="80"/>
+                    <TextField fx:id="quantityField" prefWidth="100" promptText="Enter quantity"/>
+                    <Button text="Add Product" onAction="#handleAddProduct" prefWidth="120"
+                            style="-fx-background-color: #2584f8; -fx-text-fill: white;"/>
+                </HBox>
 
-            <HBox alignment="TOP_RIGHT" spacing="10">
-                <Label text="Khuyến mãi:" />
-                <ListView fx:id="promotionListView" prefHeight="100" prefWidth="250" />
+                <!-- Stock Information Label -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="" prefWidth="80"/> <!-- Spacer -->
+                    <Label fx:id="stockLabel" text="Select product to view stock"
+                           style="-fx-font-size: 12px; -fx-font-style: italic;" prefWidth="300"/>
+                </HBox>
+            </VBox>
+
+            <!-- Invoice Table with Remove Button -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Invoice Items:" style="-fx-font-weight: bold;"/>
+                    <Button text="Remove Selected" onAction="#handleRemoveProduct"
+                            style="-fx-background-color: red; -fx-text-fill: white;" prefWidth="120"/>
+                </HBox>
+
+                <TableView fx:id="invoiceTable" prefHeight="250">
+                    <columns>
+                        <TableColumn fx:id="productNameColumn" text="Product Name" prefWidth="200"/>
+                        <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="100"/>
+                        <TableColumn fx:id="priceColumn" text="Unit Price" prefWidth="150"/>
+                        <TableColumn fx:id="totalColumn" text="Total Amount" prefWidth="150"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Promotions Section -->
+            <VBox spacing="5">
+                <Label text="Available Promotions:" style="-fx-font-weight: bold;"/>
+                <ListView fx:id="promotionListView" prefHeight="100" prefWidth="800"/>
+            </VBox>
+
+            <!-- Discount and Total Section -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Label text="Additional Discount (%):"/>
+                <TextField fx:id="discountField" prefWidth="100" promptText="0"/>
+                <Button text="Calculate Total" onAction="#handleCalculateTotal"
+                        prefWidth="120"/>
             </HBox>
 
-            <HBox alignment="TOP_RIGHT" spacing="10">
-                <Label text="Giảm giá (%):" />
-                <TextField fx:id="discountField" />
-                <Button onAction="#handleCalculateTotal" text="Tính tổng tiền" />
+            <!-- Total Amount Display -->
+            <HBox alignment="CENTER_RIGHT">
+                <Label fx:id="totalLabel"
+                       text="Total: 0 VND"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"
+                       prefWidth="200"/>
             </HBox>
-
-
-
-            <Label fx:id="totalLabel" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="832.0" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Tổng tiền: 0 VND" />
         </VBox>
     </center>
 
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="10">
+        <HBox alignment="CENTER" spacing="15">
             <padding>
-                <Insets bottom="10" left="10" right="10" top="10" />
+                <Insets top="15" right="10" bottom="15" left="10"/>
             </padding>
-
-            <Button onAction="#handleSaveInvoice" text="Lưu hóa đơn" />
-            <Button onAction="#handleReset" text="Làm mới" />
+            <Button text="Export Current Invoice" onAction="#handleExportCurrentInvoice"
+                    style="-fx-background-color: #FF9800; -fx-text-fill: white;" prefWidth="150"/>
+            <Button text="Save Invoice" onAction="#handleSaveInvoice"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white;" prefWidth="120"/>
+            <Button text="Reset" onAction="#handleReset"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;" prefWidth="80"/>
         </HBox>
     </bottom>
 </BorderPane>

@@ -7,17 +7,23 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.chart.PieChart;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 public class InventoryManagementController {
 
-    // UI Components for inventory table
     @FXML private TableView<InventoryItem> tblInventory;
     @FXML private TableColumn<InventoryItem, String> colProductCode;
     @FXML private TableColumn<InventoryItem, String> colProductName;
@@ -27,26 +33,20 @@ public class InventoryManagementController {
     @FXML private TableColumn<InventoryItem, Integer> colCurrentStock;
     @FXML private TableColumn<InventoryItem, String> colStatus;
 
-    // UI Components for filtering and search
     @FXML private TextField txtSearch;
     @FXML private ComboBox<String> cbStatusFilter;
-    @FXML private ComboBox<String> cbBrandFilter;
 
-    // UI Components for charts
     @FXML private PieChart pieStockStatus;
     @FXML private BarChart<String, Number> barTopProducts;
 
-    // UI Components for statistics
     @FXML private Label lblTotalProducts;
     @FXML private Label lblLowStockItems;
     @FXML private Label lblOutOfStockItems;
     @FXML private Label lblTotalValue;
 
-    // Data
     private ObservableList<InventoryItem> inventoryList = FXCollections.observableArrayList();
     private ObservableList<InventoryItem> filteredList = FXCollections.observableArrayList();
 
-    // Constants for stock status thresholds
     private static final int LOW_STOCK_THRESHOLD = 10;
     private static final int CRITICAL_STOCK_THRESHOLD = 5;
 
@@ -68,7 +68,6 @@ public class InventoryManagementController {
         colCurrentStock.setCellValueFactory(new PropertyValueFactory<>("currentStock"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Add cell factory for color coding based on stock status
         colStatus.setCellFactory(column -> new TableCell<InventoryItem, String>() {
             @Override
             protected void updateItem(String status, boolean empty) {
@@ -79,20 +78,10 @@ public class InventoryManagementController {
                 } else {
                     setText(status);
                     switch (status) {
-                        case "Out of Stock":
-                            setStyle("-fx-background-color: #ffebee; -fx-text-fill: #c62828;");
-                            break;
-                        case "Critical":
-                            setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #ef6c00;");
-                            break;
-                        case "Low Stock":
-                            setStyle("-fx-background-color: #fffde7; -fx-text-fill: #f57f17;");
-                            break;
-                        case "In Stock":
-                            setStyle("-fx-background-color: #e8f5e8; -fx-text-fill: #2e7d32;");
-                            break;
-                        default:
-                            setStyle("");
+                        case "Out of Stock" -> setStyle("-fx-background-color: #ffebee; -fx-text-fill: #c62828;");
+                        case "Critical" -> setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #ef6c00;");
+                        case "In Stock" -> setStyle("-fx-background-color: #e8f5e8; -fx-text-fill: #2e7d32;");
+                        default -> setStyle("");
                     }
                 }
             }
@@ -102,27 +91,17 @@ public class InventoryManagementController {
     }
 
     private void setupFilters() {
-        // Status filter
-        cbStatusFilter.setItems(FXCollections.observableArrayList(
-                "All", "Out of Stock", "Critical", "Low Stock", "In Stock"
-        ));
+        cbStatusFilter.setItems(FXCollections.observableArrayList("All", "Out of Stock", "Critical", "In Stock"));
         cbStatusFilter.setValue("All");
 
-        // Brand filter - will be populated after loading data
-        cbBrandFilter.setItems(FXCollections.observableArrayList("All"));
-        cbBrandFilter.setValue("All");
-
-        // Event handlers for filtering
         txtSearch.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
         cbStatusFilter.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
-        cbBrandFilter.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
     }
 
     private void loadInventoryData() {
         try {
-            // Get data from new DAO
-            List<InventorySummary> summaries = InventorySummaryDAO.getAllInventorySummary();
             inventoryList.clear();
+            List<InventorySummary> summaries = InventorySummaryDAO.getAllInventorySummary();
 
             for (InventorySummary summary : summaries) {
                 InventoryItem item = new InventoryItem();
@@ -139,12 +118,7 @@ public class InventoryManagementController {
                 inventoryList.add(item);
             }
 
-            // Update brand filter options
-            updateBrandFilter();
-
-            // Apply current filters
             applyFilters();
-
         } catch (Exception e) {
             showAlert("Error loading inventory data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
@@ -152,21 +126,12 @@ public class InventoryManagementController {
     }
 
     private String translateStatusToEnglish(String vietnameseStatus) {
-        switch (vietnameseStatus) {
-            case "Hết hàng": return "Out of Stock";
-            case "Sắp hết": return "Critical";
-            case "Ít hàng": return "Low Stock";
-            case "Đủ hàng": return "In Stock";
-            default: return vietnameseStatus;
-        }
-    }
-
-    private void updateBrandFilter() {
-        // Get brand list from DAO
-        List<String> brands = InventorySummaryDAO.getAllBrands();
-        brands.add(0, "All");
-        cbBrandFilter.setItems(FXCollections.observableArrayList(brands));
-        cbBrandFilter.setValue("All");
+        return switch (vietnameseStatus) {
+            case "Hết hàng" -> "Out of Stock";
+            case "Sắp hết" -> "Critical";
+            case "Đủ hàng" -> "In Stock";
+            default -> vietnameseStatus;
+        };
     }
 
     private void applyFilters() {
@@ -180,10 +145,7 @@ public class InventoryManagementController {
             boolean matchesStatus = cbStatusFilter.getValue().equals("All") ||
                     item.getStatus().equals(cbStatusFilter.getValue());
 
-            boolean matchesBrand = cbBrandFilter.getValue().equals("All") ||
-                    item.getBrand().equals(cbBrandFilter.getValue());
-
-            if (matchesSearch && matchesStatus && matchesBrand) {
+            if (matchesSearch && matchesStatus) {
                 filtered.add(item);
             }
         }
@@ -194,9 +156,8 @@ public class InventoryManagementController {
     }
 
     private void setupCharts() {
-        // Initial chart setup - will be updated in updateCharts()
         pieStockStatus.setTitle("Stock Status Distribution");
-        barTopProducts.setTitle("Top Products by Stock Level");
+        barTopProducts.setTitle("Inventory Quantity");
     }
 
     private void updateCharts() {
@@ -211,10 +172,7 @@ public class InventoryManagementController {
         }
 
         ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
-        statusCount.forEach((status, count) ->
-                pieData.add(new PieChart.Data(status + " (" + count + ")", count))
-        );
-
+        statusCount.forEach((status, count) -> pieData.add(new PieChart.Data(status + ": " + count + " items", count)));
         pieStockStatus.setData(pieData);
     }
 
@@ -225,23 +183,20 @@ public class InventoryManagementController {
         filteredList.stream()
                 .sorted((a, b) -> Integer.compare(b.getCurrentStock(), a.getCurrentStock()))
                 .limit(10)
-                .forEach(item ->
-                        series.getData().add(new XYChart.Data<>(
-                                item.getProductName().length() > 15 ?
-                                        item.getProductName().substring(0, 15) + "..." :
-                                        item.getProductName(),
-                                item.getCurrentStock()))
-                );
+                .forEach(item -> series.getData().add(new XYChart.Data<>(
+                        item.getProductName().length() > 12 ? item.getProductName().substring(0, 12) + "..." : item.getProductName(),
+                        item.getCurrentStock())));
 
         barTopProducts.getData().clear();
         barTopProducts.getData().add(series);
+
+        for (XYChart.Data<String, Number> data : series.getData()) {
+            data.getNode().setStyle("-fx-bar-fill: #3498db;");
+        }
     }
 
     private void updateStatistics() {
         int totalProducts = filteredList.size();
-        int lowStockItems = (int) filteredList.stream()
-                .filter(item -> item.getStatus().equals("Low Stock") || item.getStatus().equals("Critical"))
-                .count();
         int outOfStockItems = (int) filteredList.stream()
                 .filter(item -> item.getStatus().equals("Out of Stock"))
                 .count();
@@ -250,7 +205,6 @@ public class InventoryManagementController {
                 .sum();
 
         lblTotalProducts.setText(String.valueOf(totalProducts));
-        lblLowStockItems.setText(String.valueOf(lowStockItems));
         lblOutOfStockItems.setText(String.valueOf(outOfStockItems));
         lblTotalValue.setText(String.format("%,.0f VND", totalValue));
     }
@@ -261,11 +215,129 @@ public class InventoryManagementController {
     }
 
     @FXML
-    private void handleClearFilters() {
+    private void handleRefresh() {
         txtSearch.clear();
         cbStatusFilter.setValue("All");
-        cbBrandFilter.setValue("All");
-        applyFilters();
+        loadInventoryData();
+    }
+
+    @FXML
+    private void handleExportToTXT() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Inventory Report");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            fileChooser.setInitialFileName("Inventory_Report_" + timestamp + ".txt");
+
+            Stage stage = (Stage) tblInventory.getScene().getWindow();
+            File file = fileChooser.showSaveDialog(stage);
+
+            if (file != null) {
+                exportInventoryToTXT(file);
+                showAlert("Export completed successfully!\nFile saved to: " + file.getAbsolutePath(), Alert.AlertType.INFORMATION);
+            }
+        } catch (Exception e) {
+            showAlert("Error during export: " + e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    private void exportInventoryToTXT(File file) throws IOException {
+        try (FileWriter writer = new FileWriter(file, java.nio.charset.StandardCharsets.UTF_8)) {
+            writer.write("=".repeat(80) + "\n");
+            writer.write("                    INVENTORY MANAGEMENT REPORT\n");
+            writer.write("=".repeat(80) + "\n");
+            writer.write("Generated on: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "\n");
+            writer.write("Total Records: " + filteredList.size() + "\n");
+
+            if (!txtSearch.getText().isEmpty() || !cbStatusFilter.getValue().equals("All")) {
+                writer.write("\nApplied Filters:\n");
+                if (!txtSearch.getText().isEmpty()) {
+                    writer.write("- Search: " + txtSearch.getText() + "\n");
+                }
+                if (!cbStatusFilter.getValue().equals("All")) {
+                    writer.write("- Status: " + cbStatusFilter.getValue() + "\n");
+                }
+            }
+
+            writer.write("\n" + "=".repeat(80) + "\n");
+            writer.write("                           SUMMARY STATISTICS\n");
+            writer.write("=".repeat(80) + "\n");
+
+            int totalProducts = filteredList.size();
+            int outOfStockItems = (int) filteredList.stream()
+                    .filter(item -> item.getStatus().equals("Out of Stock"))
+                    .count();
+            int criticalItems = (int) filteredList.stream()
+                    .filter(item -> item.getStatus().equals("Critical"))
+                    .count();
+            int inStockItems = (int) filteredList.stream()
+                    .filter(item -> item.getStatus().equals("In Stock"))
+                    .count();
+            double totalValue = filteredList.stream()
+                    .mapToDouble(InventoryItem::getValue)
+                    .sum();
+            int totalStock = filteredList.stream()
+                    .mapToInt(InventoryItem::getCurrentStock)
+                    .sum();
+
+            writer.write(String.format("Total Products:      %6d\n", totalProducts));
+            writer.write(String.format("In Stock Items:      %6d\n", inStockItems));
+            writer.write(String.format("Critical Items:      %6d\n", criticalItems));
+            writer.write(String.format("Out of Stock Items:  %6d\n", outOfStockItems));
+            writer.write(String.format("Total Stock Qty:     %6d\n", totalStock));
+            writer.write(String.format("Total Stock Value:   %,.0f VND\n", totalValue));
+
+            writer.write("\n" + "=".repeat(80) + "\n");
+            writer.write("                         DETAILED INVENTORY LIST\n");
+            writer.write("=".repeat(80) + "\n");
+            writer.write(String.format("%-8s %-25s %-12s %8s %6s %8s %-12s\n",
+                    "Code", "Product Name", "Brand", "Received", "Loss", "Stock", "Status"));
+            writer.write("-".repeat(80) + "\n");
+
+            for (InventoryItem item : filteredList) {
+                String productName = item.getProductName().length() > 25 ?
+                        item.getProductName().substring(0, 22) + "..." : item.getProductName();
+                String brand = item.getBrand().length() > 12 ? item.getBrand().substring(0, 9) + "..." : item.getBrand();
+
+                writer.write(String.format("%-8s %-25s %-12s %8d %6d %8d %-12s\n",
+                        item.getProductCode(), productName, brand, item.getTotalReceived(),
+                        item.getTotalLoss(), item.getCurrentStock(), item.getStatus()));
+            }
+
+            if (!filteredList.isEmpty()) {
+                List<InventoryItem> outOfStockList = filteredList.stream()
+                        .filter(item -> item.getStatus().equals("Out of Stock"))
+                        .toList();
+                if (!outOfStockList.isEmpty()) {
+                    writer.write("\n" + "=".repeat(80) + "\n");
+                    writer.write("                        OUT OF Stock ITEMS (" + outOfStockList.size() + ")\n");
+                    writer.write("=".repeat(80) + "\n");
+                    for (InventoryItem item : outOfStockList) {
+                        writer.write("• " + item.getProductCode() + " - " + item.getProductName() + "\n");
+                    }
+                }
+
+                List<InventoryItem> criticalList = filteredList.stream()
+                        .filter(item -> item.getStatus().equals("Critical"))
+                        .toList();
+                if (!criticalList.isEmpty()) {
+                    writer.write("\n" + "=".repeat(80) + "\n");
+                    writer.write("                         CRITICAL ITEMS (" + criticalList.size() + ")\n");
+                    writer.write("=".repeat(80) + "\n");
+                    for (InventoryItem item : criticalList) {
+                        writer.write("• " + item.getProductCode() + " - " + item.getProductName() +
+                                " (Stock: " + item.getCurrentStock() + ")\n");
+                    }
+                }
+            }
+
+            writer.write("\n" + "=".repeat(80) + "\n");
+            writer.write("                          END OF REPORT\n");
+            writer.write("=".repeat(80) + "\n");
+        }
     }
 
     private void showAlert(String message, Alert.AlertType type) {
@@ -276,7 +348,6 @@ public class InventoryManagementController {
         alert.showAndWait();
     }
 
-    // Inner class for inventory items
     public static class InventoryItem {
         private int productID;
         private String productCode;
@@ -289,38 +360,84 @@ public class InventoryManagementController {
         private String status;
         private double value;
 
-        // Constructors
-        public InventoryItem() {}
+        public int getProductID() {
+            return productID;
+        }
 
-        // Getters and Setters
-        public int getProductID() { return productID; }
-        public void setProductID(int productID) { this.productID = productID; }
+        public void setProductID(int productID) {
+            this.productID = productID;
+        }
 
-        public String getProductCode() { return productCode; }
-        public void setProductCode(String productCode) { this.productCode = productCode; }
+        public String getProductCode() {
+            return productCode;
+        }
 
-        public String getProductName() { return productName; }
-        public void setProductName(String productName) { this.productName = productName; }
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
 
-        public String getBrand() { return brand; }
-        public void setBrand(String brand) { this.brand = brand; }
+        public String getProductName() {
+            return productName;
+        }
 
-        public double getPrice() { return price; }
-        public void setPrice(double price) { this.price = price; }
+        public void setProductName(String productName) {
+            this.productName = productName;
+        }
 
-        public int getTotalReceived() { return totalReceived; }
-        public void setTotalReceived(int totalReceived) { this.totalReceived = totalReceived; }
+        public String getBrand() {
+            return brand;
+        }
 
-        public int getTotalLoss() { return totalLoss; }
-        public void setTotalLoss(int totalLoss) { this.totalLoss = totalLoss; }
+        public void setBrand(String brand) {
+            this.brand = brand;
+        }
 
-        public int getCurrentStock() { return currentStock; }
-        public void setCurrentStock(int currentStock) { this.currentStock = currentStock; }
+        public double getPrice() {
+            return price;
+        }
 
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
+        public void setPrice(double price) {
+            this.price = price;
+        }
 
-        public double getValue() { return value; }
-        public void setValue(double value) { this.value = value; }
+        public int getTotalReceived() {
+            return totalReceived;
+        }
+
+        public void setTotalReceived(int totalReceived) {
+            this.totalReceived = totalReceived;
+        }
+
+        public int getTotalLoss() {
+            return totalLoss;
+        }
+
+        public void setTotalLoss(int totalLoss) {
+            this.totalLoss = totalLoss;
+        }
+
+        public int getCurrentStock() {
+            return currentStock;
+        }
+
+        public void setCurrentStock(int currentStock) {
+            this.currentStock = currentStock;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public double getValue() {
+            return value;
+        }
+
+        public void setValue(double value) {
+            this.value = value;
+        }
     }
 }
