@@ -1,7 +1,7 @@
 package controller.staff;
 
 import dao.ProductDAO;
-import dao.StockEntryDetailDAO;
+import dao.InventoryDAO;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Product;
 import javafx.fxml.FXML;
@@ -43,10 +43,9 @@ public class HomeController {
             try {
                 loadProducts(ProductDAO.search(searchText.trim()));
             } catch (Exception e) {
-                // Nếu có lỗi với search, fallback về getAll
-                System.err.println("Lỗi khi tìm kiếm: " + e.getMessage());
+                System.err.println("Search error: " + e.getMessage());
                 loadProducts(ProductDAO.getAll());
-                showAlert("Thông báo", "Tìm kiếm gặp lỗi. Hiển thị tất cả sản phẩm.");
+                showAlert("Notice", "Search encountered an error. Displaying all products.");
             }
         }
     }
@@ -67,7 +66,7 @@ public class HomeController {
     private VBox createProductCard(Product product) {
         VBox card = new VBox(8);
         card.setAlignment(Pos.CENTER);
-        card.setPrefSize(160, 270); // Giảm chiều cao vì chỉ có 1 nút
+        card.setPrefSize(160, 270);
         card.setStyle("-fx-border-color: #ccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 12; -fx-background-color: #fff;");
 
         ImageView imageView = new ImageView();
@@ -86,21 +85,18 @@ public class HomeController {
         Label priceLabel = new Label(priceStr);
         priceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e74c3c;");
 
-        // Lấy số lượng tồn kho
-        int stockQuantity = StockEntryDetailDAO.getTotalReceivedByProduct(product.getProductID());
-        Label stockLabel = new Label("Tồn kho: " + stockQuantity);
+        int stockQuantity = InventoryDAO.getCurrentStock(product.getProductID());
+        Label stockLabel = new Label("Stock: " + stockQuantity);
 
-        // Thêm màu sắc để phân biệt mức tồn kho
         if (stockQuantity <= 5) {
-            stockLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;"); // Đỏ cho tồn kho thấp
+            stockLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;"); // Red for low stock
         } else if (stockQuantity <= 20) {
-            stockLabel.setStyle("-fx-text-fill: #f39c12; -fx-font-weight: bold;"); // Vàng cho tồn kho trung bình
+            stockLabel.setStyle("-fx-text-fill: #f39c12; -fx-font-weight: bold;"); // Yellow for medium stock
         } else {
-            stockLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;"); // Xanh cho tồn kho đầy đủ
+            stockLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;"); // Green for adequate stock
         }
 
-        // Chỉ có nút Chi tiết
-        Button detailsBtn = new Button("Chi tiết");
+        Button detailsBtn = new Button("Details");
         detailsBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 120;");
         detailsBtn.setOnAction(e -> showProductDetails(product));
 
@@ -124,7 +120,6 @@ public class HomeController {
             }
         } catch (Exception ignored) {}
 
-        // Fallback image
         InputStream fallback = getClass().getResourceAsStream("/images/register_logo.png");
         return (fallback != null) ? new Image(fallback, 120, 120, true, true) : null;
     }
@@ -137,30 +132,27 @@ public class HomeController {
         NumberFormat format = NumberFormat.getNumberInstance(new Locale("de", "DE"));
         String priceStr = format.format(product.getPrice()) + " VND";
 
-        // Lấy thông tin tồn kho chi tiết
-        int totalReceived = StockEntryDetailDAO.getTotalReceivedByProduct(product.getProductID());
+        int currentStock = InventoryDAO.getCurrentStock(product.getProductID());
 
-        // Tạo các label thông tin sản phẩm
-        Label titleLabel = new Label("THÔNG TIN SẢN PHẨM");
+        Label titleLabel = new Label("PRODUCT INFORMATION");
         titleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
-        Label nameLabel = new Label("Tên sản phẩm: " + product.getProductName());
+        Label nameLabel = new Label("Product Name: " + product.getProductName());
         nameLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
 
-        Label codeLabel = new Label("Mã sản phẩm: " + product.getProductCode());
-        Label brandLabel = new Label("Thương hiệu: " + product.getBrand());
-        Label typeLabel = new Label("Loại: " + product.getType());
-        Label priceLabel = new Label("Giá: " + priceStr);
+        Label codeLabel = new Label("Product Code: " + product.getProductCode());
+        Label brandLabel = new Label("Brand: " + product.getBrand());
+        Label typeLabel = new Label("Type: " + product.getType());
+        Label priceLabel = new Label("Price: " + priceStr);
         priceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e74c3c;");
 
-        Label stockLabel = new Label("Số lượng tồn kho: " + totalReceived);
+        Label stockLabel = new Label("Stock Quantity: " + currentStock);
         stockLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #27ae60;");
 
-        Label descLabel = new Label("Mô tả: " + (product.getDescription() != null ? product.getDescription() : "Không có"));
+        Label descLabel = new Label("Description: " + (product.getDescription() != null ? product.getDescription() : "No description"));
         descLabel.setWrapText(true);
         descLabel.setMaxWidth(400);
 
-        // Thêm hình ảnh sản phẩm
         ImageView productImage = new ImageView();
         productImage.setImage(loadProductImage(product.getImage()));
         productImage.setFitWidth(200);
@@ -185,7 +177,7 @@ public class HomeController {
 
         Stage stage = new Stage();
         stage.setScene(new Scene(scrollPane, 500, 600));
-        stage.setTitle("Chi tiết sản phẩm - " + product.getProductName());
+        stage.setTitle("Product Details - " + product.getProductName());
         stage.setResizable(false);
         stage.show();
     }
@@ -198,30 +190,35 @@ public class HomeController {
         alert.showAndWait();
     }
 
-    // Làm mới dữ liệu sản phẩm
     @FXML
     private void onRefresh() {
         loadProducts(ProductDAO.getAll());
     }
 
-    // Hiển thị sản phẩm có tồn kho thấp
     @FXML
     private void showLowStockProducts() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Sản phẩm tồn kho thấp");
-        alert.setHeaderText("Các sản phẩm có tồn kho ≤ 10");
+        alert.setTitle("Low Stock Products");
+        alert.setHeaderText("Products with stock ≤ 10");
 
-        var lowStockProducts = StockEntryDetailDAO.getLowStockProducts(10);
-        if (lowStockProducts.isEmpty()) {
-            alert.setContentText("Tất cả sản phẩm đều có đủ tồn kho!");
-        } else {
-            StringBuilder content = new StringBuilder();
-            for (var product : lowStockProducts) {
+        List<Product> allProducts = ProductDAO.getAll();
+        StringBuilder content = new StringBuilder();
+        boolean hasLowStock = false;
+
+        for (Product product : allProducts) {
+            int stock = InventoryDAO.getCurrentStock(product.getProductID());
+            if (stock <= 10) {
                 content.append(product.getProductName())
                         .append(": ")
-                        .append(product.getQuantity())
-                        .append(" sản phẩm\n");
+                        .append(stock)
+                        .append(" items\n");
+                hasLowStock = true;
             }
+        }
+
+        if (!hasLowStock) {
+            alert.setContentText("All products have adequate stock!");
+        } else {
             alert.setContentText(content.toString());
         }
 

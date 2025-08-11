@@ -40,7 +40,6 @@ public class CreateInvoiceController {
     @FXML private ListView<Promotion> promotionListView;
     private final ObservableList<Promotion> selectedPromotions = FXCollections.observableArrayList();
 
-    // Thay đổi từ TextField thành ComboBox cho sản phẩm
     @FXML private ComboBox<Product> productComboBox;
     @FXML private TextField quantityField;
     @FXML private TextField discountField;
@@ -51,10 +50,7 @@ public class CreateInvoiceController {
     @FXML private TableColumn<InvoiceItem, Double> totalColumn;
     @FXML private Label totalLabel;
 
-    // ComboBox khách hàng với autocomplete
     @FXML private ComboBox<Customer> customerComboBox;
-
-    // THÊM Label hiển thị tồn kho
     @FXML private Label stockLabel;
 
     private double originalTotal = 0;
@@ -88,7 +84,6 @@ public class CreateInvoiceController {
         setupTableColumns();
         setupPromotionList();
 
-        // Load pre-selected products
         if (!selectedProducts.isEmpty()) {
             for (Product product : selectedProducts) {
                 invoiceItems.add(new InvoiceItem(product.getProductName(), 1, product.getPrice(), product.getProductID()));
@@ -101,11 +96,9 @@ public class CreateInvoiceController {
     }
 
     private void setupTableColumns() {
-        // Mapping data cho table
         productNameColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("productName"));
         quantityColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("quantity"));
 
-        // Định dạng các cột "Đơn giá" và "Thành tiền"
         NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
         numberFormat.setGroupingUsed(true);
 
@@ -140,7 +133,6 @@ public class CreateInvoiceController {
         ObservableList<Promotion> allPromotions = FXCollections.observableArrayList(PromotionDAO.getAll());
         promotionListView.setItems(allPromotions);
 
-        // Hiển thị checkbox cho mỗi khuyến mãi
         promotionListView.setCellFactory(CheckBoxListCell.forListView(promo -> {
             BooleanProperty selected = new SimpleBooleanProperty();
             selected.addListener((obs, wasSelected, isNowSelected) -> {
@@ -172,19 +164,16 @@ public class CreateInvoiceController {
 
     private void loadProducts() {
         List<Product> productList = ProductDAO.getAll();
-        // Lọc ra những sản phẩm có tồn kho > 0
         List<Product> productsInStock = productList.stream()
                 .filter(product -> ProductDAO.getRealTimeStock(product.getProductID()) > 0)
                 .collect(Collectors.toList());
         allProducts.setAll(productsInStock);
     }
 
-    // Setup autocomplete cho customer ComboBox
     private void setupCustomerFeatures() {
         customerComboBox.setEditable(true);
         customerComboBox.setItems(allCustomers);
 
-        // Converter để hiển thị tên khách hàng
         customerComboBox.setConverter(new StringConverter<Customer>() {
             @Override
             public String toString(Customer customer) {
@@ -200,7 +189,6 @@ public class CreateInvoiceController {
             }
         });
 
-        // Thêm listener để filter danh sách khi user nhập
         customerComboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
             if (newText == null || newText.isEmpty()) {
                 customerComboBox.setItems(allCustomers);
@@ -218,7 +206,6 @@ public class CreateInvoiceController {
         });
     }
 
-    // Setup product ComboBox với hiển thị tồn kho
     private void setupProductFeatures() {
         productComboBox.setItems(allProducts);
 
@@ -228,7 +215,7 @@ public class CreateInvoiceController {
                 if (product != null) {
                     NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
                     int stock = ProductDAO.getRealTimeStock(product.getProductID());
-                    return product.getProductName() + " - " + numberFormat.format(product.getPrice()) + " VND (Tồn: " + stock + ")";
+                    return product.getProductName() + " - " + numberFormat.format(product.getPrice()) + " VND (Stock: " + stock + ")";
                 }
                 return "";
             }
@@ -248,9 +235,8 @@ public class CreateInvoiceController {
                 } else {
                     NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
                     int stock = ProductDAO.getRealTimeStock(product.getProductID());
-                    setText(product.getProductName() + " - " + numberFormat.format(product.getPrice()) + " VND (Tồn: " + stock + ")");
+                    setText(product.getProductName() + " - " + numberFormat.format(product.getPrice()) + " VND (Stock: " + stock + ")");
 
-                    // Vô hiệu hóa nếu hết hàng
                     if (stock <= 0) {
                         setDisable(true);
                         setStyle("-fx-text-fill: gray;");
@@ -262,21 +248,20 @@ public class CreateInvoiceController {
             }
         });
 
-        // Listener khi chọn sản phẩm - cập nhật stockLabel
         productComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldProduct, newProduct) -> {
             if (newProduct != null) {
                 int currentStock = ProductDAO.getRealTimeStock(newProduct.getProductID());
                 NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
 
                 if (currentStock > 0) {
-                    stockLabel.setText("Tồn kho: " + numberFormat.format(currentStock) + " sản phẩm");
+                    stockLabel.setText("Stock: " + numberFormat.format(currentStock) + " items");
                     stockLabel.setStyle("-fx-font-size: 12px; -fx-font-style: italic; -fx-text-fill: green;");
                 } else {
-                    stockLabel.setText("Hết hàng");
+                    stockLabel.setText("Out of stock");
                     stockLabel.setStyle("-fx-font-size: 12px; -fx-font-style: italic; -fx-text-fill: red;");
                 }
             } else {
-                stockLabel.setText("Chọn sản phẩm để xem tồn kho");
+                stockLabel.setText("Select product to view stock");
                 stockLabel.setStyle("-fx-font-size: 12px; -fx-font-style: italic;");
             }
         });
@@ -287,15 +272,14 @@ public class CreateInvoiceController {
         Product selectedProduct = productComboBox.getSelectionModel().getSelectedItem();
 
         if (selectedProduct == null) {
-            showAlert("Lỗi", "Vui lòng chọn sản phẩm.");
+            showAlert("Error", "Please select a product.");
             return;
         }
 
-        // Kiểm tra tồn kho thực tế
         int currentStock = ProductDAO.getRealTimeStock(selectedProduct.getProductID());
 
         if (currentStock <= 0) {
-            showAlert("Lỗi", "Sản phẩm này đã hết hàng!");
+            showAlert("Error", "This product is out of stock!");
             return;
         }
 
@@ -303,37 +287,33 @@ public class CreateInvoiceController {
         try {
             quantity = Integer.parseInt(quantityField.getText());
         } catch (NumberFormatException e) {
-            showAlert("Lỗi", "Số lượng phải là số nguyên.");
+            showAlert("Error", "Quantity must be a valid number.");
             return;
         }
 
         if (quantity <= 0) {
-            showAlert("Lỗi", "Số lượng phải lớn hơn 0.");
+            showAlert("Error", "Quantity must be greater than 0.");
             return;
         }
 
-        // Kiểm tra số lượng yêu cầu có vượt quá tồn kho không
         if (quantity > currentStock) {
             NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-            showAlert("Lỗi", "Số lượng yêu cầu (" + numberFormat.format(quantity) + ") vượt quá tồn kho hiện tại (" + numberFormat.format(currentStock) + ").\nVui lòng nhập số lượng nhỏ hơn hoặc bằng " + numberFormat.format(currentStock) + ".");
+            showAlert("Error", "Requested quantity (" + numberFormat.format(quantity) + ") exceeds available stock (" + numberFormat.format(currentStock) + ").\nPlease enter a quantity less than or equal to " + numberFormat.format(currentStock) + ".");
             return;
         }
 
-        // Kiểm tra sản phẩm đã có trong hóa đơn chưa
         boolean productExists = false;
         for (InvoiceItem existingItem : invoiceItems) {
             if (existingItem.getProductID() == selectedProduct.getProductID()) {
-                // Kiểm tra tổng số lượng sau khi cộng thêm
                 int totalQuantityAfterAdd = existingItem.getQuantity() + quantity;
                 if (totalQuantityAfterAdd > currentStock) {
                     NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-                    showAlert("Lỗi", "Tổng số lượng sản phẩm '" + selectedProduct.getProductName() + "' sẽ là " +
-                            numberFormat.format(totalQuantityAfterAdd) + ", vượt quá tồn kho (" + numberFormat.format(currentStock) + ").\n" +
-                            "Hiện tại trong hóa đơn đã có " + numberFormat.format(existingItem.getQuantity()) + " sản phẩm này.");
+                    showAlert("Error", "Total quantity of product '" + selectedProduct.getProductName() + "' will be " +
+                            numberFormat.format(totalQuantityAfterAdd) + ", exceeding available stock (" + numberFormat.format(currentStock) + ").\n" +
+                            "Currently in invoice: " + numberFormat.format(existingItem.getQuantity()) + " items.");
                     return;
                 }
 
-                // Cập nhật số lượng cho sản phẩm đã có
                 InvoiceItem updatedItem = new InvoiceItem(
                         existingItem.getProductName(),
                         totalQuantityAfterAdd,
@@ -348,23 +328,18 @@ public class CreateInvoiceController {
             }
         }
 
-        // Nếu sản phẩm chưa có trong hóa đơn, thêm mới
         if (!productExists) {
             invoiceItems.add(new InvoiceItem(selectedProduct.getProductName(), quantity,
                     selectedProduct.getPrice(), selectedProduct.getProductID()));
         }
 
-        // Clear fields after adding
         productComboBox.getSelectionModel().clearSelection();
         quantityField.clear();
 
-        // Cập nhật stockLabel về trạng thái mặc định
-        stockLabel.setText("Chọn sản phẩm để xem tồn kho");
+        stockLabel.setText("Select product to view stock");
         stockLabel.setStyle("-fx-font-size: 12px; -fx-font-style: italic;");
 
         calculateAndDisplayTotal();
-
-        // Reload products để cập nhật danh sách (loại bỏ sản phẩm hết hàng)
         loadProducts();
     }
 
@@ -374,10 +349,9 @@ public class CreateInvoiceController {
         if (selectedItem != null) {
             invoiceItems.remove(selectedItem);
             calculateAndDisplayTotal();
-            // Reload products để cập nhật danh sách
             loadProducts();
         } else {
-            showAlert("Thông báo", "Vui lòng chọn sản phẩm cần xóa.");
+            showAlert("Notice", "Please select a product to remove.");
         }
     }
 
@@ -396,7 +370,7 @@ public class CreateInvoiceController {
             try {
                 discountPercent = Double.parseDouble(discountField.getText());
             } catch (NumberFormatException e) {
-                showAlert("Lỗi", "Giảm giá phải là số hợp lệ!");
+                showAlert("Error", "Discount must be a valid number!");
                 discountPercent = 0.0;
             }
         }
@@ -415,20 +389,19 @@ public class CreateInvoiceController {
         Customer selectedCustomer = customerComboBox.getSelectionModel().getSelectedItem();
 
         if (selectedCustomer == null) {
-            showAlert("Lỗi", "Vui lòng chọn khách hàng.");
+            showAlert("Error", "Please select a customer.");
             return;
         }
 
         if (invoiceItems.isEmpty()) {
-            showAlert("Lỗi", "Vui lòng thêm ít nhất một sản phẩm vào hóa đơn.");
+            showAlert("Error", "Please add at least one product to the invoice.");
             return;
         }
 
-        // Kiểm tra lại tồn kho trước khi lưu
         for (InvoiceItem item : invoiceItems) {
             int currentStock = ProductDAO.getRealTimeStock(item.getProductID());
             if (item.getQuantity() > currentStock) {
-                showAlert("Lỗi", "Sản phẩm '" + item.getProductName() + "' không đủ tồn kho. Hiện tại chỉ còn " + currentStock + " sản phẩm.");
+                showAlert("Error", "Product '" + item.getProductName() + "' has insufficient stock. Only " + currentStock + " items available.");
                 return;
             }
         }
@@ -437,7 +410,7 @@ public class CreateInvoiceController {
 
         Invoice newInvoice = new Invoice();
         newInvoice.setCustomerID(selectedCustomer.getCustomerID());
-        newInvoice.setUserID(1); // TODO: Lấy ID nhân viên thực tế từ phiên đăng nhập
+        newInvoice.setUserID(1); // TODO: Get actual staff ID from login session
         newInvoice.setDate(LocalDateTime.now());
         newInvoice.setTotalAmount(BigDecimal.valueOf(calculateTotalAmount()));
         newInvoice.setDiscount(BigDecimal.valueOf(calculateDiscount()));
@@ -457,13 +430,12 @@ public class CreateInvoiceController {
                 invoiceDetailDAO.insertInvoiceDetail(detail);
             }
 
-            // Xuất file txt
             String filePath = exportInvoiceToTxt(newInvoice, newInvoiceID, selectedCustomer);
 
             if (filePath != null) {
-                showAlert("Thành công", "Hóa đơn đã được tạo và lưu thành công!\nFile được xuất tại: " + filePath);
+                showAlert("Success", "Invoice has been created and saved successfully!\nFile exported to: " + filePath);
             } else {
-                showAlert("Thành công", "Hóa đơn đã được tạo và lưu thành công!\n(Xuất file thất bại - kiểm tra console để biết chi tiết)");
+                showAlert("Success", "Invoice has been created and saved successfully!\n(File export failed - check console for details)");
             }
 
             if (staffController != null) {
@@ -471,25 +443,21 @@ public class CreateInvoiceController {
                     staffController.loadInvoiceHistory();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    showAlert("Lỗi", "Không thể điều hướng đến trang Lịch sử Hóa đơn.");
+                    showAlert("Error", "Unable to navigate to Invoice History page.");
                 }
             }
         } else {
-            showAlert("Lỗi", "Không thể lưu hóa đơn. Vui lòng kiểm tra lại.");
+            showAlert("Error", "Unable to save invoice. Please check again.");
         }
     }
 
-    // Xuất file txt cho hóa đơn đã lưu - FIXED VERSION
     private String exportInvoiceToTxt(Invoice invoice, int invoiceID, Customer customer) {
         try {
-            // Sử dụng Desktop thay vì C:\ để tránh vấn đề quyền
             String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";
             String fileName = desktopPath + File.separator + "invoice_" + invoiceID + ".txt";
 
-            // Kiểm tra thư mục Desktop có tồn tại không
             File desktopDir = new File(desktopPath);
             if (!desktopDir.exists() || !desktopDir.canWrite()) {
-                // Nếu Desktop không khả dụng, sử dụng thư mục Documents
                 String documentsPath = System.getProperty("user.home") + File.separator + "Documents";
                 fileName = documentsPath + File.separator + "invoice_" + invoiceID + ".txt";
             }
@@ -498,21 +466,19 @@ public class CreateInvoiceController {
             FileWriter fileWriter = new FileWriter(file);
             PrintWriter printWriter = new PrintWriter(fileWriter);
 
-            // Header thông tin hóa đơn
             printWriter.println("===========================================");
-            printWriter.println("            HÓA ĐƠN BÁN HÀNG");
+            printWriter.println("            SALES INVOICE");
             printWriter.println("===========================================");
-            printWriter.println("Mã hóa đơn: " + invoiceID);
-            printWriter.println("Ngày tạo: " + invoice.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
-            printWriter.println("Khách hàng: " + customer.getFullName());
+            printWriter.println("Invoice ID: " + invoiceID);
+            printWriter.println("Date: " + invoice.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+            printWriter.println("Customer: " + customer.getFullName());
             printWriter.println("Email: " + (customer.getEmail() != null ? customer.getEmail() : "N/A"));
             printWriter.println("===========================================");
             printWriter.println();
 
-            // Chi tiết sản phẩm
-            printWriter.println("CHI TIẾT SẢN PHẨM:");
+            printWriter.println("PRODUCT DETAILS:");
             printWriter.println("-------------------------------------------");
-            printWriter.printf("%-30s %-10s %-15s %-15s%n", "Tên sản phẩm", "SL", "Đơn giá", "Thành tiền");
+            printWriter.printf("%-30s %-10s %-15s %-15s%n", "Product Name", "Qty", "Unit Price", "Amount");
             printWriter.println("-------------------------------------------");
 
             NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
@@ -529,13 +495,12 @@ public class CreateInvoiceController {
             }
 
             printWriter.println("-------------------------------------------");
-            printWriter.printf("%-30s %-10s %-15s %-15s%n", "TỔNG CỘNG", "", "",
+            printWriter.printf("%-30s %-10s %-15s %-15s%n", "SUBTOTAL", "", "",
                     numberFormat.format(subTotal) + " VND");
 
-            // Thông tin khuyến mãi nếu có
             if (!selectedPromotions.isEmpty()) {
                 printWriter.println();
-                printWriter.println("KHUYẾN MÃI ÁP DỤNG:");
+                printWriter.println("APPLIED PROMOTIONS:");
                 for (Promotion promo : selectedPromotions) {
                     printWriter.println("- " + promo.getPromotionName() + ": " + promo.getDiscountPercentage() + "%");
                 }
@@ -544,21 +509,20 @@ public class CreateInvoiceController {
             double discountPercent = calculateDiscount();
             if (discountPercent > 0) {
                 double discountAmount = subTotal * (discountPercent / 100);
-                printWriter.printf("%-30s %-10s %-15s %-15s%n", "Giảm giá (" + discountPercent + "%)", "", "",
+                printWriter.printf("%-30s %-10s %-15s %-15s%n", "Discount (" + discountPercent + "%)", "", "",
                         "-" + numberFormat.format(discountAmount) + " VND");
             }
 
-            printWriter.printf("%-30s %-10s %-15s %-15s%n", "THÀNH TIỀN", "", "",
+            printWriter.printf("%-30s %-10s %-15s %-15s%n", "TOTAL AMOUNT", "", "",
                     numberFormat.format(calculateTotalAmount()) + " VND");
 
             printWriter.println("===========================================");
-            printWriter.println("        Cảm ơn quý khách!");
+            printWriter.println("        Thank you for your business!");
             printWriter.println("===========================================");
 
             printWriter.close();
             fileWriter.close();
 
-            // Kiểm tra file đã được tạo thành công
             if (file.exists()) {
                 System.out.println("File created successfully: " + file.getAbsolutePath());
                 return file.getAbsolutePath();
@@ -570,35 +534,31 @@ public class CreateInvoiceController {
         } catch (IOException e) {
             System.err.println("Unable to export invoice to file: " + e.getMessage());
             e.printStackTrace();
-            showAlert("Lỗi", "Không thể xuất hóa đơn ra file: " + e.getMessage());
+            showAlert("Error", "Unable to export invoice to file: " + e.getMessage());
             return null;
         }
     }
 
-    // Xuất file txt cho hóa đơn hiện tại (chưa lưu) - FIXED VERSION
     @FXML
     private void handleExportCurrentInvoice() {
         Customer selectedCustomer = customerComboBox.getSelectionModel().getSelectedItem();
 
         if (selectedCustomer == null) {
-            showAlert("Lỗi", "Vui lòng chọn khách hàng.");
+            showAlert("Error", "Please select a customer.");
             return;
         }
 
         if (invoiceItems.isEmpty()) {
-            showAlert("Lỗi", "Vui lòng thêm ít nhất một sản phẩm để xuất.");
+            showAlert("Error", "Please add at least one product to export.");
             return;
         }
 
         try {
-            // Sử dụng Desktop thay vì C:\ để tránh vấn đề quyền
             String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";
             String fileName = desktopPath + File.separator + "current_invoice_" + System.currentTimeMillis() + ".txt";
 
-            // Kiểm tra thư mục Desktop có tồn tại không
             File desktopDir = new File(desktopPath);
             if (!desktopDir.exists() || !desktopDir.canWrite()) {
-                // Nếu Desktop không khả dụng, sử dụng thư mục Documents
                 String documentsPath = System.getProperty("user.home") + File.separator + "Documents";
                 fileName = documentsPath + File.separator + "current_invoice_" + System.currentTimeMillis() + ".txt";
             }
@@ -607,20 +567,18 @@ public class CreateInvoiceController {
             FileWriter fileWriter = new FileWriter(file);
             PrintWriter printWriter = new PrintWriter(fileWriter);
 
-            // Header thông tin hóa đơn
             printWriter.println("===========================================");
-            printWriter.println("         HÓA ĐƠN BÁN HÀNG (DRAFT)");
+            printWriter.println("         SALES INVOICE (DRAFT)");
             printWriter.println("===========================================");
-            printWriter.println("Ngày tạo: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
-            printWriter.println("Khách hàng: " + selectedCustomer.getFullName());
+            printWriter.println("Date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+            printWriter.println("Customer: " + selectedCustomer.getFullName());
             printWriter.println("Email: " + (selectedCustomer.getEmail() != null ? selectedCustomer.getEmail() : "N/A"));
             printWriter.println("===========================================");
             printWriter.println();
 
-            // Chi tiết sản phẩm
-            printWriter.println("CHI TIẾT SẢN PHẨM:");
+            printWriter.println("PRODUCT DETAILS:");
             printWriter.println("-------------------------------------------");
-            printWriter.printf("%-30s %-10s %-15s %-15s%n", "Tên sản phẩm", "SL", "Đơn giá", "Thành tiền");
+            printWriter.printf("%-30s %-10s %-15s %-15s%n", "Product Name", "Qty", "Unit Price", "Amount");
             printWriter.println("-------------------------------------------");
 
             NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
@@ -637,13 +595,12 @@ public class CreateInvoiceController {
             }
 
             printWriter.println("-------------------------------------------");
-            printWriter.printf("%-30s %-10s %-15s %-15s%n", "TỔNG CỘNG", "", "",
+            printWriter.printf("%-30s %-10s %-15s %-15s%n", "SUBTOTAL", "", "",
                     numberFormat.format(subTotal) + " VND");
 
-            // Thông tin khuyến mãi nếu có
             if (!selectedPromotions.isEmpty()) {
                 printWriter.println();
-                printWriter.println("KHUYẾN MÃI ÁP DỤNG:");
+                printWriter.println("APPLIED PROMOTIONS:");
                 for (Promotion promo : selectedPromotions) {
                     printWriter.println("- " + promo.getPromotionName() + ": " + promo.getDiscountPercentage() + "%");
                 }
@@ -652,29 +609,28 @@ public class CreateInvoiceController {
             double discountPercent = calculateDiscount();
             if (discountPercent > 0) {
                 double discountAmount = subTotal * (discountPercent / 100);
-                printWriter.printf("%-30s %-10s %-15s %-15s%n", "Giảm giá (" + discountPercent + "%)", "", "",
+                printWriter.printf("%-30s %-10s %-15s %-15s%n", "Discount (" + discountPercent + "%)", "", "",
                         "-" + numberFormat.format(discountAmount) + " VND");
             }
 
-            printWriter.printf("%-30s %-10s %-15s %-15s%n", "THÀNH TIỀN", "", "",
+            printWriter.printf("%-30s %-10s %-15s %-15s%n", "TOTAL AMOUNT", "", "",
                     numberFormat.format(calculateTotalAmount()) + " VND");
 
             printWriter.println("===========================================");
-            printWriter.println("        Cảm ơn quý khách!");
+            printWriter.println("        Thank you for your business!");
             printWriter.println("===========================================");
 
             printWriter.close();
             fileWriter.close();
 
-            // Kiểm tra file đã được tạo thành công
             if (file.exists()) {
-                showAlert("Thành công", "Hóa đơn đã được xuất thành công tại: " + file.getAbsolutePath());
+                showAlert("Success", "Invoice exported successfully to: " + file.getAbsolutePath());
             } else {
-                showAlert("Lỗi", "File không được tạo thành công");
+                showAlert("Error", "File was not created successfully");
             }
 
         } catch (IOException e) {
-            showAlert("Lỗi", "Không thể xuất hóa đơn: " + e.getMessage());
+            showAlert("Error", "Unable to export invoice: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -690,14 +646,11 @@ public class CreateInvoiceController {
         quantityField.clear();
         selectedPromotions.clear();
 
-        // Reset promotion checkboxes
         promotionListView.getSelectionModel().clearSelection();
 
-        // Reset stock label
-        stockLabel.setText("Chọn sản phẩm để xem tồn kho");
+        stockLabel.setText("Select product to view stock");
         stockLabel.setStyle("-fx-font-size: 12px; -fx-font-style: italic;");
 
-        // Reload products để cập nhật danh sách
         loadProducts();
     }
 
@@ -729,7 +682,6 @@ public class CreateInvoiceController {
         return discount;
     }
 
-    // Inner class đại diện cho 1 sản phẩm trong hóa đơn
     public static class InvoiceItem {
         private final String productName;
         private final int quantity;

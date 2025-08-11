@@ -20,8 +20,8 @@ public class InvoiceHistoryController {
     @FXML private Button filterButton, resetButton;
 
     @FXML private TableColumn<Invoice, Integer> invoiceIdColumn;
-    @FXML private TableColumn<Invoice, String> customerIdColumn; // Sẽ hiển thị tên khách hàng
-    @FXML private TableColumn<Invoice, String> productNameColumn; // Thêm cột tên sản phẩm
+    @FXML private TableColumn<Invoice, String> customerIdColumn;
+    @FXML private TableColumn<Invoice, String> productNameColumn;
     @FXML private TableColumn<Invoice, Integer> userIdColumn;
     @FXML private TableColumn<Invoice, String> dateColumn;
     @FXML private TableColumn<Invoice, String> totalAmountColumn;
@@ -34,14 +34,12 @@ public class InvoiceHistoryController {
     public void initialize() {
         invoiceIdColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceID"));
 
-        // Thay đổi: hiển thị tên khách hàng thay vì CustomerID
-        customerIdColumn.setText("Customer Name"); // Đổi tên cột
+        customerIdColumn.setText("Customer Name");
         customerIdColumn.setCellValueFactory(cellData -> {
             String customerName = cellData.getValue().getCustomerName();
-            return new SimpleStringProperty(customerName != null ? customerName : "Khách vãng lai");
+            return new SimpleStringProperty(customerName != null ? customerName : "Walk-in Customer");
         });
 
-        // Thêm cột hiển thị tên sản phẩm đầu tiên
         productNameColumn.setCellValueFactory(cellData -> {
             String productName = cellData.getValue().getFirstProductName();
             return new SimpleStringProperty(productName != null ? productName : "N/A");
@@ -55,7 +53,6 @@ public class InvoiceHistoryController {
             return new SimpleStringProperty("");
         });
 
-        // Khởi tạo NumberFormat với Locale của Đức để sử dụng dấu chấm cho phần nghìn
         NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("de", "DE"));
         numberFormat.setMinimumFractionDigits(0);
         numberFormat.setMaximumFractionDigits(0);
@@ -76,26 +73,23 @@ public class InvoiceHistoryController {
 
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Thiết lập màu sắc cho các nút
         setupButtonStyles();
-
         loadInvoices();
     }
 
     private void setupButtonStyles() {
-        // Filter button - #2584f8 (xanh dương như Add)
+        // Filter button - #2584f8 (blue like Add)
         if (filterButton != null) {
             filterButton.setStyle("-fx-background-color: #2584f8; -fx-text-fill: white; -fx-font-weight: bold;");
         }
 
-        // Reset button - #3498db (xanh nhạt như Refresh)
+        // Reset button - #3498db (light blue like Refresh)
         if (resetButton != null) {
             resetButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;");
         }
     }
 
     private void loadInvoices() {
-        // Sử dụng method mới để lấy hóa đơn kèm tên khách hàng và sản phẩm
         List<Invoice> invoices = invoiceDAO.getAllInvoicesWithDetails();
         invoiceTable.setItems(FXCollections.observableArrayList(invoices));
     }
@@ -106,7 +100,6 @@ public class InvoiceHistoryController {
         String product = productFilterField.getText();
         LocalDate date = dateFilterPicker.getValue();
 
-        // Sử dụng method mới để lọc
         List<Invoice> invoices = invoiceDAO.filterInvoicesWithDetails(customer, product, date, date);
         invoiceTable.setItems(FXCollections.observableArrayList(invoices));
     }

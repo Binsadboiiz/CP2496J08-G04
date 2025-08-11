@@ -37,17 +37,16 @@ public class CustomerManagementController {
 
         actionsColumn.setCellFactory(getActionCellFactory());
 
-        // Thiết lập màu sắc cho các nút
         setupButtonStyles();
     }
 
     private void setupButtonStyles() {
-        // Add button - #2584f8 (xanh dương)
+        // Add button - #2584f8 (blue)
         if (addButton != null) {
             addButton.setStyle("-fx-background-color: #2584f8; -fx-text-fill: white; -fx-font-weight: bold;");
         }
 
-        // Refresh button - #3498db (xanh nhạt)
+        // Refresh button - #3498db (light blue)
         if (refreshButton != null) {
             refreshButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;");
         }
@@ -60,10 +59,10 @@ public class CustomerManagementController {
             private final HBox pane = new HBox(10, editBtn, deleteBtn);
 
             {
-                // Thiết lập màu sắc cho nút Edit - #00CC00 (xanh lá)
+                // Edit button - #00CC00 (green)
                 editBtn.setStyle("-fx-background-color: #00CC00; -fx-text-fill: white; -fx-font-weight: bold;");
 
-                // Thiết lập màu sắc cho nút Delete - red
+                // Delete button - red
                 deleteBtn.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-font-weight: bold;");
 
                 editBtn.setOnAction(e -> {
@@ -76,35 +75,34 @@ public class CustomerManagementController {
                 deleteBtn.setOnAction(e -> {
                     Customer c = getTableView().getItems().get(getIndex());
 
-                    // Kiểm tra xem khách hàng đã có hóa đơn hay chưa
                     if (customerDAO.hasInvoices(c.getCustomerID())) {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Không thể xóa");
-                        alert.setHeaderText("Khách hàng đã có hóa đơn");
-                        alert.setContentText("Không thể xóa khách hàng này vì đã có hóa đơn trong hệ thống.");
+                        alert.setTitle("Cannot Delete");
+                        alert.setHeaderText("Customer has invoices");
+                        alert.setContentText("Cannot delete this customer because they have invoices in the system.");
                         alert.showAndWait();
                         return;
                     }
 
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                            "Bạn có chắc chắn muốn xóa khách hàng này không?",
+                            "Are you sure you want to delete this customer?",
                             ButtonType.YES, ButtonType.NO);
-                    alert.setTitle("Xác nhận xóa");
-                    alert.setHeaderText("Xóa khách hàng");
+                    alert.setTitle("Confirm Deletion");
+                    alert.setHeaderText("Delete Customer");
                     alert.showAndWait().ifPresent(response -> {
                         if (response == ButtonType.YES) {
                             if (customerDAO.deleteCustomer(c.getCustomerID())) {
                                 Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                                successAlert.setTitle("Thành công");
+                                successAlert.setTitle("Success");
                                 successAlert.setHeaderText(null);
-                                successAlert.setContentText("Xóa khách hàng thành công!");
+                                successAlert.setContentText("Customer deleted successfully!");
                                 successAlert.showAndWait();
                                 refresh();
                             } else {
                                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                                errorAlert.setTitle("Lỗi");
+                                errorAlert.setTitle("Error");
                                 errorAlert.setHeaderText(null);
-                                errorAlert.setContentText("Có lỗi xảy ra khi xóa khách hàng!");
+                                errorAlert.setContentText("An error occurred while deleting the customer!");
                                 errorAlert.showAndWait();
                             }
                         }
@@ -126,16 +124,16 @@ public class CustomerManagementController {
         if (newCustomer != null) {
             if (customerDAO.insertCustomer(newCustomer)) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thành công");
+                alert.setTitle("Success");
                 alert.setHeaderText(null);
-                alert.setContentText("Thêm khách hàng thành công!");
+                alert.setContentText("Customer added successfully!");
                 alert.showAndWait();
                 refresh();
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
+                alert.setTitle("Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Có lỗi xảy ra khi thêm khách hàng!");
+                alert.setContentText("An error occurred while adding the customer!");
                 alert.showAndWait();
             }
         }

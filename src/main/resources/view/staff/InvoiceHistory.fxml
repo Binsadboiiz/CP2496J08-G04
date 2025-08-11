@@ -26,8 +26,10 @@
                 <TextField fx:id="productFilterField" prefHeight="25.0" prefWidth="159.0" />
                 <Label text="Sale Date:" />
                 <DatePicker fx:id="dateFilterPicker" prefHeight="25.0" prefWidth="161.0" />
-                <Button fx:id="filterButton" onAction="#handleFilter" text="Filter" />
-                <Button fx:id="resetButton" onAction="#handleReset" text="Reset" />
+                <Button fx:id="filterButton" onAction="#handleFilter" text="Filter"
+                        style="-fx-background-color: #2584f8; -fx-text-fill: white; -fx-font-weight: bold;" />
+                <Button fx:id="resetButton" onAction="#handleReset" text="Reset"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" />
             </HBox>
         </VBox>
     </top>

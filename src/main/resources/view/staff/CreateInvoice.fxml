@@ -33,30 +33,31 @@
                 <ComboBox fx:id="customerComboBox" prefWidth="300" promptText="Type customer name..."/>
             </HBox>
 
-            <!-- Product Input với Stock Label -->
+            <!-- Product Input with Stock Label -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Product:" prefWidth="80"/>
                     <ComboBox fx:id="productComboBox" prefWidth="300" promptText="Select product..."/>
                     <Label text="Quantity:" prefWidth="80"/>
                     <TextField fx:id="quantityField" prefWidth="100" promptText="Enter quantity"/>
-                    <Button text="Add Product" onAction="#handleAddProduct" prefWidth="120"/>
+                    <Button text="Add Product" onAction="#handleAddProduct" prefWidth="120"
+                            style="-fx-background-color: #2584f8; -fx-text-fill: white;"/>
                 </HBox>
 
                 <!-- Stock Information Label -->
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="" prefWidth="80"/> <!-- Spacer -->
-                    <Label fx:id="stockLabel" text="Chọn sản phẩm để xem tồn kho"
+                    <Label fx:id="stockLabel" text="Select product to view stock"
                            style="-fx-font-size: 12px; -fx-font-style: italic;" prefWidth="300"/>
                 </HBox>
             </VBox>
 
-            <!-- Invoice Table với Remove Button -->
+            <!-- Invoice Table with Remove Button -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Invoice Items:" style="-fx-font-weight: bold;"/>
                     <Button text="Remove Selected" onAction="#handleRemoveProduct"
-                            style="-fx-background-color: #FF5722; -fx-text-fill: white;" prefWidth="120"/>
+                            style="-fx-background-color: red; -fx-text-fill: white;" prefWidth="120"/>
                 </HBox>
 
                 <TableView fx:id="invoiceTable" prefHeight="250">
@@ -79,7 +80,8 @@
             <HBox alignment="CENTER_RIGHT" spacing="10">
                 <Label text="Additional Discount (%):"/>
                 <TextField fx:id="discountField" prefWidth="100" promptText="0"/>
-                <Button text="Calculate Total" onAction="#handleCalculateTotal" prefWidth="120"/>
+                <Button text="Calculate Total" onAction="#handleCalculateTotal"
+                        prefWidth="120"/>
             </HBox>
 
             <!-- Total Amount Display -->
@@ -102,7 +104,7 @@
             <Button text="Save Invoice" onAction="#handleSaveInvoice"
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white;" prefWidth="120"/>
             <Button text="Reset" onAction="#handleReset"
-                    style="-fx-background-color: #F44336; -fx-text-fill: white;" prefWidth="80"/>
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;" prefWidth="80"/>
         </HBox>
     </bottom>
 </BorderPane>
