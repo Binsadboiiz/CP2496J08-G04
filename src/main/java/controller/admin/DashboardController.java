@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import model.Order;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
@@ -53,8 +55,10 @@ public class DashboardController implements Initializable {
         // 3. Doanh thu hôm nay
         double todaysSales = InvoiceDAO.getTodaysSales();
         // format có dấu ngăn cách hàng nghìn
-        DecimalFormat df = new DecimalFormat("#.### VND");
-        lblTodaysSales.setText(df.format(todaysSales));
+        Locale viVN = new Locale("vi", "VN");
+        NumberFormat df = NumberFormat.getNumberInstance(viVN);
+        // Format số + thêm chữ "VND"
+        lblTodaysSales.setText(df.format(todaysSales) + " VND");
 
         // 4. Stock alerts (threshold = 5)
         int alerts = InventoryDAO.getStockAlerts(5);

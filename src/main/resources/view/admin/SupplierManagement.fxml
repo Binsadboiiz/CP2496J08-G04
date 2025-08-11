@@ -11,48 +11,44 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="650" prefWidth="820"
-            xmlns="http://javafx.com/javafx/24.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.admin.SupplierListController" stylesheets="@../../css/product-management.css">
+<AnchorPane prefHeight="650" prefWidth="820" stylesheets="@../../css/product-management.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.SupplierListController">
 
-    <VBox spacing="12" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-          AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+    <VBox spacing="12" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 
         <!-- Title + Button -->
         <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Supplier Management"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="btnAdd" onAction="#onAdd" styleClass="btn-add" text="Add Supplier"/>
-            <Button fx:id="btnRefresh" onAction="#onRefresh" styleClass="btn-refresh" text="Refresh"/>
+            <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Supplier Management" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnAdd" onAction="#onAdd" styleClass="btn-add" text="Add Supplier" />
+            <Button fx:id="btnRefresh" onAction="#onRefresh" styleClass="btn-refresh" text="Refresh" />
         </HBox>
 
         <!-- Statistic cards -->
         <HBox spacing="15">
             <!-- Total suppliers -->
             <VBox alignment="CENTER" prefWidth="160" spacing="4" styleClass="stat-card">
-                <Label style="-fx-text-fill: #555;" text="Total suppliers"/>
+                <Label style="-fx-text-fill: #555;" text="Total suppliers" />
                 <HBox alignment="CENTER">
-                    <Label fx:id="lblTotal" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="42"/>
+                    <Label fx:id="lblTotal" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="42" />
                 </HBox>
             </VBox>
             <!-- Active suppliers -->
             <VBox alignment="CENTER" prefWidth="180" spacing="4" styleClass="stat-card">
-                <Label style="-fx-text-fill: #555;" text="Active suppliers"/>
+                <Label style="-fx-text-fill: #555;" text="Active suppliers" />
                 <HBox alignment="CENTER">
-                    <Label fx:id="lblActive" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="38"/>
+                    <Label fx:id="lblActive" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="38" />
                     <Label style="-fx-text-fill: #39cb7f; -fx-font-size: 18px;" text="✓">
-                        <padding><Insets left="8"/></padding>
+                        <padding><Insets left="8" /></padding>
                     </Label>
                 </HBox>
             </VBox>
             <!-- Inactive suppliers -->
             <VBox alignment="CENTER" prefWidth="180" spacing="4" styleClass="stat-card">
-                <Label style="-fx-text-fill: #555;" text="Inactive suppliers"/>
+                <Label style="-fx-text-fill: #555;" text="Inactive suppliers" />
                 <HBox alignment="CENTER">
-                    <Label fx:id="lblInactive" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="4"/>
+                    <Label fx:id="lblInactive" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="4" />
                     <Label style="-fx-text-fill: #f14545; -fx-font-size: 18px;" text="⛔">
-                        <padding><Insets left="8"/></padding>
+                        <padding><Insets left="8" /></padding>
                     </Label>
                 </HBox>
             </VBox>
@@ -60,24 +56,22 @@
 
         <!-- TableView -->
         <TableView fx:id="tableSupplier" prefHeight="340" styleClass="table-view">
-            <padding><Insets bottom="8" left="8" right="8" top="8"/></padding>
+            <padding><Insets bottom="8" left="8" right="8" top="8" /></padding>
             <columns>
-                <TableColumn fx:id="colCode" prefWidth="86" text="Supplier Code"/>
-                <TableColumn fx:id="colName" prefWidth="124" text="Supplier Name"/>
-                <TableColumn fx:id="colContact" prefWidth="130" text="Contact"/>
-                <TableColumn fx:id="colProducts" prefWidth="141" text="Products"/>
-                <TableColumn fx:id="colStatus" prefWidth="94" text="Status"/>
-                <TableColumn fx:id="colActions" prefWidth="130" text="Actions"/>
+                <TableColumn fx:id="colCode" prefWidth="86" text="Supplier Code" />
+                <TableColumn fx:id="colName" prefWidth="124" text="Supplier Name" />
+                <TableColumn fx:id="colContact" prefWidth="130" text="Contact" />
+                <TableColumn fx:id="colProducts" prefWidth="141" text="Products" />
+                <TableColumn fx:id="colStatus" prefWidth="116.79998779296875" text="Status" />
+                <TableColumn fx:id="colActions" prefWidth="178.40008544921875" text="Actions" />
             </columns>
         </TableView>
 
         <!-- Pagination + result info -->
         <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label fx:id="lblResult" text="Showing 1 to 10 of 42 results"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Pagination fx:id="pagination" maxPageIndicatorCount="10" pageCount="1"
-                        style="-fx-background-color: transparent;"/>
+            <Label fx:id="lblResult" text="Showing 1 to 10 of 42 results" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Pagination fx:id="pagination" maxPageIndicatorCount="10" pageCount="1" style="-fx-background-color: transparent;" />
         </HBox>
     </VBox>
 </AnchorPane>
-

@@ -12,7 +12,7 @@ public class SupplierDAO {
     // Lấy tất cả supplier đang active
     public static List<Supplier> getAll() {
         List<Supplier> list = new ArrayList<>();
-        String sql = "SELECT * FROM Supplier WHERE IsActive = 1";
+        String sql = "SELECT * FROM Supplier ORDER BY SupplierID DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
@@ -82,15 +82,15 @@ public class SupplierDAO {
 
     // Xóa mềm (soft delete)
     public static boolean softDelete(int supplierID) {
-        String sql = "UPDATE Supplier SET IsActive = 0 WHERE SupplierID = ?";
+        String sql = "DELETE FROM Supplier WHERE SupplierID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, supplierID);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     // Map dữ liệu từ ResultSet sang Supplier
