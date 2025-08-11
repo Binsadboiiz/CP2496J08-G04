@@ -1,582 +1,653 @@
 package controller.warehousestaff;
 
-import dao.WarehouseReportDAO;
+import dao.*;
+import dao.InventorySummaryDAO.InventorySummary;
+import dao.InventorySummaryDAO.InventoryStatistics;
+import dao.LossReportDAO.MonthlyLossReport;
+import dao.LossReportDetailDAO.LossReportDetailExtended;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.util.Callback;
+import model.StockEntry;
+import model.StockEntryDetail;
 
-import java.net.URL;
-import java.sql.Date;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-public class WarehouseReportController implements Initializable {
+public class WarehouseReportController {
 
-    // ==================== FXML COMPONENTS ====================
+    @FXML private TextField txtSearchEntries;
+    @FXML private TextField txtSearchLoss;
 
+    @FXML private Label lblEntriesCount;
+    @FXML private Label lblLossCount;
+
+    @FXML private TableView<StockEntry> tblRecentEntries;
+    @FXML private TableColumn<StockEntry, Integer> colEntryID;
+    @FXML private TableColumn<StockEntry, String> colEntryDate;
+    @FXML private TableColumn<StockEntry, String> colSupplier;
+    @FXML private TableColumn<StockEntry, String> colUser;
+    @FXML private TableColumn<StockEntry, Integer> colTotalQuantity;
+    @FXML private TableColumn<StockEntry, Double> colTotalValue;
+
+    @FXML private TableView<LossReportDetailExtended> tblRecentLoss;
+    @FXML private TableColumn<LossReportDetailExtended, Integer> colLossReportID;
+    @FXML private TableColumn<LossReportDetailExtended, String> colLossProduct;
+    @FXML private TableColumn<LossReportDetailExtended, Integer> colLossQuantity;
+    @FXML private TableColumn<LossReportDetailExtended, String> colLossReason;
+    @FXML private TableColumn<LossReportDetailExtended, String> colLossEmployee;
+    @FXML private TableColumn<LossReportDetailExtended, Double> colLossValue;
+    @FXML private TableColumn<LossReportDetailExtended, Double> colAvgUnitCost;
+    @FXML private TableColumn<LossReportDetailExtended, String> colLossReportDate;
+    @FXML private TableColumn<LossReportDetailExtended, Void> colActions;
+
+    @FXML private DatePicker dpFromDate;
+    @FXML private DatePicker dpToDate;
     @FXML private TabPane tabPane;
 
-    @FXML private TableView<WarehouseReportDAO.InventoryReport> inventoryTable;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, String> invProductCodeCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, String> invProductNameCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, String> invBrandCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, Double> invPriceCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, Integer> invReceivedCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, Integer> invLossCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, Integer> invCurrentStockCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, String> invStatusCol;
-    @FXML private TableColumn<WarehouseReportDAO.InventoryReport, Double> invValueCol;
+    private ObservableList<StockEntry> recentEntriesList = FXCollections.observableArrayList();
+    private ObservableList<LossReportDetailExtended> recentLossList = FXCollections.observableArrayList();
 
-    @FXML private TextField lowStockThresholdField;
-    @FXML private Button refreshInventoryBtn;
-    @FXML private Button showLowStockBtn;
+    private FilteredList<StockEntry> filteredEntriesList;
+    private FilteredList<LossReportDetailExtended> filteredLossList;
 
-    // Entry History Tab
-    @FXML private TableView<WarehouseReportDAO.StockEntryReport> stockEntryTable;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryReport, Integer> entryIdCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryReport, Date> entryDateCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryReport, String> supplierCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryReport, String> employeeCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryReport, Integer> totalQtyCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryReport, Double> totalValueCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryReport, Integer> productCountCol;
-
-    @FXML private DatePicker entryFromDate;
-    @FXML private DatePicker entryToDate;
-    @FXML private Button searchEntriesBtn;
-
-    // Entry Details Tab
-    @FXML private TableView<WarehouseReportDAO.StockEntryDetailReport> stockDetailTable;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryDetailReport, String> detailProductCodeCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryDetailReport, String> detailProductNameCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryDetailReport, String> detailBrandCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryDetailReport, Integer> detailReceivedCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryDetailReport, Double> detailAvgCostCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryDetailReport, Double> detailTotalCostCol;
-    @FXML private TableColumn<WarehouseReportDAO.StockEntryDetailReport, Integer> detailEntryCountCol;
-
-    @FXML private DatePicker detailFromDate;
-    @FXML private DatePicker detailToDate;
-    @FXML private Button searchDetailsBtn;
-
-    // Loss Report Tab
-    @FXML private TableView<WarehouseReportDAO.LossReport> lossTable;
-    @FXML private TableColumn<WarehouseReportDAO.LossReport, Integer> lossReportIdCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReport, Date> lossDateCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReport, String> lossEmployeeCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReport, Integer> lossQuantityCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReport, Double> lossValueCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReport, Integer> lossProductCountCol;
-
-    @FXML private DatePicker lossFromDate;
-    @FXML private DatePicker lossToDate;
-    @FXML private Button searchLossBtn;
-
-    // Top Loss Products Tab
-    @FXML private TableView<WarehouseReportDAO.ProductLossReport> topLossTable;
-    @FXML private TableColumn<WarehouseReportDAO.ProductLossReport, String> topLossProductCodeCol;
-    @FXML private TableColumn<WarehouseReportDAO.ProductLossReport, String> topLossProductNameCol;
-    @FXML private TableColumn<WarehouseReportDAO.ProductLossReport, String> topLossBrandCol;
-    @FXML private TableColumn<WarehouseReportDAO.ProductLossReport, Integer> topLossQuantityCol;
-    @FXML private TableColumn<WarehouseReportDAO.ProductLossReport, Double> topLossValueCol;
-    @FXML private TableColumn<WarehouseReportDAO.ProductLossReport, Double> topLossPercentageCol;
-
-    @FXML private TextField topLossLimitField;
-    @FXML private Button showTopLossBtn;
-
-    // Loss Detail Tab
-    @FXML private TableView<WarehouseReportDAO.LossDetailReport> lossDetailTable;
-    @FXML private TableColumn<WarehouseReportDAO.LossDetailReport, Integer> lossDetailReportIdCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossDetailReport, String> lossDetailProductCodeCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossDetailReport, String> lossDetailProductNameCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossDetailReport, Integer> lossDetailQuantityCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossDetailReport, String> lossDetailReasonCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossDetailReport, Double> lossDetailValueCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossDetailReport, Date> lossDetailDateCol;
-
-    @FXML private DatePicker lossDetailFromDate;
-    @FXML private DatePicker lossDetailToDate;
-    @FXML private Button searchLossDetailBtn;
-
-    // Loss Reason Report Tab
-    @FXML private TableView<WarehouseReportDAO.LossReasonReport> lossReasonTable;
-    @FXML private TableColumn<WarehouseReportDAO.LossReasonReport, String> reasonCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReasonReport, Integer> reasonProductCountCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReasonReport, Integer> reasonQuantityCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReasonReport, Double> reasonValueCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossReasonReport, Integer> reasonReportCountCol;
-
-    @FXML private DatePicker reasonFromDate;
-    @FXML private DatePicker reasonToDate;
-    @FXML private Button searchReasonBtn;
-
-    // Loss Value Comparison Tab
-    @FXML private TableView<WarehouseReportDAO.LossValueComparisonReport> valueComparisonTable;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, String> compProductCodeCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, String> compProductNameCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, Integer> compQuantityCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, Double> compSellingPriceCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, Double> compUnitCostCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, Double> compLossBySellingCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, Double> compLossByUnitCostCol;
-    @FXML private TableColumn<WarehouseReportDAO.LossValueComparisonReport, Double> compValueDifferenceCol;
-
-    @FXML private DatePicker compFromDate;
-    @FXML private DatePicker compToDate;
-    @FXML private Button searchComparisonBtn;
-
-    // Overview Statistics
-    @FXML private VBox summaryBox;
-    @FXML private Label totalProductsLabel;
-    @FXML private Label totalReceivedLabel;
-    @FXML private Label totalLossLabel;
-    @FXML private Label currentStockLabel;
-    @FXML private Label totalStockValueLabel;
-    @FXML private Label outOfStockLabel;
-    @FXML private Label lowStockLabel;
-    @FXML private Button refreshSummaryBtn;
-
-    // ==================== INITIALIZE ====================
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        setupTableColumns();
-        setupDatePickers();
-        setupDefaultValues();
-        loadInitialData();
-    }
-
-    private void setupTableColumns() {
-        // Inventory Table
-        invProductCodeCol.setCellValueFactory(new PropertyValueFactory<>("productCode"));
-        invProductNameCol.setCellValueFactory(new PropertyValueFactory<>("productName"));
-        invBrandCol.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        invPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-        invReceivedCol.setCellValueFactory(new PropertyValueFactory<>("totalReceived"));
-        invLossCol.setCellValueFactory(new PropertyValueFactory<>("totalLoss"));
-        invCurrentStockCol.setCellValueFactory(new PropertyValueFactory<>("currentStock"));
-        invStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-        invValueCol.setCellValueFactory(new PropertyValueFactory<>("stockValue"));
-
-        // Stock Entry Table
-        entryIdCol.setCellValueFactory(new PropertyValueFactory<>("entryID"));
-        entryDateCol.setCellValueFactory(new PropertyValueFactory<>("entryDate"));
-        supplierCol.setCellValueFactory(new PropertyValueFactory<>("supplierName"));
-        employeeCol.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
-        totalQtyCol.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
-        totalValueCol.setCellValueFactory(new PropertyValueFactory<>("totalValue"));
-        productCountCol.setCellValueFactory(new PropertyValueFactory<>("productCount"));
-
-        // Stock Detail Table
-        detailProductCodeCol.setCellValueFactory(new PropertyValueFactory<>("productCode"));
-        detailProductNameCol.setCellValueFactory(new PropertyValueFactory<>("productName"));
-        detailBrandCol.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        detailReceivedCol.setCellValueFactory(new PropertyValueFactory<>("totalReceived"));
-        detailAvgCostCol.setCellValueFactory(new PropertyValueFactory<>("avgUnitCost"));
-        detailTotalCostCol.setCellValueFactory(new PropertyValueFactory<>("totalCost"));
-        detailEntryCountCol.setCellValueFactory(new PropertyValueFactory<>("entryCount"));
-
-        // Loss Table
-        lossReportIdCol.setCellValueFactory(new PropertyValueFactory<>("reportID"));
-        lossDateCol.setCellValueFactory(new PropertyValueFactory<>("reportDate"));
-        lossEmployeeCol.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
-        lossQuantityCol.setCellValueFactory(new PropertyValueFactory<>("totalLossQuantity"));
-        lossValueCol.setCellValueFactory(new PropertyValueFactory<>("totalLossValue"));
-        lossProductCountCol.setCellValueFactory(new PropertyValueFactory<>("productCount"));
-
-        // Top Loss Table
-        topLossProductCodeCol.setCellValueFactory(new PropertyValueFactory<>("productCode"));
-        topLossProductNameCol.setCellValueFactory(new PropertyValueFactory<>("productName"));
-        topLossBrandCol.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        topLossQuantityCol.setCellValueFactory(new PropertyValueFactory<>("totalLossQuantity"));
-        topLossValueCol.setCellValueFactory(new PropertyValueFactory<>("totalLossValue"));
-        topLossPercentageCol.setCellValueFactory(new PropertyValueFactory<>("lossPercentage"));
-
-        // Setup Loss Detail Table - THÊM MỚI
-        if (lossDetailTable != null) {
-            lossDetailReportIdCol.setCellValueFactory(new PropertyValueFactory<>("reportID"));
-            lossDetailProductCodeCol.setCellValueFactory(new PropertyValueFactory<>("productCode"));
-            lossDetailProductNameCol.setCellValueFactory(new PropertyValueFactory<>("productName"));
-            lossDetailQuantityCol.setCellValueFactory(new PropertyValueFactory<>("lostQuantity"));
-            lossDetailReasonCol.setCellValueFactory(new PropertyValueFactory<>("reason"));
-            lossDetailValueCol.setCellValueFactory(new PropertyValueFactory<>("lossValue"));
-            lossDetailDateCol.setCellValueFactory(new PropertyValueFactory<>("reportDate"));
-        }
-
-        // Setup Loss Reason Table - THÊM MỚI
-        if (lossReasonTable != null) {
-            reasonCol.setCellValueFactory(new PropertyValueFactory<>("reason"));
-            reasonProductCountCol.setCellValueFactory(new PropertyValueFactory<>("productCount"));
-            reasonQuantityCol.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
-            reasonValueCol.setCellValueFactory(new PropertyValueFactory<>("totalValue"));
-            reasonReportCountCol.setCellValueFactory(new PropertyValueFactory<>("reportCount"));
-        }
-
-        // Setup Value Comparison Table - THÊM MỚI
-        if (valueComparisonTable != null) {
-            compProductCodeCol.setCellValueFactory(new PropertyValueFactory<>("productCode"));
-            compProductNameCol.setCellValueFactory(new PropertyValueFactory<>("productName"));
-            compQuantityCol.setCellValueFactory(new PropertyValueFactory<>("totalLossQuantity"));
-            compSellingPriceCol.setCellValueFactory(new PropertyValueFactory<>("sellingPrice"));
-            compUnitCostCol.setCellValueFactory(new PropertyValueFactory<>("avgUnitCost"));
-            compLossBySellingCol.setCellValueFactory(new PropertyValueFactory<>("lossValueBySellingPrice"));
-            compLossByUnitCostCol.setCellValueFactory(new PropertyValueFactory<>("lossValueByUnitCost"));
-            compValueDifferenceCol.setCellValueFactory(new PropertyValueFactory<>("valueDifference"));
-        }
-
-        // Format price columns
-        formatPriceColumn(invPriceCol);
-        formatPriceColumn(invValueCol);
-        formatPriceColumn(totalValueCol);
-        formatPriceColumn(detailAvgCostCol);
-        formatPriceColumn(detailTotalCostCol);
-        formatPriceColumn(lossValueCol);
-        formatPriceColumn(topLossValueCol);
-
-        if (lossDetailValueCol != null) formatPriceColumn(lossDetailValueCol);
-        if (reasonValueCol != null) formatPriceColumn(reasonValueCol);
-        if (compSellingPriceCol != null) formatPriceColumn(compSellingPriceCol);
-        if (compUnitCostCol != null) formatPriceColumn(compUnitCostCol);
-        if (compLossBySellingCol != null) formatPriceColumn(compLossBySellingCol);
-        if (compLossByUnitCostCol != null) formatPriceColumn(compLossByUnitCostCol);
-        if (compValueDifferenceCol != null) formatPriceColumn(compValueDifferenceCol);
-
-        // Format percentage column
-        formatPercentageColumn(topLossPercentageCol);
-    }
-
-    private void setupDatePickers() {
-        LocalDate now = LocalDate.now();
-        LocalDate startOfMonth = now.withDayOfMonth(1);
-
-        // Set default dates for existing date pickers
-        entryFromDate.setValue(startOfMonth);
-        entryToDate.setValue(now);
-        detailFromDate.setValue(startOfMonth);
-        detailToDate.setValue(now);
-        lossFromDate.setValue(startOfMonth);
-        lossToDate.setValue(now);
-
-        // Set default dates for new date pickers - THÊM MỚI
-        if (lossDetailFromDate != null) lossDetailFromDate.setValue(startOfMonth);
-        if (lossDetailToDate != null) lossDetailToDate.setValue(now);
-        if (reasonFromDate != null) reasonFromDate.setValue(startOfMonth);
-        if (reasonToDate != null) reasonToDate.setValue(now);
-        if (compFromDate != null) compFromDate.setValue(startOfMonth);
-        if (compToDate != null) compToDate.setValue(now);
-    }
-
-    private void setupDefaultValues() {
-        lowStockThresholdField.setText("10");
-        topLossLimitField.setText("20");
-    }
-
-    private void loadInitialData() {
-        loadInventoryReport();
-        loadStockEntryReport();
-        loadStockDetailReport();
-        loadLossReport();
-        loadTopLossReport();
-        loadSummary();
-
-        // Load new reports
-        loadLossDetailReport();
-        loadLossReasonReport();
-        loadLossValueComparisonReport();
-    }
-
-    // ==================== EVENT HANDLERS ====================
+    private Map<Integer, List<StockEntryDetail>> stockEntryDetailsCache = new HashMap<>();
 
     @FXML
-    private void handleRefreshInventory() {
-        loadInventoryReport();
+    public void initialize() {
+        setupTables();
+        setupControls();
+        setupSearchFilters(); // Setup search functionality
+        loadAllData();
     }
 
-    @FXML
-    private void handleShowLowStock() {
-        try {
-            int threshold = Integer.parseInt(lowStockThresholdField.getText());
-            List<WarehouseReportDAO.InventoryReport> lowStockList =
-                    WarehouseReportDAO.getLowStockReport(threshold);
+    private void setupTables() {
+        setupStockEntriesTable();
 
-            ObservableList<WarehouseReportDAO.InventoryReport> data =
-                    FXCollections.observableArrayList(lowStockList);
-            inventoryTable.setItems(data);
+        setupLossReportsTable();
 
-            showAlert("Notification", "Showing " + lowStockList.size() +
-                    " products with stock ≤ " + threshold, Alert.AlertType.INFORMATION);
-        } catch (NumberFormatException e) {
-            showAlert("Error", "Please enter a valid integer for warning threshold", Alert.AlertType.ERROR);
-        }
+        filteredEntriesList = new FilteredList<>(recentEntriesList, p -> true);
+        filteredLossList = new FilteredList<>(recentLossList, p -> true);
+
+        tblRecentEntries.setItems(filteredEntriesList);
+        tblRecentLoss.setItems(filteredLossList);
     }
 
-    @FXML
-    private void handleSearchEntries() {
-        loadStockEntryReport();
-    }
+    private void setupStockEntriesTable() {
+        colEntryID.setCellValueFactory(new PropertyValueFactory<>("entryID"));
 
-    @FXML
-    private void handleSearchDetails() {
-        loadStockDetailReport();
-    }
-
-    @FXML
-    private void handleSearchLoss() {
-        loadLossReport();
-    }
-
-    @FXML
-    private void handleShowTopLoss() {
-        try {
-            int limit = Integer.parseInt(topLossLimitField.getText());
-            List<WarehouseReportDAO.ProductLossReport> topLossList =
-                    WarehouseReportDAO.getTopLossProductsReport(limit);
-
-            ObservableList<WarehouseReportDAO.ProductLossReport> data =
-                    FXCollections.observableArrayList(topLossList);
-            topLossTable.setItems(data);
-
-            showAlert("Notification", "Showing top " + topLossList.size() +
-                    " products with highest losses", Alert.AlertType.INFORMATION);
-        } catch (NumberFormatException e) {
-            showAlert("Error", "Please enter a valid integer", Alert.AlertType.ERROR);
-        }
-    }
-
-    @FXML
-    private void handleRefreshSummary() {
-        loadSummary();
-    }
-
-    // THÊM CÁC EVENT HANDLER MỚI
-    @FXML
-    private void handleSearchLossDetail() {
-        loadLossDetailReport();
-    }
-
-    @FXML
-    private void handleSearchReason() {
-        loadLossReasonReport();
-    }
-
-    @FXML
-    private void handleSearchComparison() {
-        loadLossValueComparisonReport();
-    }
-
-    // ==================== DATA LOADING METHODS ====================
-
-    private void loadInventoryReport() {
-        try {
-            List<WarehouseReportDAO.InventoryReport> inventoryList =
-                    WarehouseReportDAO.getInventoryReport();
-
-            // Translate Vietnamese status to English
-            for (WarehouseReportDAO.InventoryReport report : inventoryList) {
-                report.setStatus(translateStatusToEnglish(report.getStatus()));
+        colEntryDate.setCellValueFactory(cell -> {
+            Date date = cell.getValue().getDate();
+            if (date != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                return new javafx.beans.property.SimpleStringProperty(dateFormat.format(date));
             }
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
 
-            ObservableList<WarehouseReportDAO.InventoryReport> data =
-                    FXCollections.observableArrayList(inventoryList);
-            inventoryTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load inventory report: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
+        colSupplier.setCellValueFactory(new PropertyValueFactory<>("supplierName"));
+        colUser.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty("Warehouse Staff"));
 
-    private String translateStatusToEnglish(String vietnameseStatus) {
-        if (vietnameseStatus == null) return "";
-        switch (vietnameseStatus) {
-            case "Hết hàng": return "Out of Stock";
-            case "Sắp hết": return "Critical";
-            case "Ít hàng": return "Low Stock";
-            case "Đủ hàng": return "In Stock";
-            default: return vietnameseStatus;
-        }
-    }
+        tblRecentEntries.setRowFactory(tv -> {
+            TableRow<StockEntry> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    showStockEntryDetails(row.getItem());
+                }
+            });
+            return row;
+        });
 
-    private void loadStockEntryReport() {
-        try {
-            Date fromDate = Date.valueOf(entryFromDate.getValue());
-            Date toDate = Date.valueOf(entryToDate.getValue());
+        colTotalQuantity.setCellValueFactory(cell -> {
+            int entryID = cell.getValue().getEntryID();
+            int totalQuantity = calculateTotalQuantityForEntry(entryID);
+            return new javafx.beans.property.SimpleIntegerProperty(totalQuantity).asObject();
+        });
 
-            List<WarehouseReportDAO.StockEntryReport> entryList =
-                    WarehouseReportDAO.getStockEntryReport(fromDate, toDate);
+        colTotalValue.setCellValueFactory(cell -> {
+            int entryID = cell.getValue().getEntryID();
+            double totalValue = calculateTotalValueForEntry(entryID);
+            return new javafx.beans.property.SimpleDoubleProperty(totalValue).asObject();
+        });
 
-            ObservableList<WarehouseReportDAO.StockEntryReport> data =
-                    FXCollections.observableArrayList(entryList);
-            stockEntryTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load stock entry report: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    private void loadStockDetailReport() {
-        try {
-            Date fromDate = Date.valueOf(detailFromDate.getValue());
-            Date toDate = Date.valueOf(detailToDate.getValue());
-
-            List<WarehouseReportDAO.StockEntryDetailReport> detailList =
-                    WarehouseReportDAO.getStockEntryDetailReport(fromDate, toDate);
-
-            ObservableList<WarehouseReportDAO.StockEntryDetailReport> data =
-                    FXCollections.observableArrayList(detailList);
-            stockDetailTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load entry details: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    private void loadLossReport() {
-        try {
-            Date fromDate = Date.valueOf(lossFromDate.getValue());
-            Date toDate = Date.valueOf(lossToDate.getValue());
-
-            List<WarehouseReportDAO.LossReport> lossList =
-                    WarehouseReportDAO.getLossReport(fromDate, toDate);
-
-            ObservableList<WarehouseReportDAO.LossReport> data =
-                    FXCollections.observableArrayList(lossList);
-            lossTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load loss report: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    private void loadTopLossReport() {
-        try {
-            int limit = Integer.parseInt(topLossLimitField.getText());
-            List<WarehouseReportDAO.ProductLossReport> topLossList =
-                    WarehouseReportDAO.getTopLossProductsReport(limit);
-
-            ObservableList<WarehouseReportDAO.ProductLossReport> data =
-                    FXCollections.observableArrayList(topLossList);
-            topLossTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load top loss products: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    // THÊM CÁC PHƯƠNG THỨC LOAD REPORT MỚI
-    private void loadLossDetailReport() {
-        if (lossDetailTable == null || lossDetailFromDate == null || lossDetailToDate == null) return;
-
-        try {
-            Date fromDate = Date.valueOf(lossDetailFromDate.getValue());
-            Date toDate = Date.valueOf(lossDetailToDate.getValue());
-
-            List<WarehouseReportDAO.LossDetailReport> detailList =
-                    WarehouseReportDAO.getLossDetailReport(fromDate, toDate);
-
-            ObservableList<WarehouseReportDAO.LossDetailReport> data =
-                    FXCollections.observableArrayList(detailList);
-            lossDetailTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load loss detail report: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    private void loadLossReasonReport() {
-        if (lossReasonTable == null || reasonFromDate == null || reasonToDate == null) return;
-
-        try {
-            Date fromDate = Date.valueOf(reasonFromDate.getValue());
-            Date toDate = Date.valueOf(reasonToDate.getValue());
-
-            List<WarehouseReportDAO.LossReasonReport> reasonList =
-                    WarehouseReportDAO.getLossReasonReport(fromDate, toDate);
-
-            ObservableList<WarehouseReportDAO.LossReasonReport> data =
-                    FXCollections.observableArrayList(reasonList);
-            lossReasonTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load loss reason report: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    private void loadLossValueComparisonReport() {
-        if (valueComparisonTable == null || compFromDate == null || compToDate == null) return;
-
-        try {
-            Date fromDate = Date.valueOf(compFromDate.getValue());
-            Date toDate = Date.valueOf(compToDate.getValue());
-
-            List<WarehouseReportDAO.LossValueComparisonReport> comparisonList =
-                    WarehouseReportDAO.getLossValueComparisonReport(fromDate, toDate);
-
-            ObservableList<WarehouseReportDAO.LossValueComparisonReport> data =
-                    FXCollections.observableArrayList(comparisonList);
-            valueComparisonTable.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load loss value comparison report: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    private void loadSummary() {
-        try {
-            WarehouseReportDAO.WarehouseSummary summary = WarehouseReportDAO.getWarehouseSummary();
-
-            totalProductsLabel.setText(String.valueOf(summary.getTotalProducts()));
-            totalReceivedLabel.setText(String.valueOf(summary.getTotalReceived()));
-            totalLossLabel.setText(String.valueOf(summary.getTotalLoss()));
-            currentStockLabel.setText(String.valueOf(summary.getCurrentStock()));
-            totalStockValueLabel.setText(String.format("%,.0f USD", summary.getTotalStockValue()));
-            outOfStockLabel.setText(String.valueOf(summary.getOutOfStockCount()));
-            lowStockLabel.setText(String.valueOf(summary.getLowStockCount()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Cannot load overview statistics: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    // ==================== UTILITY METHODS ====================
-
-    private <T> void formatPriceColumn(TableColumn<T, Double> column) {
-        if (column == null) return;
-        column.setCellFactory(col -> new TableCell<T, Double>() {
+        colTotalValue.setCellFactory(col -> new TableCell<StockEntry, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%,.0f USD", item));
+                    setText(String.format("%,.0f VND", item));
                 }
             }
         });
     }
 
-    private <T> void formatPercentageColumn(TableColumn<T, Double> column) {
-        if (column == null) return;
-        column.setCellFactory(col -> new TableCell<T, Double>() {
+    private void setupLossReportsTable() {
+        colLossReportID.setCellValueFactory(new PropertyValueFactory<>("reportID"));
+        colLossProduct.setCellValueFactory(new PropertyValueFactory<>("productName"));
+        colLossQuantity.setCellValueFactory(new PropertyValueFactory<>("lostQuantity"));
+        colLossReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
+        colLossEmployee.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
+        colLossValue.setCellValueFactory(new PropertyValueFactory<>("lossValue"));
+
+        if (colLossReportDate != null) {
+            colLossReportDate.setCellValueFactory(cellData -> {
+                return new javafx.beans.property.SimpleStringProperty(
+                        cellData.getValue().getReportDateFormatted()
+                );
+            });
+        }
+
+        if (colAvgUnitCost != null) {
+            colAvgUnitCost.setCellValueFactory(new PropertyValueFactory<>("avgUnitCost"));
+            colAvgUnitCost.setCellFactory(col -> new TableCell<LossReportDetailExtended, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(String.format("%,.0f VND", item));
+                    }
+                }
+            });
+        }
+
+        colLossValue.setCellFactory(col -> new TableCell<LossReportDetailExtended, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%.2f%%", item));
+                    setText(String.format("%,.0f VND", item));
                 }
+            }
+        });
+
+        if (colActions != null) {
+            colActions.setCellFactory(new Callback<TableColumn<LossReportDetailExtended, Void>, TableCell<LossReportDetailExtended, Void>>() {
+                @Override
+                public TableCell<LossReportDetailExtended, Void> call(TableColumn<LossReportDetailExtended, Void> param) {
+                    return new TableCell<LossReportDetailExtended, Void>() {
+                        private final Button viewBtn = new Button("👁️");
+
+                        {
+                            viewBtn.setStyle("-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-size: 10px; -fx-padding: 2 6;");
+                            viewBtn.setTooltip(new Tooltip("View details"));
+                            viewBtn.setOnAction(event -> {
+                                LossReportDetailExtended item = getTableView().getItems().get(getIndex());
+                                handleViewLossReportDetail(item);
+                            });
+                        }
+
+                        @Override
+                        protected void updateItem(Void item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty) {
+                                setGraphic(null);
+                            } else {
+                                setGraphic(viewBtn);
+                            }
+                        }
+                    };
+                }
+            });
+        }
+    }
+
+    private void setupSearchFilters() {
+        if (txtSearchEntries != null) {
+            txtSearchEntries.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredEntriesList.setPredicate(entry -> {
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+
+                    String lowerCaseFilter = newValue.toLowerCase();
+
+                    if (String.valueOf(entry.getEntryID()).contains(lowerCaseFilter)) {
+                        return true;
+                    }
+
+                    if (entry.getSupplierName() != null &&
+                            entry.getSupplierName().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+
+                    if (entry.getDate() != null) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        String dateStr = dateFormat.format(entry.getDate());
+                        if (dateStr.contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
+
+                updateEntriesCount();
+            });
+        }
+
+        if (txtSearchLoss != null) {
+            txtSearchLoss.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredLossList.setPredicate(lossReport -> {
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+
+                    String lowerCaseFilter = newValue.toLowerCase();
+
+                    if (String.valueOf(lossReport.getReportID()).contains(lowerCaseFilter)) {
+                        return true;
+                    }
+
+                    if (lossReport.getProductName() != null &&
+                            lossReport.getProductName().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+
+                    if (lossReport.getReason() != null &&
+                            lossReport.getReason().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+
+                    if (lossReport.getEmployeeName() != null &&
+                            lossReport.getEmployeeName().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                updateLossCount();
+            });
+        }
+    }
+
+    private void updateEntriesCount() {
+        if (lblEntriesCount != null && filteredEntriesList != null) {
+            lblEntriesCount.setText("Total: " + filteredEntriesList.size() + " records");
+        }
+    }
+
+    private void updateLossCount() {
+        if (lblLossCount != null && filteredLossList != null) {
+            lblLossCount.setText("Total: " + filteredLossList.size() + " records");
+        }
+    }
+
+    private int calculateTotalQuantityForEntry(int entryID) {
+        List<StockEntryDetail> details = getStockEntryDetails(entryID);
+        return details.stream().mapToInt(StockEntryDetail::getQuantity).sum();
+    }
+
+    private double calculateTotalValueForEntry(int entryID) {
+        List<StockEntryDetail> details = getStockEntryDetails(entryID);
+        return details.stream().mapToDouble(detail -> detail.getQuantity() * detail.getUnitCost()).sum();
+    }
+
+    private List<StockEntryDetail> getStockEntryDetails(int entryID) {
+        if (!stockEntryDetailsCache.containsKey(entryID)) {
+            List<StockEntryDetail> details = StockEntryDetailDAO.getByEntryID(entryID);
+            stockEntryDetailsCache.put(entryID, details);
+        }
+        return stockEntryDetailsCache.get(entryID);
+    }
+
+    private void setupControls() {
+        dpFromDate.setValue(LocalDate.now().minusMonths(1));
+        dpToDate.setValue(LocalDate.now());
+
+        dpFromDate.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && dpToDate.getValue() != null) {
+                loadAllData();
+            }
+        });
+
+        dpToDate.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && dpFromDate.getValue() != null) {
+                loadAllData();
             }
         });
     }
 
-    private void showAlert(String title, String message, Alert.AlertType type) {
+    private void loadAllData() {
+        try {
+            stockEntryDetailsCache.clear();
+
+            loadRecentStockEntries();
+            loadRecentLossReports();
+
+            updateEntriesCount();
+            updateLossCount();
+        } catch (Exception e) {
+            showAlert("Error loading data: " + e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    private void loadRecentStockEntries() {
+        try {
+            List<StockEntry> allEntries = StockEntryDAO.getAll();
+            recentEntriesList.setAll(allEntries);
+        } catch (Exception e) {
+            showAlert("Error loading recent stock entries: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void loadRecentLossReports() {
+        try {
+            List<LossReportDetailExtended> allLossReports = LossReportDetailDAO.getLossReportDetailsExtended();
+            recentLossList.setAll(allLossReports);
+        } catch (Exception e) {
+            showAlert("Error loading recent loss reports: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void showStockEntryDetails(StockEntry entry) {
+        if (entry == null) {
+            showAlert("No stock entry selected!", Alert.AlertType.WARNING);
+            return;
+        }
+
+        List<StockEntryDetail> details = StockEntryDetailDAO.getByEntryID(entry.getEntryID());
+
+        if (details.isEmpty()) {
+            showAlert("No details found for this entry!", Alert.AlertType.INFORMATION);
+            return;
+        }
+
+        Dialog<Void> detailDialog = new Dialog<>();
+        detailDialog.setTitle("Stock Entry Details");
+        detailDialog.setHeaderText("Entry ID: " + entry.getEntryID() +
+                " | Date: " + new SimpleDateFormat("dd/MM/yyyy").format(entry.getDate()) +
+                " | Supplier: " + entry.getSupplierName());
+
+        TableView<StockEntryDetail> detailTable = new TableView<>();
+        detailTable.setPrefWidth(700);
+        detailTable.setPrefHeight(400);
+
+        TableColumn<StockEntryDetail, Integer> colProductID = new TableColumn<>("Product ID");
+        colProductID.setCellValueFactory(new PropertyValueFactory<>("productID"));
+        colProductID.setPrefWidth(80);
+
+        TableColumn<StockEntryDetail, String> colProductName = new TableColumn<>("Product Name");
+        colProductName.setCellValueFactory(new PropertyValueFactory<>("productName"));
+        colProductName.setPrefWidth(200);
+
+        TableColumn<StockEntryDetail, Integer> colQuantity = new TableColumn<>("Quantity");
+        colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        colQuantity.setPrefWidth(80);
+
+        TableColumn<StockEntryDetail, Double> colUnitCost = new TableColumn<>("Unit Cost");
+        colUnitCost.setCellValueFactory(new PropertyValueFactory<>("unitCost"));
+        colUnitCost.setPrefWidth(100);
+
+        colUnitCost.setCellFactory(col -> new TableCell<StockEntryDetail, Double>() {
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%,.0f VND", item));
+                }
+            }
+        });
+
+        TableColumn<StockEntryDetail, Double> colTotal = new TableColumn<>("Total");
+        colTotal.setCellValueFactory(cell -> {
+            StockEntryDetail detail = cell.getValue();
+            double total = detail.getQuantity() * detail.getUnitCost();
+            return new javafx.beans.property.SimpleDoubleProperty(total).asObject();
+        });
+        colTotal.setPrefWidth(120);
+
+        colTotal.setCellFactory(col -> new TableCell<StockEntryDetail, Double>() {
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%,.0f VND", item));
+                }
+            }
+        });
+
+        detailTable.getColumns().addAll(colProductID, colProductName, colQuantity, colUnitCost, colTotal);
+
+        detailTable.setItems(FXCollections.observableArrayList(details));
+
+        double grandTotal = details.stream().mapToDouble(d -> d.getQuantity() * d.getUnitCost()).sum();
+
+        VBox content = new VBox(10);
+        content.getChildren().add(detailTable);
+
+        Label totalLabel = new Label("Grand Total: " + String.format("%,.0f VND", grandTotal));
+        totalLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        content.getChildren().add(totalLabel);
+
+        detailDialog.getDialogPane().setContent(content);
+        detailDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        detailDialog.showAndWait();
+    }
+
+    private void handleViewLossReportDetail(LossReportDetailExtended selected) {
+        if (selected == null) {
+            showAlert("No loss report selected!", Alert.AlertType.WARNING);
+            return;
+        }
+
+        Alert detailAlert = new Alert(Alert.AlertType.INFORMATION);
+        detailAlert.setTitle("Loss Report Details");
+        detailAlert.setHeaderText("Loss Report ID: " + selected.getReportID());
+        detailAlert.setContentText(String.format(
+                "Product: %s\n" +
+                        "Product Code: %s\n" +
+                        "Brand: %s\n" +
+                        "Quantity Lost: %d\n" +
+                        "Average Unit Cost: %,.0f VND\n" +
+                        "Loss Value: %,.0f VND\n" +
+                        "Reason: %s\n" +
+                        "Report Date: %s\n" +
+                        "Created By: %s",
+                selected.getProductName(),
+                selected.getProductCode() != null ? selected.getProductCode() : "N/A",
+                selected.getBrand() != null ? selected.getBrand() : "N/A",
+                selected.getLostQuantity(),
+                selected.getAvgUnitCost(),
+                selected.getLossValue(),
+                selected.getReason(),
+                selected.getReportDateFormatted(),
+                selected.getEmployeeName()
+        ));
+
+        detailAlert.showAndWait();
+    }
+
+    @FXML
+    private void handleExportStockEntries() {
+        try {
+            exportStockEntriesToTxt();
+        } catch (Exception e) {
+            showAlert("Error exporting stock entries: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleExportLossReports() {
+        try {
+            exportLossReportsToTxt();
+        } catch (Exception e) {
+            showAlert("Error exporting loss reports: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void exportStockEntriesToTxt() {
+        try {
+            List<StockEntry> entriesToExport = filteredEntriesList.stream().collect(Collectors.toList());
+
+            if (entriesToExport.isEmpty()) {
+                showAlert("No stock entries to export!", Alert.AlertType.WARNING);
+                return;
+            }
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Stock Entries Report");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            fileChooser.setInitialFileName("StockEntries_" + timestamp + ".txt");
+
+            File file = fileChooser.showSaveDialog(tblRecentEntries.getScene().getWindow());
+
+            if (file != null) {
+                try (FileWriter writer = new FileWriter(file)) {
+                    writer.write("=====================================\n");
+                    writer.write("        STOCK ENTRIES REPORT\n");
+                    writer.write("=====================================\n");
+                    writer.write("Export Date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+                    writer.write("Total Records: " + entriesToExport.size() + "\n");
+                    writer.write("=====================================\n\n");
+
+                    writer.write(String.format("%-10s %-15s %-30s %-20s %-15s %-15s\n",
+                            "Entry ID", "Date", "Supplier", "Created By", "Total Qty", "Total Value"));
+                    writer.write("----------------------------------------------------------------------\n");
+
+                    double grandTotal = 0;
+                    int totalQuantity = 0;
+
+                    for (StockEntry entry : entriesToExport) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        String dateStr = entry.getDate() != null ? dateFormat.format(entry.getDate()) : "N/A";
+
+                        int entryTotalQty = calculateTotalQuantityForEntry(entry.getEntryID());
+                        double entryTotalValue = calculateTotalValueForEntry(entry.getEntryID());
+
+                        totalQuantity += entryTotalQty;
+                        grandTotal += entryTotalValue;
+
+                        writer.write(String.format("%-10d %-15s %-30s %-20s %-15d %15.0f\n",
+                                entry.getEntryID(),
+                                dateStr,
+                                entry.getSupplierName() != null ? entry.getSupplierName() : "N/A",
+                                "Warehouse Staff",
+                                entryTotalQty,
+                                entryTotalValue));
+                    }
+
+                    writer.write("----------------------------------------------------------------------\n");
+                    writer.write(String.format("%-71s %-15d %15.0f\n", "TOTAL:", totalQuantity, grandTotal));
+                    writer.write("======================================================================\n");
+
+                    showAlert("Stock entries exported successfully to: " + file.getAbsolutePath(), Alert.AlertType.INFORMATION);
+                }
+            }
+        } catch (IOException e) {
+            showAlert("Error writing to file: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void exportLossReportsToTxt() {
+        try {
+            List<LossReportDetailExtended> lossReportsToExport = filteredLossList.stream().collect(Collectors.toList());
+
+            if (lossReportsToExport.isEmpty()) {
+                showAlert("No loss reports to export!", Alert.AlertType.WARNING);
+                return;
+            }
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Loss Reports");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            fileChooser.setInitialFileName("LossReports_" + timestamp + ".txt");
+
+            File file = fileChooser.showSaveDialog(tblRecentLoss.getScene().getWindow());
+
+            if (file != null) {
+                try (FileWriter writer = new FileWriter(file)) {
+                    writer.write("=====================================\n");
+                    writer.write("        LOSS REPORTS SUMMARY\n");
+                    writer.write("=====================================\n");
+                    writer.write("Export Date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+                    writer.write("Total Records: " + lossReportsToExport.size() + "\n");
+                    writer.write("=====================================\n\n");
+
+                    writer.write(String.format("%-8s %-25s %-10s %-20s %-15s %-12s %-15s %-12s\n",
+                            "ID", "Product", "Loss Qty", "Reason", "Created By", "Loss Value", "Avg Unit Cost", "Report Date"));
+                    writer.write("----------------------------------------------------------------------------------------------------\n");
+
+                    double totalLossValue = 0;
+                    int totalLossQuantity = 0;
+
+                    for (LossReportDetailExtended report : lossReportsToExport) {
+                        totalLossQuantity += report.getLostQuantity();
+                        totalLossValue += report.getLossValue();
+
+                        String productName = report.getProductName();
+                        if (productName.length() > 23) {
+                            productName = productName.substring(0, 20) + "...";
+                        }
+
+                        String reason = report.getReason();
+                        if (reason.length() > 18) {
+                            reason = reason.substring(0, 15) + "...";
+                        }
+
+                        String employeeName = report.getEmployeeName();
+                        if (employeeName.length() > 13) {
+                            employeeName = employeeName.substring(0, 10) + "...";
+                        }
+
+                        writer.write(String.format("%-8d %-25s %-10d %-20s %-15s %12.0f %15.0f %-12s\n",
+                                report.getReportID(),
+                                productName,
+                                report.getLostQuantity(),
+                                reason,
+                                employeeName,
+                                report.getLossValue(),
+                                report.getAvgUnitCost(),
+                                report.getReportDateFormatted()));
+                    }
+
+                    writer.write("----------------------------------------------------------------------------------------------------\n");
+                    writer.write(String.format("%-54s %-10d %12.0f\n", "TOTAL LOSSES:", totalLossQuantity, totalLossValue));
+                    writer.write("====================================================================================================\n");
+
+                    showAlert("Loss reports exported successfully to: " + file.getAbsolutePath(), Alert.AlertType.INFORMATION);
+                }
+            }
+        } catch (IOException e) {
+            showAlert("Error writing to file: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void showAlert(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle(title);
+        alert.setTitle("Warehouse Report");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

@@ -15,70 +15,54 @@
         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
     </padding>
 
-    <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #f8f9fa; -fx-padding: 10; -fx-background-radius: 8;">
-        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="📦 Inventory Management" />
-        <Region HBox.hgrow="ALWAYS" />
-        <Button onAction="#handleClearFilters" style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 12px;" text="🗑️ Clear Filters" />
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Inventory Management" />
     </HBox>
 
-    <!-- Statistics Cards -->
     <HBox spacing="10.0" prefHeight="60.0">
-        <!-- Total Products Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #3498db; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
             <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Total Products" />
             <Label fx:id="lblTotalProducts" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" text="0" />
         </VBox>
 
-        <!-- Low Stock Items Card -->
-        <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #f39c12; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Low Stock Products" />
-            <Label fx:id="lblLowStockItems" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" text="0" />
-        </VBox>
-
-        <!-- Out of Stock Items Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #e74c3c; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
             <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Out of Stock" />
             <Label fx:id="lblOutOfStockItems" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" text="0" />
         </VBox>
 
-        <!-- Total Value Card -->
         <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #27ae60; -fx-background-radius: 8; -fx-padding: 8;" HBox.hgrow="ALWAYS">
             <Label style="-fx-font-size: 10px; -fx-text-fill: white;" text="Total Stock Value" />
-            <Label fx:id="lblTotalValue" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;" text="0 USD" />
+            <Label fx:id="lblTotalValue" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;" text="0 VND" />
         </VBox>
     </HBox>
 
-    <!-- Filter Section -->
     <HBox spacing="10.0" alignment="CENTER_LEFT" style="-fx-background-color: #e3f2fd; -fx-border-color: #2196f3; -fx-padding: 10; -fx-background-radius: 8;">
-        <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" text="🔍 Filters:" />
+        <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" text="Filters:" />
 
-        <!-- Search Field -->
         <VBox spacing="2.0">
             <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Search:" />
             <TextField fx:id="txtSearch" prefWidth="150.0" promptText="Code or Product Name..." style="-fx-font-size: 11px;" />
         </VBox>
 
-        <!-- Status Filter -->
         <VBox spacing="2.0">
             <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Status:" />
             <ComboBox fx:id="cbStatusFilter" prefWidth="120.0" style="-fx-font-size: 11px;" />
         </VBox>
 
-        <!-- Brand Filter -->
         <VBox spacing="2.0">
-            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Brand:" />
-            <ComboBox fx:id="cbBrandFilter" prefWidth="120.0" style="-fx-font-size: 11px;" />
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #1976d2;" text="Actions:" />
+            <HBox spacing="5.0">
+                <Button onAction="#handleRefresh" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10;" text="Refresh" />
+                <Button onAction="#handleExportToTXT" style="-fx-background-color: #6f42c1; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10;" text="Export TXT" />
+            </HBox>
         </VBox>
     </HBox>
 
-    <!-- Main Content -->
     <HBox spacing="15.0" VBox.vgrow="ALWAYS">
 
-        <!-- Left Panel - Inventory Table -->
         <VBox spacing="8.0" prefWidth="480.0">
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 10; -fx-background-radius: 8;">
-                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;" text="📋 Inventory List" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;" text="Inventory List" />
                 <TableView fx:id="tblInventory" prefHeight="450.0">
                     <columns>
                         <TableColumn fx:id="colProductCode" prefWidth="70.0" text="Product ID" style="-fx-font-size: 11px;" />
@@ -93,19 +77,16 @@
             </VBox>
         </VBox>
 
-        <!-- Right Panel - Charts -->
         <VBox spacing="10.0" prefWidth="300.0">
 
-            <!-- Stock Status Distribution -->
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 10; -fx-background-radius: 8;">
-                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="📊 Status Distribution" />
-                <PieChart fx:id="pieStockStatus" prefHeight="180.0" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="Status Distribution" />
+                <PieChart fx:id="pieStockStatus" prefHeight="180.0" legendVisible="true" />
             </VBox>
 
-            <!-- Top Products Chart -->
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 10; -fx-background-radius: 8;">
-                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="📈 Top Products" />
-                <BarChart fx:id="barTopProducts" prefHeight="180.0">
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 5 0;" text="Inventory Statistics" />
+                <BarChart fx:id="barTopProducts" prefHeight="180.0" legendVisible="true">
                     <xAxis>
                         <CategoryAxis side="BOTTOM" style="-fx-font-size: 9px;" />
                     </xAxis>

@@ -2,6 +2,7 @@ package dao;
 
 import model.LossReportDetail;
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,7 +155,6 @@ public class LossReportDetailDAO {
         return 0;
     }
 
-    // SỬA ĐỔI: Tính giá trị tổn thất dựa trên giá nhập (UnitCost) thay vì giá bán (Price)
     public static double getTotalLossValueByProduct(int productID) {
         String sql = """
             SELECT ISNULL(SUM(lrd.Quantity * sed.UnitCost), 0) as TotalLossValue
@@ -178,7 +178,7 @@ public class LossReportDetailDAO {
         return 0.0;
     }
 
-    public static List<LossReportDetail> getLossReportDetailsByDateRange(java.sql.Date fromDate, java.sql.Date toDate) {
+    public static List<LossReportDetail> getLossReportDetailsByDateRange(Date fromDate, Date toDate) {
         List<LossReportDetail> details = new ArrayList<>();
         String sql = """
             SELECT lrd.ReportID, lrd.ProductID, lrd.Quantity, lrd.Note, lrd.LossDate,
@@ -210,7 +210,6 @@ public class LossReportDetailDAO {
         return details;
     }
 
-    // SỬA ĐỔI: Tính top sản phẩm tổn thất dựa trên giá nhập
     public static List<LossReportDetail> getTopLossProducts(int limit) {
         List<LossReportDetail> details = new ArrayList<>();
         String sql = """
@@ -279,7 +278,7 @@ public class LossReportDetailDAO {
         return false;
     }
 
-    // SỬA ĐỔI QUAN TRỌNG: Tính giá trị tổn thất dựa trên giá trung bình của tất cả lần nhập
+    // CẬP NHẬT: Bao gồm ngày tạo báo cáo
     public static List<LossReportDetailExtended> getLossReportDetailsExtended() {
         List<LossReportDetailExtended> details = new ArrayList<>();
         String sql = """
@@ -299,7 +298,7 @@ public class LossReportDetailDAO {
             GROUP BY lrd.ReportID, lrd.ProductID, lrd.Quantity, lrd.Note, lrd.LossDate,
                      p.ProductName, p.ProductCode, p.Brand, p.Price,
                      lr.ReportDate
-            ORDER BY lrd.LossDate DESC
+            ORDER BY lr.ReportDate DESC
         """;
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -315,12 +314,16 @@ public class LossReportDetailDAO {
                 detail.productName = rs.getString("ProductName");
                 detail.productCode = rs.getString("ProductCode");
                 detail.brand = rs.getString("Brand");
-                detail.price = rs.getDouble("Price"); // Giá bán (để hiển thị tham khảo)
-                detail.avgUnitCost = rs.getDouble("AvgUnitCost"); // Giá nhập trung bình
+                detail.price = rs.getDouble("Price");
+                detail.avgUnitCost = rs.getDouble("AvgUnitCost");
                 detail.employeeName = "Warehouse Staff";
                 detail.totalReceived = rs.getInt("TotalReceived");
-                // SỬA ĐỔI: Tính giá trị tổn thất dựa trên giá nhập trung bình
                 detail.lossValue = detail.lostQuantity * detail.avgUnitCost;
+
+                // THÊM: Lấy ngày tạo báo cáo
+                Timestamp reportDate = rs.getTimestamp("ReportDate");
+                detail.reportDate = reportDate;
+
                 details.add(detail);
             }
         } catch (SQLException e) {
@@ -338,11 +341,12 @@ public class LossReportDetailDAO {
         public String productName;
         public String productCode;
         public String brand;
-        public double price; // Giá bán (để tham khảo)
-        public double avgUnitCost; // Giá nhập trung bình
+        public double price;
+        public double avgUnitCost;
         public String employeeName;
         public int totalReceived;
         public double lossValue;
+        public Timestamp reportDate; // THÊM: Ngày tạo báo cáo
 
         // Getters for JavaFX binding
         public int getReportID() { return reportID; }
@@ -352,23 +356,23 @@ public class LossReportDetailDAO {
         public String getProductName() { return productName; }
         public String getProductCode() { return productCode; }
         public String getBrand() { return brand; }
-
-        // Trả về giá bán (để hiển thị tham khảo)
         public double getPrice() { return price; }
-
-        // THÊM: Getter cho giá nhập trung bình
         public double getAvgUnitCost() { return avgUnitCost; }
-
-        // Luôn trả về "Warehouse Staff" cho cột người tạo
-        public String getEmployeeName() {
-            return "Warehouse Staff";
-        }
-
+        public String getEmployeeName() { return "Warehouse Staff"; }
         public int getTotalReceived() { return totalReceived; }
-
-        // SỬA ĐỔI: Giá trị tổn thất dựa trên giá nhập
         public double getLossValue() { return lossValue; }
-
         public int getRemainingQuantity() { return Math.max(0, totalReceived - lostQuantity); }
+
+        // THÊM: Getter cho ngày tạo báo cáo
+        public Timestamp getReportDate() { return reportDate; }
+
+        // THÊM: Getter cho ngày tạo báo cáo đã format
+        public String getReportDateFormatted() {
+            if (reportDate != null) {
+                return reportDate.toLocalDateTime()
+                        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            }
+            return "";
+        }
     }
 }
