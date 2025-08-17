@@ -8,18 +8,18 @@ public class LossReport {
     private IntegerProperty employeeID;
     private ObjectProperty<Timestamp> reportDate;
 
-    private IntegerProperty entryDetailID;   // MỚI
-    private IntegerProperty quantity;        // MỚI
-    private StringProperty reason;           // MỚI
+    private IntegerProperty entryDetailID;
+    private IntegerProperty quantity;
+    private StringProperty reason;
 
     public LossReport() {
         this.reportID = new SimpleIntegerProperty();
         this.employeeID = new SimpleIntegerProperty();
         this.reportDate = new SimpleObjectProperty<>();
 
-        this.entryDetailID = new SimpleIntegerProperty();   // MỚI
-        this.quantity = new SimpleIntegerProperty();        // MỚI
-        this.reason = new SimpleStringProperty();           // MỚI
+        this.entryDetailID = new SimpleIntegerProperty();
+        this.quantity = new SimpleIntegerProperty();
+        this.reason = new SimpleStringProperty();
     }
 
     public int getReportID() { return reportID.get(); }
@@ -34,7 +34,6 @@ public class LossReport {
     public void setReportDate(Timestamp date) { this.reportDate.set(date); }
     public ObjectProperty<Timestamp> reportDateProperty() { return reportDate; }
 
-    // ---------- THÊM DƯỚI ĐÂY ----------
 
     public int getEntryDetailID() { return entryDetailID.get(); }
     public void setEntryDetailID(int entryDetailID) { this.entryDetailID.set(entryDetailID); }

@@ -3,8 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
@@ -39,13 +37,13 @@
                 </font>
             </Button>
 
-            <Button fx:id="btnLossManagement" maxWidth="180" text="Loss Management" onAction="#handleLossManagement" styleClass="sidebar-button">
+            <Button fx:id="btnLossReport" maxWidth="180" text="Loss Report" onAction="#handleLossReport" styleClass="sidebar-button">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>
             </Button>
 
-            <Button fx:id="btnInventoryManagement" maxWidth="180" text="Inventory Management" onAction="#handleInventoryManagement" styleClass="sidebar-button">
+            <Button fx:id="btnInventoryReport" maxWidth="180" text="Inventory Report" onAction="#handleInventoryReport" styleClass="sidebar-button">
                 <font>
                     <Font name="Times New Roman Bold" size="18" />
                 </font>

@@ -29,7 +29,6 @@ import java.util.Map;
 
 public class StockEntryController {
 
-    // ===== STOCK ENTRY LIST COMPONENTS =====
     @FXML private VBox listView;
     @FXML private TextField txtSearch;
     @FXML private TableView<StockEntry> table;
@@ -42,7 +41,6 @@ public class StockEntryController {
     @FXML private Button btnAdd, btnRefresh;
     @FXML private Label lblRecordCount;
 
-    // ===== STOCK ENTRY FORM COMPONENTS =====
     @FXML private VBox formView;
     @FXML private ComboBox<Supplier> cbSupplier;
     @FXML private DatePicker dpDate;
@@ -60,7 +58,7 @@ public class StockEntryController {
     @FXML private TableColumn<StockEntryDetail, Void> colAction;
     @FXML private Label lblTotalForm;
 
-    // ===== STOCK ENTRY DETAIL COMPONENTS =====
+
     @FXML private VBox detailView;
     @FXML private TableView<StockEntryDetail> tableDetail;
     @FXML private TableColumn<StockEntryDetail, Integer> colProductIDDetail;
@@ -73,32 +71,26 @@ public class StockEntryController {
     @FXML private Label lblTitle;
     @FXML private Label lblTotal;
 
-    // ===== SHARED VARIABLES =====
     private ObservableList<StockEntry> list = FXCollections.observableArrayList();
     private FilteredList<StockEntry> filteredList;
     private SortedList<StockEntry> sortedList;
     private ObservableList<StockEntryDetail> detailList = FXCollections.observableArrayList();
     private int entryID;
 
-    // Cache cho data - tránh load lại nhiều lần
     private static List<Supplier> suppliersCache = null;
     private static List<Product> productsCache = null;
     private static long lastCacheTime = 0;
-    private static final long CACHE_DURATION = 30000; // 30 seconds
+    private static final long CACHE_DURATION = 30000;
 
-    // Maps to store additional info
     private Map<StockEntryDetail, String> supplierNames = new HashMap<>();
     private Map<StockEntryDetail, String> entryDates = new HashMap<>();
     private Map<StockEntryDetail, String> supplierNamesDetail = new HashMap<>();
     private Map<StockEntryDetail, String> entryDatesDetail = new HashMap<>();
 
-    // Cache for stock entry details
     private Map<Integer, List<StockEntryDetail>> stockEntryDetailsCache = new HashMap<>();
 
-    // Dashboard controller reference
     private WarehouseStaffDashboardController dashboardController;
 
-    // Debounce cho search
     private javafx.animation.Timeline searchTimeline;
 
     private boolean isRefreshing = false;
@@ -112,12 +104,10 @@ public class StockEntryController {
         setupSearchFilter();
     }
 
-    // Method để nhận dashboard controller reference
     public void setDashboardController(WarehouseStaffDashboardController controller) {
         this.dashboardController = controller;
     }
 
-    // ===== CACHE METHODS =====
     private List<Supplier> getSuppliers() {
         long currentTime = System.currentTimeMillis();
         if (suppliersCache == null || (currentTime - lastCacheTime) > CACHE_DURATION) {
@@ -136,7 +126,6 @@ public class StockEntryController {
         return productsCache;
     }
 
-    // ===== SEARCH FUNCTIONALITY - OPTIMIZED =====
     private void setupSearchFilter() {
         filteredList = new FilteredList<>(list, p -> true);
         sortedList = new SortedList<>(filteredList);
@@ -189,7 +178,6 @@ public class StockEntryController {
         }
     }
 
-    // ===== VIEW SWITCHING METHODS =====
     private void showListView() {
         listView.setVisible(true);
         listView.setManaged(true);
@@ -217,13 +205,11 @@ public class StockEntryController {
         detailView.setManaged(true);
     }
 
-    // ===== LIST VIEW METHODS - OPTIMIZED =====
     private void initializeListView() {
         enableColumnSorting();
         loadTableAsync();
         btnRefresh.setOnAction(e -> loadTableAsync());
 
-        // Double click to show detail
         table.setRowFactory(tv -> {
             TableRow<StockEntry> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -361,9 +347,7 @@ public class StockEntryController {
                             table.getSelectionModel().select(selectedIndex);
                             table.scrollTo(selectedIndex);
                         }
-                    } catch (Exception ex) {
-                        // Ignore restore errors
-                    }
+                    } catch (Exception ex) {}
 
                     updateRecordCount();
                     isRefreshing = false;
@@ -398,7 +382,6 @@ public class StockEntryController {
         loadTableAsync();
     }
 
-    // ===== FORM VIEW METHODS - OPTIMIZED =====
     private void initializeFormView() {
         loadComboBoxData();
         setupFormTableColumns();
@@ -411,11 +394,9 @@ public class StockEntryController {
     }
 
     private void loadComboBoxData() {
-        // Load suppliers với custom StringConverter
         List<Supplier> suppliers = getSuppliers();
         cbSupplier.setItems(FXCollections.observableArrayList(suppliers));
 
-        // Set StringConverter để hiển thị tên nhà cung cấp
         cbSupplier.setConverter(new javafx.util.StringConverter<Supplier>() {
             @Override
             public String toString(Supplier supplier) {
@@ -434,11 +415,9 @@ public class StockEntryController {
             }
         });
 
-        // Load products với custom StringConverter
         List<Product> products = getProducts();
         cbProduct.setItems(FXCollections.observableArrayList(products));
 
-        // Set StringConverter để hiển thị tên sản phẩm
         cbProduct.setConverter(new javafx.util.StringConverter<Product>() {
             @Override
             public String toString(Product product) {
@@ -504,7 +483,6 @@ public class StockEntryController {
     }
 
     private void setupOptimizedSearch() {
-        // Supplier search
         cbSupplier.setEditable(true);
         cbSupplier.getEditor().focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (isNowFocused) {
@@ -512,7 +490,6 @@ public class StockEntryController {
             }
         });
 
-        // Product search
         cbProduct.setEditable(true);
         cbProduct.getEditor().focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (isNowFocused) {
@@ -537,9 +514,8 @@ public class StockEntryController {
 
     @FXML
     private void onAddProduct() {
-        // Validation - Sửa lỗi casting ở đây
-        Supplier supplier = cbSupplier.getValue(); // Không cast nữa
-        Product product = cbProduct.getValue(); // Không cast nữa
+        Supplier supplier = cbSupplier.getValue();
+        Product product = cbProduct.getValue();
         LocalDate selectedDate = dpDate.getValue();
         String qtyStr = txtQty.getText().trim();
         String priceStr = txtUnitCost.getText().trim();
@@ -560,7 +536,6 @@ public class StockEntryController {
             return;
         }
 
-        // Check duplicate
         String dateStr = selectedDate.toString();
         String supplierName = supplier.getName();
 
@@ -575,7 +550,6 @@ public class StockEntryController {
             return;
         }
 
-        // Add product
         StockEntryDetail detail = new StockEntryDetail();
         detail.setProductID(product.getProductID());
         detail.setProductName(product.getProductName());
@@ -587,7 +561,6 @@ public class StockEntryController {
         detailList.add(detail);
         updateTotal();
 
-        // Clear fields
         cbProduct.getSelectionModel().clearSelection();
         cbProduct.getEditor().clear();
         txtQty.clear();
@@ -653,19 +626,19 @@ public class StockEntryController {
             StockEntry stockEntry = new StockEntry();
             stockEntry.setSupplierID(supplier.getSupplierID());
             stockEntry.setDate(java.sql.Date.valueOf(LocalDate.parse(dateStr)));
-            stockEntry.setUserID(1); // Hoặc lấy từ session
+            stockEntry.setUserID(1);
 
             int entryID = StockEntryDAO.insert(stockEntry);
             if (entryID <= 0) continue;
 
-            // Lưu chi tiết và cập nhật tồn kho
+
             for (StockEntryDetail detail : entry.getValue()) {
                 detail.setEntryID(entryID);
 
-                // Lưu chi tiết phiếu nhập
+
                 boolean saved = StockEntryDetailDAO.insert(detail);
 
-                // CẬP NHẬT TỒN KHO - ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT
+
                 if (saved) {
                     InventoryDAO.updateInventoryStock(detail.getProductID(), detail.getQuantity());
                 }
@@ -678,7 +651,6 @@ public class StockEntryController {
         showListView();
     }
 
-    // ===== DETAIL VIEW METHODS =====
     private void initializeDetailView() {
         setupDetailTableColumns();
     }

@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 public class InventoryDAO {
 
-    // Phương thức hiện tại
     public static int getStockAlerts(int threshold) {
         String sql = "SELECT COUNT(*) FROM Inventory WHERE Quantity <= ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -22,14 +21,11 @@ public class InventoryDAO {
         }
     }
 
-    // PHƯƠNG THỨC SỬA: Cập nhật tồn kho khi nhập hàng
     public static boolean updateInventoryStock(int productID, int quantityToAdd) {
         try (Connection conn = DatabaseConnection.getConnection()) {
 
-            // BƯỚC 1: Đảm bảo có warehouse mặc định
             int warehouseID = ensureDefaultWarehouse(conn);
 
-            // BƯỚC 2: Kiểm tra xem sản phẩm đã có trong inventory chưa
             String checkSql = "SELECT InventoryID, Quantity FROM Inventory WHERE ProductID = ? AND WarehouseID = ?";
             try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
                 checkPs.setInt(1, productID);
@@ -37,7 +33,6 @@ public class InventoryDAO {
                 ResultSet rs = checkPs.executeQuery();
 
                 if (rs.next()) {
-                    // Đã tồn tại -> cập nhật số lượng
                     String updateSql = "UPDATE Inventory SET Quantity = Quantity + ? WHERE ProductID = ? AND WarehouseID = ?";
                     try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
                         updatePs.setInt(1, quantityToAdd);
@@ -51,7 +46,6 @@ public class InventoryDAO {
                         return success;
                     }
                 } else {
-                    // Chưa tồn tại -> thêm mới
                     String insertSql = "INSERT INTO Inventory (WarehouseID, ProductID, Quantity) VALUES (?, ?, ?)";
                     try (PreparedStatement insertPs = conn.prepareStatement(insertSql)) {
                         insertPs.setInt(1, warehouseID);
@@ -73,25 +67,18 @@ public class InventoryDAO {
         }
     }
 
-    /**
-     * Đảm bảo có warehouse mặc định, nếu không có thì tạo mới
-     * @param conn Database connection
-     * @return WarehouseID mặc định
-     */
     private static int ensureDefaultWarehouse(Connection conn) throws SQLException {
-        // Kiểm tra xem có warehouse nào không
+        // Check if any warehouse exists
         String checkWarehouseSQL = "SELECT TOP 1 WarehouseID FROM Warehouse ORDER BY WarehouseID";
         try (PreparedStatement ps = conn.prepareStatement(checkWarehouseSQL);
              ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
-                // Đã có warehouse -> trả về cái đầu tiên
                 int warehouseID = rs.getInt("WarehouseID");
                 return warehouseID;
             }
         }
 
-        // Không có warehouse -> tạo warehouse mặc định
         String insertWarehouseSQL = "INSERT INTO Warehouse (WarehouseName, Address) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(insertWarehouseSQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, "Main Warehouse");
@@ -110,7 +97,6 @@ public class InventoryDAO {
         throw new SQLException("Failed to create default warehouse");
     }
 
-    // PHƯƠNG THỨC PHỤ: Lấy số lượng tồn kho hiện tại
     public static int getCurrentStock(int productID) {
         String sql = "SELECT ISNULL(SUM(Quantity), 0) as CurrentStock FROM Inventory WHERE ProductID = ?";
         try (Connection conn = DatabaseConnection.getConnection();

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StockEntryDAO {
-    // Lấy danh sách tất cả phiếu nhập
     public static List<StockEntry> getAll() {
         List<StockEntry> list = new ArrayList<>();
         String sql = """
@@ -38,7 +37,6 @@ public class StockEntryDAO {
         return list;
     }
 
-    // Lấy 1 phiếu nhập theo ID
     public static StockEntry getById(int entryID) {
         String sql = """
             SELECT se.*, s.Name AS SupplierName, u.Username AS UserName
@@ -69,14 +67,13 @@ public class StockEntryDAO {
         return null;
     }
 
-    // Thêm phiếu nhập mới, trả về entryID mới
     public static int insert(StockEntry entry) {
         String sql = "INSERT INTO StockEntry (SupplierID, UserID, Date) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, entry.getSupplierID());
             ps.setInt(2, entry.getUserID());
-            ps.setTimestamp(3, new Timestamp(entry.getDate().getTime()));// Hoặc entry.getNote() nếu có field Note
+            ps.setTimestamp(3, new Timestamp(entry.getDate().getTime()));
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) return rs.getInt(1);

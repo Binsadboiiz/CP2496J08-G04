@@ -187,7 +187,6 @@ public class LossReportDAO {
         return reports;
     }
 
-    // THÊM: Phương thức tính tổng giá trị tổn thất dựa trên giá nhập
     public static double getTotalLossValueBasedOnUnitCost() {
         String sql = """
             SELECT ISNULL(SUM(lrd.Quantity * avgCost.AvgUnitCost), 0) as TotalLossValue
@@ -217,7 +216,6 @@ public class LossReportDAO {
         return 0.0;
     }
 
-    // THÊM: Phương thức thống kê tổn thất theo tháng dựa trên giá nhập
     public static List<MonthlyLossReport> getMonthlyLossReportsBasedOnUnitCost() {
         List<MonthlyLossReport> reports = new ArrayList<>();
         String sql = """
@@ -259,7 +257,6 @@ public class LossReportDAO {
         return reports;
     }
 
-    // THÊM: Inner class cho báo cáo tổn thất hàng tháng
     public static class MonthlyLossReport {
         public int year;
         public int month;
