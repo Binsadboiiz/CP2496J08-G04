@@ -29,7 +29,7 @@ public class MainApp extends Application {
         try (Connection conn = DatabaseConnection.getConnection()) {
             System.out.println("SQLServer Connected Successfully!");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
         launch(args);
     }
