@@ -1,6 +1,8 @@
 package dao;
 
 import model.Employee;
+import model.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -199,5 +201,28 @@ public class EmployeeDAO {
             e.printStackTrace();
         }
         return "Unknown";
+    }
+    public static User findByEmployeeID(int empId) {
+        String sql = "SELECT Username, Password, Role, EmployeeID "
+                + "FROM [User] WHERE EmployeeID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, empId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    User u = new User();
+                    u.setEmployeeID(rs.getInt("EmployeeID"));
+                    u.setUsername(rs.getString("Username"));
+                    u.setPassword(rs.getString("Password"));
+                    u.setRole(rs.getString("Role"));
+                    // u.setEmail("");
+                    // u.setStatus("");
+                    return u;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
