@@ -7,13 +7,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
 import model.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public class LossManagementController {
+public class LossReportController {
 
     @FXML private TableView<ProductWithStock> tblProducts;
     @FXML private TableColumn<ProductWithStock, String> colProductCode;
@@ -56,6 +55,8 @@ public class LossManagementController {
     private ObservableList<LossReportDetailDAO.LossReportDetailExtended> filteredLossReportList = FXCollections.observableArrayList();
     private ProductWithStock selectedProduct;
 
+    private InventoryReportController inventoryReportController;
+
     @FXML
     public void initialize() {
         setupTables();
@@ -63,6 +64,10 @@ public class LossManagementController {
         loadData();
         dpLossDate.setValue(LocalDate.now());
         tblProducts.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> onProductSelected(newVal));
+    }
+
+    public void setInventoryReportController(InventoryReportController controller) {
+        this.inventoryReportController = controller;
     }
 
     private void setupTables() {
@@ -108,7 +113,6 @@ public class LossManagementController {
 
                 {
                     deleteBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-size: 10px; -fx-padding: 2 6");
-                    deleteBtn.setTooltip(new Tooltip("Delete this loss report"));
                     deleteBtn.setOnAction(event -> {
                         LossReportDetailDAO.LossReportDetailExtended item = getTableView().getItems().get(getIndex());
                         handleDeleteSpecificLossReport(item);
@@ -172,11 +176,7 @@ public class LossManagementController {
     }
 
     private int getTotalStockForProduct(int productID) {
-        String sql = """
-                SELECT ISNULL(SUM(sed.Quantity), 0) as TotalStock
-                FROM StockEntryDetail sed
-                WHERE sed.ProductID = ?
-                """;
+        String sql = "SELECT ISNULL(SUM(sed.Quantity), 0) as TotalStock FROM StockEntryDetail sed WHERE sed.ProductID = ?";
         try (var conn = DatabaseConnection.getConnection();
              var ps = conn.prepareStatement(sql)) {
             ps.setInt(1, productID);
@@ -192,15 +192,7 @@ public class LossManagementController {
     }
 
     private double getAverageUnitCostForProduct(int productID) {
-        String sql = """
-                SELECT CASE 
-                           WHEN SUM(sed.Quantity) > 0 
-                           THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
-                           ELSE 0 
-                       END as AvgUnitCost
-                FROM StockEntryDetail sed
-                WHERE sed.ProductID = ?
-                """;
+        String sql = "SELECT CASE WHEN SUM(sed.Quantity) > 0 THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity) ELSE 0 END as AvgUnitCost FROM StockEntryDetail sed WHERE sed.ProductID = ?";
         try (var conn = DatabaseConnection.getConnection();
              var ps = conn.prepareStatement(sql)) {
             ps.setInt(1, productID);
@@ -299,7 +291,13 @@ public class LossManagementController {
                             selectedProduct.getAvgUnitCost(),
                             lossValue);
                     showAlert(message, Alert.AlertType.INFORMATION);
+
                     loadData();
+
+                    if (inventoryReportController != null) {
+                        inventoryReportController.refreshInventoryData();
+                    }
+
                     txtLossQuantity.clear();
                     txtLossReason.clear();
                     dpLossDate.setValue(LocalDate.now());
@@ -397,7 +395,12 @@ public class LossManagementController {
                 boolean success = LossReportDetailDAO.deleteLossReportDetail(selected.getReportID(), selected.getProductID());
                 if (success) {
                     showAlert("Loss report deleted successfully!", Alert.AlertType.INFORMATION);
+
                     loadData();
+
+                    if (inventoryReportController != null) {
+                        inventoryReportController.refreshInventoryData();
+                    }
                 } else {
                     showAlert("Error deleting loss report!", Alert.AlertType.ERROR);
                 }

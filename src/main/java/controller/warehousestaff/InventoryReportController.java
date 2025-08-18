@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InventoryManagementController {
+public class InventoryReportController {
 
     @FXML private TableView<InventoryItem> tblInventory;
     @FXML private TableColumn<InventoryItem, String> colProductCode;
@@ -31,6 +31,7 @@ public class InventoryManagementController {
     @FXML private TableColumn<InventoryItem, Integer> colTotalReceived;
     @FXML private TableColumn<InventoryItem, Integer> colTotalLoss;
     @FXML private TableColumn<InventoryItem, Integer> colCurrentStock;
+    @FXML private TableColumn<InventoryItem, Integer> colSalableStock;
     @FXML private TableColumn<InventoryItem, String> colStatus;
 
     @FXML private TextField txtSearch;
@@ -47,7 +48,6 @@ public class InventoryManagementController {
     private ObservableList<InventoryItem> inventoryList = FXCollections.observableArrayList();
     private ObservableList<InventoryItem> filteredList = FXCollections.observableArrayList();
 
-    private static final int LOW_STOCK_THRESHOLD = 10;
     private static final int CRITICAL_STOCK_THRESHOLD = 5;
 
     @FXML
@@ -66,6 +66,7 @@ public class InventoryManagementController {
         colTotalReceived.setCellValueFactory(new PropertyValueFactory<>("totalReceived"));
         colTotalLoss.setCellValueFactory(new PropertyValueFactory<>("totalLoss"));
         colCurrentStock.setCellValueFactory(new PropertyValueFactory<>("currentStock"));
+        colSalableStock.setCellValueFactory(new PropertyValueFactory<>("salableStock"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         colStatus.setCellFactory(column -> new TableCell<InventoryItem, String>() {
@@ -112,8 +113,9 @@ public class InventoryManagementController {
                 item.setPrice(summary.price);
                 item.setTotalReceived(summary.totalReceived);
                 item.setTotalLoss(summary.totalLoss);
-                item.setCurrentStock(summary.currentStock);
-                item.setStatus(translateStatusToEnglish(summary.status));
+                item.setCurrentStock(summary.totalReceived);
+                item.setSalableStock(summary.currentStock);
+                item.setStatus(summary.status);
                 item.setValue(summary.value);
                 inventoryList.add(item);
             }
@@ -125,15 +127,6 @@ public class InventoryManagementController {
         }
     }
 
-    private String translateStatusToEnglish(String vietnameseStatus) {
-        return switch (vietnameseStatus) {
-            case "Hết hàng" -> "Out of Stock";
-            case "Sắp hết" -> "Critical";
-            case "Đủ hàng" -> "In Stock";
-            default -> vietnameseStatus;
-        };
-    }
-
     private void applyFilters() {
         ObservableList<InventoryItem> filtered = FXCollections.observableArrayList();
 
@@ -142,8 +135,9 @@ public class InventoryManagementController {
                     item.getProductName().toLowerCase().contains(txtSearch.getText().toLowerCase()) ||
                     item.getProductCode().toLowerCase().contains(txtSearch.getText().toLowerCase());
 
+            String actualStatus = determineSalableStockStatus(item.getSalableStock());
             boolean matchesStatus = cbStatusFilter.getValue().equals("All") ||
-                    item.getStatus().equals(cbStatusFilter.getValue());
+                    actualStatus.equals(cbStatusFilter.getValue());
 
             if (matchesSearch && matchesStatus) {
                 filtered.add(item);
@@ -153,6 +147,16 @@ public class InventoryManagementController {
         filteredList.setAll(filtered);
         updateStatistics();
         updateCharts();
+    }
+
+    private String determineSalableStockStatus(int salableStock) {
+        if (salableStock == 0) {
+            return "Out of Stock";
+        } else if (salableStock <= CRITICAL_STOCK_THRESHOLD) {
+            return "Critical";
+        } else {
+            return "In Stock";
+        }
     }
 
     private void setupCharts() {
@@ -168,7 +172,8 @@ public class InventoryManagementController {
     private void updatePieChart() {
         Map<String, Integer> statusCount = new HashMap<>();
         for (InventoryItem item : filteredList) {
-            statusCount.merge(item.getStatus(), 1, Integer::sum);
+            String actualStatus = determineSalableStockStatus(item.getSalableStock());
+            statusCount.merge(actualStatus, 1, Integer::sum);
         }
 
         ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
@@ -178,14 +183,14 @@ public class InventoryManagementController {
 
     private void updateBarChart() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Stock Quantity");
+        series.setName("Salable Stock Quantity");
 
         filteredList.stream()
-                .sorted((a, b) -> Integer.compare(b.getCurrentStock(), a.getCurrentStock()))
+                .sorted((a, b) -> Integer.compare(b.getSalableStock(), a.getSalableStock()))
                 .limit(10)
                 .forEach(item -> series.getData().add(new XYChart.Data<>(
                         item.getProductName().length() > 12 ? item.getProductName().substring(0, 12) + "..." : item.getProductName(),
-                        item.getCurrentStock())));
+                        item.getSalableStock())));
 
         barTopProducts.getData().clear();
         barTopProducts.getData().add(series);
@@ -198,10 +203,10 @@ public class InventoryManagementController {
     private void updateStatistics() {
         int totalProducts = filteredList.size();
         int outOfStockItems = (int) filteredList.stream()
-                .filter(item -> item.getStatus().equals("Out of Stock"))
+                .filter(item -> determineSalableStockStatus(item.getSalableStock()).equals("Out of Stock"))
                 .count();
         double totalValue = filteredList.stream()
-                .mapToDouble(InventoryItem::getValue)
+                .mapToDouble(item -> item.getSalableStock() * item.getPrice())
                 .sum();
 
         lblTotalProducts.setText(String.valueOf(totalProducts));
@@ -247,7 +252,7 @@ public class InventoryManagementController {
     private void exportInventoryToTXT(File file) throws IOException {
         try (FileWriter writer = new FileWriter(file, java.nio.charset.StandardCharsets.UTF_8)) {
             writer.write("=".repeat(80) + "\n");
-            writer.write("                    INVENTORY MANAGEMENT REPORT\n");
+            writer.write("                    INVENTORY REPORT\n");
             writer.write("=".repeat(80) + "\n");
             writer.write("Generated on: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "\n");
             writer.write("Total Records: " + filteredList.size() + "\n");
@@ -268,19 +273,25 @@ public class InventoryManagementController {
 
             int totalProducts = filteredList.size();
             int outOfStockItems = (int) filteredList.stream()
-                    .filter(item -> item.getStatus().equals("Out of Stock"))
+                    .filter(item -> determineSalableStockStatus(item.getSalableStock()).equals("Out of Stock"))
                     .count();
             int criticalItems = (int) filteredList.stream()
-                    .filter(item -> item.getStatus().equals("Critical"))
+                    .filter(item -> determineSalableStockStatus(item.getSalableStock()).equals("Critical"))
                     .count();
             int inStockItems = (int) filteredList.stream()
-                    .filter(item -> item.getStatus().equals("In Stock"))
+                    .filter(item -> determineSalableStockStatus(item.getSalableStock()).equals("In Stock"))
                     .count();
             double totalValue = filteredList.stream()
-                    .mapToDouble(InventoryItem::getValue)
+                    .mapToDouble(item -> item.getSalableStock() * item.getPrice())
                     .sum();
             int totalStock = filteredList.stream()
                     .mapToInt(InventoryItem::getCurrentStock)
+                    .sum();
+            int totalSalableStock = filteredList.stream()
+                    .mapToInt(InventoryItem::getSalableStock)
+                    .sum();
+            int totalLoss = filteredList.stream()
+                    .mapToInt(InventoryItem::getTotalLoss)
                     .sum();
 
             writer.write(String.format("Total Products:      %6d\n", totalProducts));
@@ -288,49 +299,51 @@ public class InventoryManagementController {
             writer.write(String.format("Critical Items:      %6d\n", criticalItems));
             writer.write(String.format("Out of Stock Items:  %6d\n", outOfStockItems));
             writer.write(String.format("Total Stock Qty:     %6d\n", totalStock));
+            writer.write(String.format("Total Loss Qty:      %6d\n", totalLoss));
+            writer.write(String.format("Total Salable Qty:   %6d\n", totalSalableStock));
             writer.write(String.format("Total Stock Value:   %,.0f VND\n", totalValue));
 
             writer.write("\n" + "=".repeat(80) + "\n");
             writer.write("                         DETAILED INVENTORY LIST\n");
             writer.write("=".repeat(80) + "\n");
-            writer.write(String.format("%-8s %-25s %-12s %8s %6s %8s %-12s\n",
-                    "Code", "Product Name", "Brand", "Received", "Loss", "Stock", "Status"));
+            writer.write(String.format("%-8s %-20s %-10s %8s %6s %8s %8s %-12s\n",
+                    "Code", "Product Name", "Brand", "Received", "Loss", "Stock", "Salable", "Status"));
             writer.write("-".repeat(80) + "\n");
 
             for (InventoryItem item : filteredList) {
-                String productName = item.getProductName().length() > 25 ?
-                        item.getProductName().substring(0, 22) + "..." : item.getProductName();
-                String brand = item.getBrand().length() > 12 ? item.getBrand().substring(0, 9) + "..." : item.getBrand();
+                String productName = item.getProductName().length() > 20 ?
+                        item.getProductName().substring(0, 17) + "..." : item.getProductName();
+                String brand = item.getBrand().length() > 10 ? item.getBrand().substring(0, 7) + "..." : item.getBrand();
+                String actualStatus = determineSalableStockStatus(item.getSalableStock());
 
-                writer.write(String.format("%-8s %-25s %-12s %8d %6d %8d %-12s\n",
+                writer.write(String.format("%-8s %-20s %-10s %8d %6d %8d %8d %-12s\n",
                         item.getProductCode(), productName, brand, item.getTotalReceived(),
-                        item.getTotalLoss(), item.getCurrentStock(), item.getStatus()));
+                        item.getTotalLoss(), item.getCurrentStock(), item.getSalableStock(), actualStatus));
             }
 
-            if (!filteredList.isEmpty()) {
-                List<InventoryItem> outOfStockList = filteredList.stream()
-                        .filter(item -> item.getStatus().equals("Out of Stock"))
-                        .toList();
-                if (!outOfStockList.isEmpty()) {
-                    writer.write("\n" + "=".repeat(80) + "\n");
-                    writer.write("                        OUT OF Stock ITEMS (" + outOfStockList.size() + ")\n");
-                    writer.write("=".repeat(80) + "\n");
-                    for (InventoryItem item : outOfStockList) {
-                        writer.write("• " + item.getProductCode() + " - " + item.getProductName() + "\n");
-                    }
+            List<InventoryItem> outOfSalableStockList = filteredList.stream()
+                    .filter(item -> determineSalableStockStatus(item.getSalableStock()).equals("Out of Stock"))
+                    .toList();
+            if (!outOfSalableStockList.isEmpty()) {
+                writer.write("\n" + "=".repeat(80) + "\n");
+                writer.write("                        OUT OF SALABLE STOCK ITEMS (" + outOfSalableStockList.size() + ")\n");
+                writer.write("=".repeat(80) + "\n");
+                for (InventoryItem item : outOfSalableStockList) {
+                    writer.write("• " + item.getProductCode() + " - " + item.getProductName() +
+                            " (Loss: " + item.getTotalLoss() + ")\n");
                 }
+            }
 
-                List<InventoryItem> criticalList = filteredList.stream()
-                        .filter(item -> item.getStatus().equals("Critical"))
-                        .toList();
-                if (!criticalList.isEmpty()) {
-                    writer.write("\n" + "=".repeat(80) + "\n");
-                    writer.write("                         CRITICAL ITEMS (" + criticalList.size() + ")\n");
-                    writer.write("=".repeat(80) + "\n");
-                    for (InventoryItem item : criticalList) {
-                        writer.write("• " + item.getProductCode() + " - " + item.getProductName() +
-                                " (Stock: " + item.getCurrentStock() + ")\n");
-                    }
+            List<InventoryItem> criticalSalableList = filteredList.stream()
+                    .filter(item -> determineSalableStockStatus(item.getSalableStock()).equals("Critical"))
+                    .toList();
+            if (!criticalSalableList.isEmpty()) {
+                writer.write("\n" + "=".repeat(80) + "\n");
+                writer.write("                         CRITICAL SALABLE ITEMS (" + criticalSalableList.size() + ")\n");
+                writer.write("=".repeat(80) + "\n");
+                for (InventoryItem item : criticalSalableList) {
+                    writer.write("• " + item.getProductCode() + " - " + item.getProductName() +
+                            " (Salable: " + item.getSalableStock() + ", Loss: " + item.getTotalLoss() + ")\n");
                 }
             }
 
@@ -348,6 +361,10 @@ public class InventoryManagementController {
         alert.showAndWait();
     }
 
+    public void refreshInventoryData() {
+        loadInventoryData();
+    }
+
     public static class InventoryItem {
         private int productID;
         private String productCode;
@@ -357,6 +374,7 @@ public class InventoryManagementController {
         private int totalReceived;
         private int totalLoss;
         private int currentStock;
+        private int salableStock;
         private String status;
         private double value;
 
@@ -422,6 +440,14 @@ public class InventoryManagementController {
 
         public void setCurrentStock(int currentStock) {
             this.currentStock = currentStock;
+        }
+
+        public int getSalableStock() {
+            return salableStock;
+        }
+
+        public void setSalableStock(int salableStock) {
+            this.salableStock = salableStock;
         }
 
         public String getStatus() {

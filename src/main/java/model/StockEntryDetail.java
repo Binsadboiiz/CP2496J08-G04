@@ -20,7 +20,6 @@ public class StockEntryDetail {
         this.productName = productName;
     }
 
-    // Getter & Setter
     public int getEntryDetailID() {
         return entryDetailID;
     }

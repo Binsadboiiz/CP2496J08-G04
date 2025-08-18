@@ -9,14 +9,14 @@
 <?import javafx.scene.layout.*?>
 
 <VBox spacing="10.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.warehousestaff.InventoryManagementController"
-      prefHeight="700.0" prefWidth="820.0">
+      fx:controller="controller.warehousestaff.InventoryReportController"
+      prefHeight="700.0" prefWidth="900.0">
     <padding>
         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
     </padding>
 
     <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #f8f9fa; -fx-padding: 10; -fx-background-radius: 8;">
-        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Inventory Management" />
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Inventory Report" />
     </HBox>
 
     <HBox spacing="10.0" prefHeight="60.0">
@@ -60,18 +60,19 @@
 
     <HBox spacing="15.0" VBox.vgrow="ALWAYS">
 
-        <VBox spacing="8.0" prefWidth="480.0">
+        <VBox spacing="8.0" prefWidth="550.0">
             <VBox style="-fx-background-color: white; -fx-border-color: #ddd; -fx-padding: 10; -fx-background-radius: 8;">
                 <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;" text="Inventory List" />
                 <TableView fx:id="tblInventory" prefHeight="450.0">
                     <columns>
                         <TableColumn fx:id="colProductCode" prefWidth="70.0" text="Product ID" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colProductName" prefWidth="150.0" text="Product Name" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colBrand" prefWidth="80.0" text="Brand" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colProductName" prefWidth="120.0" text="Product Name" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colBrand" prefWidth="70.0" text="Brand" style="-fx-font-size: 11px;" />
                         <TableColumn fx:id="colTotalReceived" prefWidth="60.0" text="Received" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colTotalLoss" prefWidth="60.0" text="Loss" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colTotalLoss" prefWidth="60.0" text="Loss/Sold" style="-fx-font-size: 11px;" />
                         <TableColumn fx:id="colCurrentStock" prefWidth="60.0" text="Stock" style="-fx-font-size: 11px;" />
-                        <TableColumn fx:id="colStatus" prefWidth="80.0" text="Status" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colSalableStock" prefWidth="60.0" text="Salable" style="-fx-font-size: 11px;" />
+                        <TableColumn fx:id="colStatus" prefWidth="70.0" text="Status" style="-fx-font-size: 11px;" />
                     </columns>
                 </TableView>
             </VBox>

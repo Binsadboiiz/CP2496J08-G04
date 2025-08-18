@@ -7,7 +7,6 @@ import java.util.List;
 
 public class InventorySummaryDAO {
 
-    // Class để chứa thông tin tồn kho
     public static class InventorySummary {
         public int productID;
         public String productCode;
@@ -19,9 +18,8 @@ public class InventorySummaryDAO {
         public int currentStock;
         public String status;
         public double value;
-        public double avgUnitCost; // Thêm giá nhập trung bình
+        public double avgUnitCost;
 
-        // Getters cho JavaFX binding
         public int getProductID() { return productID; }
         public String getProductCode() { return productCode; }
         public String getProductName() { return productName; }
@@ -35,7 +33,6 @@ public class InventorySummaryDAO {
         public double getAvgUnitCost() { return avgUnitCost; }
     }
 
-    // Lấy tất cả thông tin tồn kho với logic cải tiến
     public static List<InventorySummary> getAllInventorySummary() {
         List<InventorySummary> list = new ArrayList<>();
         String sql = """
@@ -46,9 +43,9 @@ public class InventorySummaryDAO {
                     p.ProductName,
                     ISNULL(p.Brand, 'N/A') as Brand,
                     p.Price,
-                    -- Tính tổng số lượng nhập
+                    -- Calculate total received quantity
                     ISNULL(SUM(sed.Quantity), 0) as TotalReceived,
-                    -- Tính giá nhập trung bình có trọng số
+                    -- Calculate weighted average unit cost
                     CASE 
                         WHEN SUM(sed.Quantity) > 0 
                         THEN SUM(sed.Quantity * sed.UnitCost) / SUM(sed.Quantity)
@@ -74,7 +71,7 @@ public class InventorySummaryDAO {
                 ss.TotalReceived,
                 ss.AvgUnitCost,
                 ISNULL(ls.TotalLoss, 0) as TotalLoss,
-                -- Tính tồn kho thực tế
+                -- Calculate actual stock
                 CASE 
                     WHEN ss.TotalReceived - ISNULL(ls.TotalLoss, 0) < 0 
                     THEN 0 
@@ -101,7 +98,7 @@ public class InventorySummaryDAO {
                 summary.currentStock = Math.max(0, rs.getInt("CurrentStock"));
                 summary.avgUnitCost = rs.getDouble("AvgUnitCost");
                 summary.status = determineStockStatus(summary.currentStock);
-                // Tính giá trị tồn kho dựa trên giá nhập trung bình
+
                 summary.value = summary.currentStock * summary.avgUnitCost;
 
                 list.add(summary);
@@ -112,20 +109,16 @@ public class InventorySummaryDAO {
         return list;
     }
 
-    // Xác định trạng thái tồn kho với các ngưỡng có thể cấu hình
     private static String determineStockStatus(int currentStock) {
         if (currentStock == 0) {
-            return "Hết hàng";
+            return "Out of Stock";
         } else if (currentStock <= 5) {
-            return "Sắp hết";
-        } else if (currentStock <= 10) {
-            return "Ít hàng";
+            return "Critical";
         } else {
-            return "Đủ hàng";
+            return "In Stock";
         }
     }
 
-    // Lấy thông tin tồn kho cho một sản phẩm cụ thể
     public static InventorySummary getInventorySummaryByProductId(int productId) {
         String sql = """
             WITH StockSummary AS (
@@ -200,7 +193,6 @@ public class InventorySummaryDAO {
         return null;
     }
 
-    // Lấy thống kê tổng quan với logic cải tiến
     public static InventoryStatistics getInventoryStatistics() {
         InventoryStatistics stats = new InventoryStatistics();
         String sql = """
@@ -253,7 +245,6 @@ public class InventorySummaryDAO {
         return stats;
     }
 
-    // Class để chứa thống kê
     public static class InventoryStatistics {
         public int totalProducts;
         public int outOfStockItems;
@@ -266,7 +257,6 @@ public class InventorySummaryDAO {
         public double getTotalValue() { return totalValue; }
     }
 
-    // Lấy danh sách thương hiệu distinct
     public static List<String> getAllBrands() {
         List<String> brands = new ArrayList<>();
         String sql = "SELECT DISTINCT Brand FROM Product WHERE Brand IS NOT NULL ORDER BY Brand";
@@ -287,7 +277,6 @@ public class InventorySummaryDAO {
         return brands;
     }
 
-    // Phương thức mới: Lấy sản phẩm cần chú ý (hết hàng hoặc sắp hết)
     public static List<InventorySummary> getCriticalStockItems() {
         List<InventorySummary> list = new ArrayList<>();
         String sql = """
@@ -331,7 +320,7 @@ public class InventorySummaryDAO {
                 END as CurrentStock
             FROM StockSummary ss
             LEFT JOIN LossSummary ls ON ss.ProductID = ls.ProductID
-            WHERE (ss.TotalReceived - ISNULL(ls.TotalLoss, 0)) <= 5  -- Chỉ lấy sản phẩm có stock <= 5
+            WHERE (ss.TotalReceived - ISNULL(ls.TotalLoss, 0)) <= 5  -- Only get products with stock <= 5
             ORDER BY CurrentStock ASC, ss.ProductName
         """;
 

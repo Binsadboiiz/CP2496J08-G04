@@ -15,7 +15,6 @@ public class StockEntry {
     private String userName;
 
     public StockEntry() {
-        //Contructor rỗng
     }
 
     public StockEntry(int entryID, int supplierID, int userID, Date date, Date createdAt, Date updatedAt, Integer updatedBy, String supplierName, String userName) {
@@ -30,7 +29,6 @@ public class StockEntry {
         this.userName = userName;
     }
 
-    // Getter & Setter
     public int getEntryID() {
         return entryID;
     }

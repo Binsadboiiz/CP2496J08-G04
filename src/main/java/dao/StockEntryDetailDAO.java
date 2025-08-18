@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StockEntryDetailDAO {
-    // Lấy tất cả chi tiết theo phiếu nhập
     public static List<StockEntryDetail> getByEntryID(int entryID) {
         List<StockEntryDetail> list = new ArrayList<>();
         String sql = """
@@ -36,7 +35,6 @@ public class StockEntryDetailDAO {
         return list;
     }
 
-    // Thêm chi tiết cho phiếu nhập
     public static boolean insert(StockEntryDetail detail) {
         String sql = "INSERT INTO StockEntryDetail (EntryID, ProductID, Quantity, UnitCost) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -50,7 +48,6 @@ public class StockEntryDetailDAO {
         return false;
     }
 
-    // THÊM PHƯƠNG THỨC MỚI: Tính tổng số lượng nhập theo sản phẩm
     public static int getTotalReceivedByProduct(int productID) {
         String sql = "SELECT ISNULL(SUM(Quantity), 0) as TotalReceived FROM StockEntryDetail WHERE ProductID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -67,7 +64,6 @@ public class StockEntryDetailDAO {
         return 0;
     }
 
-    // THÊM PHƯƠNG THỨC MỚI: Lấy tất cả sản phẩm đã nhập với tổng số lượng
     public static List<StockEntryDetail> getAllProductsWithTotalReceived() {
         List<StockEntryDetail> list = new ArrayList<>();
         String sql = """
@@ -94,7 +90,6 @@ public class StockEntryDetailDAO {
         return list;
     }
 
-    // THÊM PHƯƠNG THỨC MỚI: Lấy danh sách sản phẩm có số lượng nhập thấp
     public static List<StockEntryDetail> getLowStockProducts(int threshold) {
         List<StockEntryDetail> list = new ArrayList<>();
         String sql = """

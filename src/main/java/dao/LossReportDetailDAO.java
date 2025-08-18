@@ -278,7 +278,6 @@ public class LossReportDetailDAO {
         return false;
     }
 
-    // CẬP NHẬT: Bao gồm ngày tạo báo cáo
     public static List<LossReportDetailExtended> getLossReportDetailsExtended() {
         List<LossReportDetailExtended> details = new ArrayList<>();
         String sql = """
@@ -320,7 +319,6 @@ public class LossReportDetailDAO {
                 detail.totalReceived = rs.getInt("TotalReceived");
                 detail.lossValue = detail.lostQuantity * detail.avgUnitCost;
 
-                // THÊM: Lấy ngày tạo báo cáo
                 Timestamp reportDate = rs.getTimestamp("ReportDate");
                 detail.reportDate = reportDate;
 
@@ -332,7 +330,6 @@ public class LossReportDetailDAO {
         return details;
     }
 
-    // Inner class for extended loss report detail information
     public static class LossReportDetailExtended {
         public int reportID;
         public int productID;
@@ -348,7 +345,6 @@ public class LossReportDetailDAO {
         public double lossValue;
         public Timestamp reportDate; // THÊM: Ngày tạo báo cáo
 
-        // Getters for JavaFX binding
         public int getReportID() { return reportID; }
         public int getProductID() { return productID; }
         public int getLostQuantity() { return lostQuantity; }
@@ -363,10 +359,8 @@ public class LossReportDetailDAO {
         public double getLossValue() { return lossValue; }
         public int getRemainingQuantity() { return Math.max(0, totalReceived - lostQuantity); }
 
-        // THÊM: Getter cho ngày tạo báo cáo
         public Timestamp getReportDate() { return reportDate; }
 
-        // THÊM: Getter cho ngày tạo báo cáo đã format
         public String getReportDateFormatted() {
             if (reportDate != null) {
                 return reportDate.toLocalDateTime()
